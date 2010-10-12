@@ -216,7 +216,7 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>313171891264BC3800FB8BC9</string>
+						<string>313171F71264CA1000FB8BC9</string>
 						<key>history</key>
 						<array>
 							<string>313170BD125E27E400FB8BC9</string>
@@ -322,7 +322,7 @@
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 0}, {281, 1129}}</string>
+							<string>{{0, 0}, {281, 1233}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -334,14 +334,14 @@
 					<key>GeometryConfiguration</key>
 					<dict>
 						<key>Frame</key>
-						<string>{{0, 0}, {298, 1147}}</string>
+						<string>{{0, 0}, {298, 1251}}</string>
 						<key>GroupTreeTableConfiguration</key>
 						<array>
 							<string>MainColumn</string>
 							<real>281</real>
 						</array>
 						<key>RubberWindowFrame</key>
-						<string>766 224 1652 1188 0 0 2560 1418 </string>
+						<string>766 120 1675 1292 0 0 2560 1418 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXSmartGroupTreeModule</string>
@@ -369,7 +369,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>313171871264BC3800FB8BC9</string>
+										<string>313171F51264CA1000FB8BC9</string>
 										<key>history</key>
 										<array>
 											<string>31B66B2011E7245D00BF2BE2</string>
@@ -393,14 +393,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1349, 316}}</string>
+								<string>{{0, 0}, {1372, 420}}</string>
 								<key>RubberWindowFrame</key>
-								<string>766 224 1652 1188 0 0 2560 1418 </string>
+								<string>766 120 1675 1292 0 0 2560 1418 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>316pt</string>
+							<string>420pt</string>
 						</dict>
 						<dict>
 							<key>BecomeActive</key>
@@ -422,7 +422,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>313171881264BC3800FB8BC9</string>
+										<string>313171F61264CA1000FB8BC9</string>
 										<key>history</key>
 										<array>
 											<string>31B66B2011E7245D00BF2BE2</string>
@@ -444,9 +444,9 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 321}, {1349, 646}}</string>
+								<string>{{0, 425}, {1372, 646}}</string>
 								<key>RubberWindowFrame</key>
-								<string>766 224 1652 1188 0 0 2560 1418 </string>
+								<string>766 120 1675 1292 0 0 2560 1418 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
@@ -464,9 +464,9 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 972}, {1349, 175}}</string>
+								<string>{{0, 1076}, {1372, 175}}</string>
 								<key>RubberWindowFrame</key>
-								<string>766 224 1652 1188 0 0 2560 1418 </string>
+								<string>766 120 1675 1292 0 0 2560 1418 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
@@ -475,7 +475,7 @@
 						</dict>
 					</array>
 					<key>Proportion</key>
-					<string>1349pt</string>
+					<string>1372pt</string>
 				</dict>
 			</array>
 			<key>Name</key>
@@ -631,12 +631,12 @@
 	<key>WindowOrderList</key>
 	<array>
 		<string>1CD10A99069EF8BA00B06720</string>
-		<string>313074F211C7B230005E3702</string>
 		<string>313170BB125E27E400FB8BC9</string>
+		<string>313074F211C7B230005E3702</string>
 		<string>/Users/ahodge/src/IgorFiles/XOP Toolkit 5/IgorXOPs5/ODDRunACCESCard/Xcode/XFUNC3.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
-	<string>766 224 1652 1188 0 0 2560 1418 </string>
+	<string>766 120 1675 1292 0 0 2560 1418 </string>
 	<key>WindowToolsV3</key>
 	<array>
 		<dict>

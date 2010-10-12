@@ -41,6 +41,9 @@
 
 #include "aioUsbApi.h"
 
+int triggerDetect();
+int odourPulse(int delay, int odour, int duration);
+
 
 int   devIdx;
 char  anyKey;
@@ -284,6 +287,148 @@ int initialise()
 }
 
 
+int odourPulses()
+{
+	
+	
+	int			 ret;
+	int			 tmp;
+	int			 i;
+	int			 stimTime;
+	int			 delayTime;
+	int          odour;
+	
+	
+	unsigned char  pins0_7;
+	unsigned char  pins8_15;
+	unsigned char  pins16_23;
+	unsigned char  pins24_31; 
+	int            p0_7Input;
+	int            p8_15Input;
+	int			   p16_23Input;
+	int			   p24_31Input;
+	
+	unsigned char  mask; 
+	unsigned char  data[4];
+	int            triState; 
+	
+	mask = 0;
+	mask = pins24_31 << 3;;			//these are shifted HEX values
+	mask = mask | pins16_23 << 2; 
+	mask = mask | pins8_15 << 1; 
+	mask = mask | pins0_7; 
+	
+	
+	triState = 0;
+	
+
+	XOPNotice("\015Can I please have another trigger?\015");
+	tmp=triggerDetect();
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	stimTime=1000;
+	odour=5;
+	delayTime=1000;
+	
+	
+	
+	usleep(1000*delayTime);
+	if (odour<8) {
+		
+		data[0]=pow(2,odour);
+		data[1]=0;
+		data[2]=0;
+		data[3]=0;
+		
+		ret =   AIO_Usb_DIO_Configure (devIdx,
+									   triState,
+									   &mask,
+									   data);
+		
+		usleep(1000*stimTime);
+		data[0]=1;
+		data[1]=0;
+		data[2]=0;
+		data[3]=0;
+		
+		
+		ret =   AIO_Usb_DIO_Configure (devIdx,
+									   triState,
+									   &mask,
+									   data);
+		return(1);
+	}else if (odour>7&&odour<16) {
+		
+		data[0]=0;
+		data[1]=pow(2,odour-8);
+		data[2]=0;
+		data[3]=0;
+		
+		ret =   AIO_Usb_DIO_Configure (devIdx,
+									   triState,
+									   &mask,
+									   data);
+		
+		usleep(1000*stimTime);
+		data[0]=1;
+		data[1]=0;
+		data[2]=0;
+		data[3]=0;
+		
+		
+		ret =   AIO_Usb_DIO_Configure (devIdx,
+									   triState,
+									   &mask,
+									   data);
+		return(1);
+	}else if (odour>15&&odour<24) {
+		
+		data[0]=0;
+		data[1]=0;
+		data[2]=pow(2,odour-16);
+		data[3]=0;
+		
+		ret =   AIO_Usb_DIO_Configure (devIdx,
+									   triState,
+									   &mask,
+									   data);
+		
+		usleep(1000*stimTime);
+		data[0]=1;
+		data[1]=0;
+		data[2]=0;
+		data[3]=0;
+		
+		
+		ret =   AIO_Usb_DIO_Configure (devIdx,
+									   triState,
+									   &mask,
+									   data);
+		return(1);
+	}else{
+		printf("ERROR: Invalid odour");
+		return(0);
+	}
+}
 int odourPulse(int delay, int odour, int duration)
 {
 	
@@ -405,125 +550,7 @@ int odourPulse(int delay, int odour, int duration)
 }
 
 
-int odourPulses()
-{
-	
-	int			 ret;
-	int			 tmp;
-	int			 i;
-	int          odour;
-	int			 stimTime;
-	int			 delayTime;
-	char         cfgPath[80];
-	
-	
-	unsigned char  pins0_7;
-	unsigned char  pins8_15;
-	unsigned char  pins16_23;
-	unsigned char  pins24_31; 
-	int            p0_7Input;
-	int            p8_15Input;
-	int			   p16_23Input;
-	int			   p24_31Input;
-	
-	unsigned char  mask; 
-	unsigned char  data[4];
-	int            triState; 
-	
-	mask = 0;
-	mask = pins24_31 << 3;;			//these are shifted HEX values
-	mask = mask | pins16_23 << 2; 
-	mask = mask | pins8_15 << 1; 
-	mask = mask | pins0_7; 
-	
-	
-	triState = 0;
 
-	
-		
-	delayTime=1000;
-	stimTime=1000;
-	odour=5;
-	
-	
-	usleep(1000*delayTime);
-	if (odour<8) {
-		
-		data[0]=pow(2,odour);
-		data[1]=0;
-		data[2]=0;
-		data[3]=0;
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		
-		usleep(stimTime);
-		data[0]=1;
-		data[1]=0;
-		data[2]=0;
-		data[3]=0;
-		
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		return(1);
-	}else if (odour>7&&odour<16) {
-		
-		data[0]=0;
-		data[1]=pow(2,odour-8);
-		data[2]=0;
-		data[3]=0;
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		
-		usleep(stimTime);
-		data[0]=1;
-		data[1]=0;
-		data[2]=0;
-		data[3]=0;
-		
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		return(1);
-	}else if (odour>15&&odour<24) {
-		
-		data[0]=0;
-		data[1]=0;
-		data[2]=pow(2,odour-16);
-		data[3]=0;
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		
-		usleep(stimTime);
-		data[0]=1;
-		data[1]=0;
-		data[2]=0;
-		data[3]=0;
-		
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		return(1);
-	}else{
-		printf("ERROR: Invalid odour");
-		return(0);
-	}
-}
 
 
 
@@ -613,7 +640,6 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	
 	
 	
-	
 	Handle str1;						/* output handle */
 	long len2, len3;
 	int err=0;
@@ -663,6 +689,7 @@ done:
 //	tmp = odourPulse(2000,21,500);
 //	tmp = odourPulse(2000,22,500);
 	XOPNotice("\015odourPulse OK\015");
+	
 	tmp = odourPulses();
 	XOPNotice("\015odourPulses OK\015");
 
