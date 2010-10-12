@@ -70,6 +70,8 @@ unsigned char  mask;
 unsigned char  data[4];
 int            triState; 
 
+char ch, s[80], chID1[10], chID2[10], chID3[10], chID4[10], chID5[10];
+int d1,p1,o1,d2,p2,o2,d3,p3,o3,d4,p4,o4,d5,p5,o5;
 
 
 
@@ -322,6 +324,83 @@ int odourPulses()
 	triState = 0;
 	
 
+	
+	
+	
+	
+	//time
+	time_t sec;
+	sec = time(NULL);
+	//printf("%ld",sec);
+	
+	printf("\nCreating file pointers...");
+	XOPNotice("\015Creating file pointers...");
+//	char line[80];
+//	char logFile[] = "defaultLog.log";
+//	char configFile[] = "cfgFile.odd";
+//
+	FILE* fi; 
+	FILE* fo; 
+//	void wrt(char *s);
+	//	void wrt(char *s);
+//	char ch, s[80], chID1[10], chID2[10], chID3[10], chID4[10], chID5[10];
+//	char s[80], chID1[10];
+//	int d1,p1,o1,d2,p2,o2,d3,p3,o3,d4,p4,o4,d5,p5,o5;
+	
+	
+	
+	
+	printf("done");
+	XOPNotice("done");
+	
+	
+	printf("\nOpening files...");
+	XOPNotice("\015Opening files...");
+	/*	if((fi=fopen("defaultcfg.ODD","r"))==NULL) { // open a file
+	 printf("could not open cfg file"); // print an error
+	 return(0);
+	 }*/
+	if((fi=fopen("/Users/ahodge/Desktop/cfgFile.odd","r"))==NULL) { // open a file
+		printf("could not open cfg file"); // print an error
+		XOPNotice("could not open cfg file"); // print an error
+		return(0);
+	}
+	if((fo=fopen("/Users/ahodge/Desktop/logfiles/tempLog.txt","w"))==NULL) { // open a file
+		//if((fo=fopen(str5,"w"))==NULL) { // open a file
+		//if((fo=fopen(str3,"w"))==NULL) { // open a file
+		//if((fo=fopen(logFile,"w"))==NULL) { // open a file
+		printf("could not open log file"); // print an error
+		XOPNotice("could not open log file"); // print an error
+		return(0);
+	}
+	printf("done");
+	XOPNotice("done");
+
+	
+	
+	fgets(s,80,fi);
+	//	printf("Read...\n");
+	//	printf("%s",s);
+	//	fprintf(fo,"%s",s);
+	
+	sscanf(s,"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",& chID1, &d1, &p1, &o1, &d2, &p2, &o2, &d3, &p3, &o3, &d4, &p4, &o4, &d5, &p5, &o5);
+	
+	
+	
+	
+	
+	
+	
+	XOPNotice("\015Closing files\015");
+	fclose(fi);fclose(fo);
+	XOPNotice("\015OK\015");
+	
+	
+	
+	
+	
+	
+	
 	XOPNotice("\015Can I please have another trigger?\015");
 	tmp=triggerDetect();
 	
@@ -329,24 +408,8 @@ int odourPulses()
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	stimTime=1000;
-	odour=5;
+	odour=o1;
 	delayTime=1000;
 	
 	
@@ -429,6 +492,15 @@ int odourPulses()
 		return(0);
 	}
 }
+
+
+
+
+
+
+
+
+
 int odourPulse(int delay, int odour, int duration)
 {
 	
