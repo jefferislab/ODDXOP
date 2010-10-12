@@ -405,7 +405,7 @@ int odourPulse(int delay, int odour, int duration)
 }
 
 
-int odourPulses(char configFile)
+int odourPulses()
 {
 	
 	int			 ret;
@@ -414,6 +414,7 @@ int odourPulses(char configFile)
 	int          odour;
 	int			 stimTime;
 	int			 delayTime;
+	char         cfgPath[80];
 	
 	
 	unsigned char  pins0_7;
@@ -439,9 +440,7 @@ int odourPulses(char configFile)
 	triState = 0;
 
 	
-	XOPNotice("\015Waiting for another trigger...\015");
-	tmp=triggerDetect();
-	
+		
 	delayTime=1000;
 	stimTime=1000;
 	odour=5;
@@ -661,10 +660,10 @@ done:
 	
 	
 	tmp = odourPulse(2000,20,500);
-	tmp = odourPulse(2000,21,500);
-	tmp = odourPulse(2000,22,500);
+//	tmp = odourPulse(2000,21,500);
+//	tmp = odourPulse(2000,22,500);
 	XOPNotice("\015odourPulse OK\015");
-	tmp = odourPulses("thing.odd");
+	tmp = odourPulses();
 	XOPNotice("\015odourPulses OK\015");
 
 	

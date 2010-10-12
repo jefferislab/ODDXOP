@@ -216,7 +216,7 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>313171501264B44400FB8BC9</string>
+						<string>313171891264BC3800FB8BC9</string>
 						<key>history</key>
 						<array>
 							<string>313170BD125E27E400FB8BC9</string>
@@ -369,7 +369,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>3131714E1264B44400FB8BC9</string>
+										<string>313171871264BC3800FB8BC9</string>
 										<key>history</key>
 										<array>
 											<string>31B66B2011E7245D00BF2BE2</string>
@@ -393,14 +393,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1349, 473}}</string>
+								<string>{{0, 0}, {1349, 316}}</string>
 								<key>RubberWindowFrame</key>
 								<string>766 224 1652 1188 0 0 2560 1418 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>473pt</string>
+							<string>316pt</string>
 						</dict>
 						<dict>
 							<key>BecomeActive</key>
@@ -422,7 +422,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>3131714F1264B44400FB8BC9</string>
+										<string>313171881264BC3800FB8BC9</string>
 										<key>history</key>
 										<array>
 											<string>31B66B2011E7245D00BF2BE2</string>
@@ -444,14 +444,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 478}, {1349, 489}}</string>
+								<string>{{0, 321}, {1349, 646}}</string>
 								<key>RubberWindowFrame</key>
 								<string>766 224 1652 1188 0 0 2560 1418 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>489pt</string>
+							<string>646pt</string>
 						</dict>
 						<dict>
 							<key>ContentConfiguration</key>
@@ -631,8 +631,8 @@
 	<key>WindowOrderList</key>
 	<array>
 		<string>1CD10A99069EF8BA00B06720</string>
-		<string>313170BB125E27E400FB8BC9</string>
 		<string>313074F211C7B230005E3702</string>
+		<string>313170BB125E27E400FB8BC9</string>
 		<string>/Users/ahodge/src/IgorFiles/XOP Toolkit 5/IgorXOPs5/ODDRunACCESCard/Xcode/XFUNC3.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
