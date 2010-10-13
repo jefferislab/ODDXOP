@@ -1,6 +1,6 @@
 /*	XFUNC3.c -- illustrates Igor external string functions.
-
-*/
+ 
+ */
 
 #include "XOPStandardHeaders.h"			// Include ANSI headers, Mac headers, IgorXOP.h, XOP.h and XOPSupport.h
 
@@ -41,6 +41,8 @@
 
 #include "aioUsbApi.h"
 
+
+int delay, odour, duration;
 int triggerDetect();
 int odourPulse(int delay, int odour, int duration);
 
@@ -55,6 +57,8 @@ int			   ret;
 int			   tmp;
 int			   i;
 int			   hangTime;
+int			 stimTime;
+int			 delayTime;
 
 
 unsigned char  pins0_7;
@@ -72,8 +76,9 @@ int            triState;
 
 char ch, s[80], chID1[10], chID2[10], chID3[10], chID4[10], chID5[10];
 int d1,p1,o1,d2,p2,o2,d3,p3,o3,d4,p4,o4,d5,p5,o5;
+int isRunning;
 
-
+int odourPulsesSimple(int delay, int odour, int duration);
 
 ////////////////////////////////////////////////
 
@@ -177,7 +182,7 @@ validateIndex(int devIdx)
 
 int initialise()
 {
-
+	
 	printf("For testing. This function just tests each channel");
 	
 	int			 ret;
@@ -263,7 +268,7 @@ int initialise()
 		tmp = 0;
 		data[3] = tmp;
 	}
-
+	
 	
 	ret =   AIO_Usb_DIO_Configure (devIdx,
 								   triState,
@@ -323,7 +328,7 @@ int odourPulses()
 	
 	triState = 0;
 	
-
+	
 	
 	
 	
@@ -335,17 +340,17 @@ int odourPulses()
 	
 	printf("\nCreating file pointers...");
 	XOPNotice("\015Creating file pointers...");
-//	char line[80];
-//	char logFile[] = "defaultLog.log";
-//	char configFile[] = "cfgFile.odd";
-//
+	//	char line[80];
+	//	char logFile[] = "defaultLog.log";
+	//	char configFile[] = "cfgFile.odd";
+	//
 	FILE* fi; 
 	FILE* fo; 
-//	void wrt(char *s);
 	//	void wrt(char *s);
-//	char ch, s[80], chID1[10], chID2[10], chID3[10], chID4[10], chID5[10];
-//	char s[80], chID1[10];
-//	int d1,p1,o1,d2,p2,o2,d3,p3,o3,d4,p4,o4,d5,p5,o5;
+	//	void wrt(char *s);
+	//	char ch, s[80], chID1[10], chID2[10], chID3[10], chID4[10], chID5[10];
+	//	char s[80], chID1[10];
+	//	int d1,p1,o1,d2,p2,o2,d3,p3,o3,d4,p4,o4,d5,p5,o5;
 	
 	
 	
@@ -375,122 +380,467 @@ int odourPulses()
 	}
 	printf("done");
 	XOPNotice("done");
-
-	
-	
-	fgets(s,80,fi);
-	//	printf("Read...\n");
-	//	printf("%s",s);
-	//	fprintf(fo,"%s",s);
-	
-	sscanf(s,"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",& chID1, &d1, &p1, &o1, &d2, &p2, &o2, &d3, &p3, &o3, &d4, &p4, &o4, &d5, &p5, &o5);
 	
 	
 	
 	
-	
-	
+	for(i=0;i<10;i++)
+	{
+		
+		fgets(s,80,fi);
+		//	printf("Read...\n");
+		//	printf("%s",s);
+		//	fprintf(fo,"%s",s);
+		sscanf(s,"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",& chID1, &d1, &p1, &o1, &d2, &p2, &o2, &d3, &p3, &o3, &d4, &p4, &o4, &d5, &p5, &o5);
+		
+		
+		
+		if (p1==0) {
+			XOPNotice("\015No stimuli\015");
+			//return(0);
+		}
+		
+		
+		
+		else
+		{
+			XOPNotice("\015Can I please have another trigger?\015");
+			tmp=triggerDetect();
+			
+			
+			//tmp = odourPulsesSimple(1000,5,1000);
+			
+			
+			stimTime=p1;
+			odour=o1;
+			delayTime=d1;
+			
+			if (stimTime!=0) {
+				
+				usleep(1000*delayTime);
+				if (odour<8) {
+					
+					data[0]=pow(2,odour);
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+				}else if (odour>7&&odour<16) {
+					
+					data[0]=0;
+					data[1]=pow(2,odour-8);
+					data[2]=0;
+					data[3]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+				}else if (odour>15&&odour<24) {
+					
+					data[0]=0;
+					data[1]=0;
+					data[2]=pow(2,odour-16);
+					data[3]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+				}else{
+					printf("ERROR: Invalid odour");
+					return(0);
+				}
+			}
+			stimTime=p2;
+			odour=o2;
+			delayTime=d2;
+			
+			if (stimTime!=0) {
+				
+				usleep(1000*delayTime);
+				if (odour<8) {
+					
+					data[0]=pow(2,odour);
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+				}else if (odour>7&&odour<16) {
+					
+					data[0]=0;
+					data[1]=pow(2,odour-8);
+					data[2]=0;
+					data[3]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+				}else if (odour>15&&odour<24) {
+					
+					data[0]=0;
+					data[1]=0;
+					data[2]=pow(2,odour-16);
+					data[3]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+				}else{
+					printf("ERROR: Invalid odour");
+					return(0);
+				}
+			}
+			stimTime=p3;
+			odour=o3;
+			delayTime=d3;
+			
+			if (stimTime!=0) {
+				
+				usleep(1000*delayTime);
+				if (odour<8) {
+					
+					data[0]=pow(2,odour);
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+				}else if (odour>7&&odour<16) {
+					
+					data[0]=0;
+					data[1]=pow(2,odour-8);
+					data[2]=0;
+					data[3]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+				}else if (odour>15&&odour<24) {
+					
+					data[0]=0;
+					data[1]=0;
+					data[2]=pow(2,odour-16);
+					data[3]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+				}else{
+					printf("ERROR: Invalid odour");
+					return(0);
+				}
+			}
+			stimTime=p4;
+			odour=o4;
+			delayTime=d4;
+			
+			if (stimTime!=0) {
+				
+				usleep(1000*delayTime);
+				if (odour<8) {
+					
+					data[0]=pow(2,odour);
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+				}else if (odour>7&&odour<16) {
+					
+					data[0]=0;
+					data[1]=pow(2,odour-8);
+					data[2]=0;
+					data[3]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+				}else if (odour>15&&odour<24) {
+					
+					data[0]=0;
+					data[1]=0;
+					data[2]=pow(2,odour-16);
+					data[3]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+				}else{
+					printf("ERROR: Invalid odour");
+					return(0);
+				}
+			}
+			stimTime=p5;
+			odour=o5;
+			delayTime=d5;
+			
+			if (stimTime!=0) {
+				
+				usleep(1000*delayTime);
+				if (odour<8) {
+					
+					data[0]=pow(2,odour);
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+				}else if (odour>7&&odour<16) {
+					
+					data[0]=0;
+					data[1]=pow(2,odour-8);
+					data[2]=0;
+					data[3]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+				}else if (odour>15&&odour<24) {
+					
+					data[0]=0;
+					data[1]=0;
+					data[2]=pow(2,odour-16);
+					data[3]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   &mask,
+												   data);
+					
+				}else{
+					printf("ERROR: Invalid odour");
+					return(0);
+				}
+			}
+			
+		}
+		
+	}
 	
 	XOPNotice("\015Closing files\015");
 	fclose(fi);fclose(fo);
 	XOPNotice("\015OK\015");
+	return(1);
 	
-	
-	
-	
-	
-	
-	
-	XOPNotice("\015Can I please have another trigger?\015");
-	tmp=triggerDetect();
-	
-	
-	
-	
-	
-	stimTime=1000;
-	odour=o1;
-	delayTime=1000;
-	
-	
-	
-	usleep(1000*delayTime);
-	if (odour<8) {
-		
-		data[0]=pow(2,odour);
-		data[1]=0;
-		data[2]=0;
-		data[3]=0;
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		
-		usleep(1000*stimTime);
-		data[0]=1;
-		data[1]=0;
-		data[2]=0;
-		data[3]=0;
-		
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		return(1);
-	}else if (odour>7&&odour<16) {
-		
-		data[0]=0;
-		data[1]=pow(2,odour-8);
-		data[2]=0;
-		data[3]=0;
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		
-		usleep(1000*stimTime);
-		data[0]=1;
-		data[1]=0;
-		data[2]=0;
-		data[3]=0;
-		
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		return(1);
-	}else if (odour>15&&odour<24) {
-		
-		data[0]=0;
-		data[1]=0;
-		data[2]=pow(2,odour-16);
-		data[3]=0;
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		
-		usleep(1000*stimTime);
-		data[0]=1;
-		data[1]=0;
-		data[2]=0;
-		data[3]=0;
-		
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		return(1);
-	}else{
-		printf("ERROR: Invalid odour");
-		return(0);
-	}
 }
 
 
@@ -538,7 +888,7 @@ int odourPulse(int delay, int odour, int duration)
 	delayTime = delay;
 	
 	
-	printf("\n i = %d\n hangtime = %d\n",i,hangTime);
+	//printf("\n i = %d\n hangtime = %d\n",i,hangTime);
 	
 	
 	
@@ -566,7 +916,7 @@ int odourPulse(int delay, int odour, int duration)
 									   triState,
 									   &mask,
 									   data);
-		return(1);
+		//return(1);
 	}else if (odour>7&&odour<16) {
 		
 		data[0]=0;
@@ -590,7 +940,7 @@ int odourPulse(int delay, int odour, int duration)
 									   triState,
 									   &mask,
 									   data);
-		return(1);
+		//return(1);
 	}else if (odour>15&&odour<24) {
 		
 		data[0]=0;
@@ -614,11 +964,135 @@ int odourPulse(int delay, int odour, int duration)
 									   triState,
 									   &mask,
 									   data);
-		return(1);
+		//return(1);
 	}else{
 		printf("ERROR: Invalid odour");
 		return(0);
 	}
+	return(1);
+}
+
+
+
+int odourPulsesSimple(int delay, int odour, int duration)
+{
+	
+	
+//	int			 ret;
+//	int			 tmp;
+//	int			 i;
+//	int			 stimTime;
+//	int			 delayTime;
+	
+	
+//	unsigned char  pins0_7;
+//	unsigned char  pins8_15;
+//	unsigned char  pins16_23;
+//	unsigned char  pins24_31; 
+//	int            p0_7Input;
+//	int            p8_15Input;
+//	int			   p16_23Input;
+//	int			   p24_31Input;
+	
+//	unsigned char  mask; 
+//	unsigned char  data[4];
+//	int            triState; 
+	
+//	mask = 0;
+//	mask = pins24_31 << 3;;			//these are shifted HEX values
+//	mask = mask | pins16_23 << 2; 
+//	mask = mask | pins8_15 << 1; 
+//	mask = mask | pins0_7; 
+	
+	
+//	triState = 0;
+//	i=odour;
+//	stimTime = duration*1000;
+//	delayTime = delay;
+	
+	
+	//printf("\n i = %d\n hangtime = %d\n",i,hangTime);
+	
+	
+	
+	usleep(1000*delayTime);
+	if (odour<8) {
+		
+		data[0]=pow(2,i);
+		data[1]=0;
+		data[2]=0;
+		data[3]=0;
+		
+		ret =   AIO_Usb_DIO_Configure (devIdx,
+									   triState,
+									   &mask,
+									   data);
+		
+		usleep(stimTime);
+		data[0]=1;
+		data[1]=0;
+		data[2]=0;
+		data[3]=0;
+		
+		
+		ret =   AIO_Usb_DIO_Configure (devIdx,
+									   triState,
+									   &mask,
+									   data);
+		//return(1);
+	}else if (odour>7&&odour<16) {
+		
+		data[0]=0;
+		data[1]=pow(2,i-8);
+		data[2]=0;
+		data[3]=0;
+		
+		ret =   AIO_Usb_DIO_Configure (devIdx,
+									   triState,
+									   &mask,
+									   data);
+		
+		usleep(stimTime);
+		data[0]=1;
+		data[1]=0;
+		data[2]=0;
+		data[3]=0;
+		
+		
+		ret =   AIO_Usb_DIO_Configure (devIdx,
+									   triState,
+									   &mask,
+									   data);
+		//return(1);
+	}else if (odour>15&&odour<24) {
+		
+		data[0]=0;
+		data[1]=0;
+		data[2]=pow(2,i-16);
+		data[3]=0;
+		
+		ret =   AIO_Usb_DIO_Configure (devIdx,
+									   triState,
+									   &mask,
+									   data);
+		
+		usleep(stimTime);
+		data[0]=1;
+		data[1]=0;
+		data[2]=0;
+		data[3]=0;
+		
+		
+		ret =   AIO_Usb_DIO_Configure (devIdx,
+									   triState,
+									   &mask,
+									   data);
+		//return(1);
+	}else{
+		printf("ERROR: Invalid odour");
+		return(0);
+	}
+	return(1);
 }
 
 
@@ -744,9 +1218,9 @@ done:
 		DisposeHandle(p->str3);			/* we need to get rid of input parameters */
 	p->result = str1;
 	
-//	AIO_Init();
-//	ret = AIO_Usb_GetDevices(&aioDevices);
-//	devIdx = aioDevices.aioDevList[0].devIdx;
+	//	AIO_Init();
+	//	ret = AIO_Usb_GetDevices(&aioDevices);
+	//	devIdx = aioDevices.aioDevList[0].devIdx;
 	XOPNotice("How do yorfgaeguXXXXXXX like me now?\015");
 	MyHello();
 	XOPNotice("MyHello OK\015");
@@ -758,13 +1232,13 @@ done:
 	
 	
 	tmp = odourPulse(2000,20,500);
-//	tmp = odourPulse(2000,21,500);
-//	tmp = odourPulse(2000,22,500);
+	//	tmp = odourPulse(2000,21,500);
+	//	tmp = odourPulse(2000,22,500);
 	XOPNotice("\015odourPulse OK\015");
 	
 	tmp = odourPulses();
 	XOPNotice("\015odourPulses OK\015");
-
+	
 	
 	return(err);
 }
@@ -782,7 +1256,7 @@ static long
 RegisterFunction()
 {
 	int funcIndex;
-
+	
 	funcIndex = GetXOPItem(0);		/* which function invoked ? */
 	switch (funcIndex) {
 		case 0:						/* str1 = oddRun(str2, str3) */
@@ -791,11 +1265,11 @@ RegisterFunction()
 		case 1:						/* str1 = xstrcat1(str2, str3) */
 			return((long)xstrcat);	/* This uses the direct call method - preferred. */
 			break;
-		///////////////////////////////////////////////////////////////////////////////////////////
+			///////////////////////////////////////////////////////////////////////////////////////////
 		case 2:						/* str1 = xstrcat1(str2, str3) */
 			return(NIL);			/* This uses the message call method - generally not needed. */
 			break;
-		///////////////////////////////////////////////////////////////////////////////////////////
+			///////////////////////////////////////////////////////////////////////////////////////////
 			
 	}
 	return(NIL);
@@ -807,7 +1281,7 @@ DoFunction()
 	int funcIndex;
 	void *p;				/* pointer to structure containing function parameters and result */
 	int err;				/* error code returned by function */
-
+	
 	funcIndex = GetXOPItem(0);		/* which function invoked ? */
 	p = (void *)GetXOPItem(1);		/* get pointer to params/result */
 	switch (funcIndex) {
@@ -822,16 +1296,16 @@ DoFunction()
 }
 
 /*	XOPEntry()
-
-	This is the entry point from the host application to the XOP for all messages after the
-	INIT message.
-*/
+ 
+ This is the entry point from the host application to the XOP for all messages after the
+ INIT message.
+ */
 
 static void
 XOPEntry(void)
 {	
 	long result = 0;
-
+	
 	switch (GetXOPMessage()) {
 		case FUNCTION:								/* our external function being invoked ? */
 			result = DoFunction();
@@ -845,19 +1319,19 @@ XOPEntry(void)
 }
 
 /*	main(ioRecHandle)
-
-	This is the initial entry point at which the host application calls XOP.
-	The message sent by the host must be INIT.
-	main() does any necessary initialization and then sets the XOPEntry field of the
-	ioRecHandle to the address to be called for future messages.
-*/
+ 
+ This is the initial entry point at which the host application calls XOP.
+ The message sent by the host must be INIT.
+ main() does any necessary initialization and then sets the XOPEntry field of the
+ ioRecHandle to the address to be called for future messages.
+ */
 
 HOST_IMPORT void
 main(IORecHandle ioRecHandle)
 {	
 	XOPInit(ioRecHandle);							/* do standard XOP initialization */
 	SetXOPEntry(XOPEntry);							/* set entry point for future calls */
-
+	
 	
 	AIO_Init();
 	
