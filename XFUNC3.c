@@ -78,8 +78,9 @@ char ch, s[80], chID1[10], chID2[10], chID3[10], chID4[10], chID5[10];
 int d1,p1,o1,d2,p2,o2,d3,p3,o3,d4,p4,o4,d5,p5,o5;
 int isRunning;
 
+char cfgFileName;
 int odourPulsesSimple(int delay, int odour, int duration);
-
+int odourPulses(char *cfgFileName);
 ////////////////////////////////////////////////
 
 
@@ -294,7 +295,7 @@ int initialise()
 }
 
 
-int odourPulses()
+int odourPulses(char *cfgFileName)
 {
 	
 	
@@ -1236,7 +1237,7 @@ done:
 	//	tmp = odourPulse(2000,22,500);
 	XOPNotice("\015odourPulse OK\015");
 	
-	tmp = odourPulses();
+	tmp = odourPulses("thing");
 	XOPNotice("\015odourPulses OK\015");
 	
 	
