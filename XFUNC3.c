@@ -1228,7 +1228,8 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	memcpy(*str1+len2, *p->str3, len3);
 	
 	//strcpy(cfg,"cfgFile.odd");//working
-	strcpy(cfg,*p->str2);
+	//strcpy(cfg,*p->str2);
+	GetCStringFromHandle(p->str2, cfg, 20);
 
 	
 	
