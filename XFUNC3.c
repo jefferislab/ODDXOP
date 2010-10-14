@@ -204,7 +204,7 @@ int initialise()
 	unsigned char  data[4];
 	int            triState; 
 	
-	
+	//boo
 	
 	printf("Configuring all DIO bytes for output...\n");
 	
