@@ -336,8 +336,10 @@ int odourPulses(char *cfgFileName)
 	strcpy(configFile,"/Users/ahodge/Desktop/");
 	strcat(configFile,cfgFileName);
 
-	
-	
+	XOPNotice("\015\015");
+	XOPNotice(configFile);
+	XOPNotice("\015\015");
+
 	//time
 	time_t sec;
 	sec = time(NULL);
@@ -1214,6 +1216,14 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 		goto done;						/* out of memory */
 	}
 	
+
+	
+	
+	XOPNotice("\015\015*p->str2");
+	XOPNotice(*p->str2);
+	XOPNotice("\015");
+	
+	
 	memcpy(*str1, *p->str2, len2);
 	memcpy(*str1+len2, *p->str3, len3);
 	
@@ -1223,12 +1233,6 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	
 	
 	
-done:
-	if (p->str2)
-		DisposeHandle(p->str2);			/* we need to get rid of input parameters */
-	if (p->str3)
-		DisposeHandle(p->str3);			/* we need to get rid of input parameters */
-	p->result = str1;
 	
 	//	AIO_Init();
 	//	ret = AIO_Usb_GetDevices(&aioDevices);
@@ -1261,9 +1265,20 @@ done:
 	
 	
 	
-	tmp = odourPulses(cfg);
-	//tmp = odourPulses("cfgFile.odd");
+	//tmp = odourPulses(*p->str2);
+	tmp = odourPulses(cfg);				//almost works
+	//tmp = odourPulses("cfgFile.odd");		//works
 	XOPNotice("\015odourPulses OK\015");
+	
+
+	
+done:
+	if (p->str2)
+		DisposeHandle(p->str2);			/* we need to get rid of input parameters */
+	if (p->str3)
+		DisposeHandle(p->str3);			/* we need to get rid of input parameters */
+	p->result = str1;
+	
 	
 	
 	return(err);
