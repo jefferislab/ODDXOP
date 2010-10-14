@@ -80,6 +80,7 @@ int isRunning;
 
 char cfgFileName;
 char configFile[80];
+char cfg[20];
 int odourPulsesSimple(int delay, int odour, int duration);
 int odourPulses(char *cfgFileName);
 ////////////////////////////////////////////////
@@ -1216,6 +1217,12 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	memcpy(*str1, *p->str2, len2);
 	memcpy(*str1+len2, *p->str3, len3);
 	
+	//strcpy(cfg,"cfgFile.odd");//working
+	strcpy(cfg,*p->str2);
+
+	
+	
+	
 done:
 	if (p->str2)
 		DisposeHandle(p->str2);			/* we need to get rid of input parameters */
@@ -1252,7 +1259,10 @@ done:
 	
 */
 	
-	tmp = odourPulses("AcfgFile.odd");
+	
+	
+	tmp = odourPulses(cfg);
+	//tmp = odourPulses("cfgFile.odd");
 	XOPNotice("\015odourPulses OK\015");
 	
 	
