@@ -79,6 +79,7 @@ int d1,p1,o1,d2,p2,o2,d3,p3,o3,d4,p4,o4,d5,p5,o5;
 int isRunning;
 
 char cfgFileName;
+char configFile[80];
 int odourPulsesSimple(int delay, int odour, int duration);
 int odourPulses(char *cfgFileName);
 ////////////////////////////////////////////////
@@ -331,7 +332,9 @@ int odourPulses(char *cfgFileName)
 	
 	
 	
-	
+	strcpy(configFile,"/Users/ahodge/Desktop/");
+	strcat(configFile,cfgFileName);
+
 	
 	
 	//time
@@ -366,7 +369,8 @@ int odourPulses(char *cfgFileName)
 	 printf("could not open cfg file"); // print an error
 	 return(0);
 	 }*/
-	if((fi=fopen("/Users/ahodge/Desktop/cfgFile.odd","r"))==NULL) { // open a file
+	if((fi=fopen(configFile,"r"))==NULL) { // open a file
+	//if((fi=fopen("/Users/ahodge/Desktop/cfgFile.odd","r"))==NULL) { // open a file
 		printf("could not open cfg file"); // print an error
 		XOPNotice("could not open cfg file"); // print an error
 		return(0);
@@ -1222,11 +1226,17 @@ done:
 	//	AIO_Init();
 	//	ret = AIO_Usb_GetDevices(&aioDevices);
 	//	devIdx = aioDevices.aioDevList[0].devIdx;
-	XOPNotice("How do yorfgaeguXXXXXXX like me now?\015");
+	//XOPNotice("How do yorfgaeguXXXXXXX like me now?\015");
 	MyHello();
 	XOPNotice("MyHello OK\015");
 	tmp = initialise();
 	XOPNotice("initialise OK\015");
+	
+	
+	
+	
+	
+/*	
 	XOPNotice("Can I have a trigger?\015");
 	tmp = triggerDetect();
 	
@@ -1237,7 +1247,12 @@ done:
 	//	tmp = odourPulse(2000,22,500);
 	XOPNotice("\015odourPulse OK\015");
 	
-	tmp = odourPulses("thing");
+	
+	
+	
+*/
+	
+	tmp = odourPulses("AcfgFile.odd");
 	XOPNotice("\015odourPulses OK\015");
 	
 	
