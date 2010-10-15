@@ -190,8 +190,8 @@ int initialise()
 	
 	int			 ret;
 	int			 tmp;
-	int			 i;
-	int			 hangTime;
+//	int			 i;
+//	int			 hangTime;
 	
 	
 	unsigned char  pins0_7;
@@ -313,10 +313,10 @@ int odourPulses(char *cfgFileName)
 	unsigned char  pins8_15;
 	unsigned char  pins16_23;
 	unsigned char  pins24_31; 
-	int            p0_7Input;
-	int            p8_15Input;
-	int			   p16_23Input;
-	int			   p24_31Input;
+//	int            p0_7Input;
+//	int            p8_15Input;
+//	int			   p16_23Input;
+//	int			   p24_31Input;
 	
 	unsigned char  mask; 
 	unsigned char  data[4];
@@ -399,7 +399,7 @@ int odourPulses(char *cfgFileName)
 		//	printf("Read...\n");
 		//	printf("%s",s);
 		//	fprintf(fo,"%s",s);
-		sscanf(s,"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",& chID1, &d1, &p1, &o1, &d2, &p2, &o2, &d3, &p3, &o3, &d4, &p4, &o4, &d5, &p5, &o5);
+		sscanf(s,"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",&chID1, &d1, &p1, &o1, &d2, &p2, &o2, &d3, &p3, &o3, &d4, &p4, &o4, &d5, &p5, &o5);
 		
 		
 		
@@ -864,7 +864,7 @@ int odourPulse(int delay, int odour, int duration)
 	
 	
 	int			 ret;
-	int			 tmp;
+//	int			 tmp;
 	int			 i;
 	int			 stimTime;
 	int			 delayTime;
@@ -874,10 +874,10 @@ int odourPulse(int delay, int odour, int duration)
 	unsigned char  pins8_15;
 	unsigned char  pins16_23;
 	unsigned char  pins24_31; 
-	int            p0_7Input;
-	int            p8_15Input;
-	int			   p16_23Input;
-	int			   p24_31Input;
+//	int            p0_7Input;
+//	int            p8_15Input;
+//	int			   p16_23Input;
+//	int			   p24_31Input;
 	
 	unsigned char  mask; 
 	unsigned char  data[4];
@@ -1114,7 +1114,7 @@ int triggerDetect()
 	
 	int						ret;
 	unsigned char           data[4];
-	unsigned char           testThing;
+//	unsigned char           testThing;
     int						difference;
 	int						temp;
 	
