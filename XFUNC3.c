@@ -81,6 +81,10 @@ int isRunning;
 char cfgFileName;
 char configFile[80];
 char cfg[20];
+
+char cfgForThread[20];
+int  stringLen;
+
 int odourPulsesSimple(int delay, int odour, int duration);
 int odourPulses(char *cfgFileName);
 ////////////////////////////////////////////////
@@ -186,25 +190,61 @@ validateIndex(int devIdx)
 
 
 
+
+
+
+
+
+
+
+
+
 /* This is our thread function.  It is like main(), but for a thread*/
+
 void *threadFunc(void *arg)
 {
 	char *str;
-	int i = 0;
+//	int i = 0;
 	
+	
+	
+//TODO: Add If/THen so that cfgFile.odd is default (passed in by str)	
+	
+	int blah;
 	str=(char*)arg;
 	
-	tmp = odourPulses("cfgFile.odd");				//works
+	XOPNotice(cfg);
+
+	blah=strlen((char*)cfg);
+	
+//	XOPNotice(blah);
+	
+	//if(stringLen<1)
+	if(strlen(cfg)<1)
+	{
+		XOPNotice("StrLen small");
+		tmp = odourPulses(str);				//works
+
+	}else {
+		
+		XOPNotice("\015StrLen Large\015");
+		tmp = odourPulses(cfg);				//works
+
+	}
 
 	
-	while(i < 110 )
-	{
-		usleep(1);
-		printf("threadFunc says: %s\n",str);
-		XOPNotice("\015ThreadThing\015");
-		XOPNotice(str);
-		++i;
-	}
+	//tmp = odourPulses("cfgFile.odd");				//works
+	//tmp = odourPulses(str);				//works
+	
+	
+//	while(i < 110 )
+//	{
+//		usleep(1);
+//		printf("threadFunc says: %s\n",str);
+//		XOPNotice("\015ThreadThing\015");
+//		XOPNotice(str);
+//		++i;
+//	}
 	
 	return NULL;
 }
@@ -1269,6 +1309,7 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	}
 	
 	len2 = GetHandleSize(p->str2);		/* length of string 2 */
+	stringLen = GetHandleSize(p->str2);
 	len3 = GetHandleSize(p->str3);		/* length of string 3 */
 	str1 = NewHandle(len2 + len3);		/* get output handle */
 	if (str1 == NIL) {
@@ -1291,6 +1332,8 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	//strcpy(cfg,*p->str2);
 	GetCStringFromHandle(p->str2, cfg, 20);
 
+	
+	
 	
 	
 	
@@ -1323,20 +1366,15 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	
 	
 */
-	
-	XOPNotice("\015Trying a fork\015");
-	int pid;
-	pid=fork();
-	XOPNotice("\015Forked!  \015");
-	if (pid==0) {
-		XOPNotice("\015Running a child process.\015");
-	}
-	else {
-		XOPNotice("\015Running a parent process.\015");
-	}
 
+	char *stringThing;
+	//	int i = 0;
 	
+	stringThing=(char*)cfg;
 	
+	XOPNotice("\015str = ");
+	XOPNotice(stringThing);
+	XOPNotice("015");
 	
 	
 	
@@ -1344,21 +1382,23 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	
 	
 	pthread_t pth;	// this is our thread identifier
-	int i = 0;
+//	int i = 0;
 	
-	//pthread_create(&pth,NULL,threadFunc,"foo");
-	pthread_create(&pth,NULL,threadFunc,"cfgFile.odd");
+	//pthread_create(&pth,NULL,threadFunc,"foo");			//Original
+	
+	pthread_create(&pth,NULL,threadFunc,"cfgFile.odd");		//GOOD
+	//pthread_create(&pth,NULL,threadFunc,(char*)cfg);		//No Good
 	
 	pthread_detach(pth);
 	
-	while(i < 100)
-	{
-		usleep(1);
-		printf("main is running...\n");
-		++i;
-	}
+//	while(i < 100)
+//	{
+//		usleep(1);
+//		printf("main is running...\n");
+//		++i;
+//	}
 	
-	printf("main waiting for thread to terminate...\n");
+//	printf("main waiting for thread to terminate...\n");
 //	pthread_join(pth,NULL);
 	
 	
@@ -1393,7 +1433,7 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	
 	
 	//tmp = odourPulses(*p->str2);
-	tmp = odourPulses(cfg);				//works
+//	tmp = odourPulses(cfg);				//works  //Disable for testing threads
 	//tmp = odourPulses("cfgFile.odd");		//works
 	XOPNotice("\015odourPulses OK\015");
 	
