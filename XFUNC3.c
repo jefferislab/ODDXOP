@@ -1349,6 +1349,8 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	//pthread_create(&pth,NULL,threadFunc,"foo");
 	pthread_create(&pth,NULL,threadFunc,"cfgFile.odd");
 	
+	pthread_detach(pth);
+	
 	while(i < 100)
 	{
 		usleep(1);
@@ -1357,7 +1359,12 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	}
 	
 	printf("main waiting for thread to terminate...\n");
-	pthread_join(pth,NULL);
+//	pthread_join(pth,NULL);
+	
+	
+	
+	
+	
 /*	
 	pthread_t pth;	// this is our thread identifier
 	int i = 0;
