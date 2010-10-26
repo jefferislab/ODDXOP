@@ -50,15 +50,15 @@ int odourPulse(int delay, int odour, int duration);
 int   devIdx;
 char  anyKey;
 int   ctlC;
-aioDeviceInfo aioDevices;
 
+aioDeviceInfo aioDevices;
 
 int			   ret;
 int			   tmp;
 int			   i;
 int			   hangTime;
-int			 stimTime;
-int			 delayTime;
+int			   stimTime;
+int			   delayTime;
 
 
 unsigned char  pins0_7;
@@ -158,21 +158,56 @@ catchInterrupt (int signum)
 }
 
 
-int 
+int
 validateIndex(int devIdx)
 {
-	int ret;
+//	int ret;
 	
 	ret = AIO_UsbValidateDeviceIndex(devIdx);
 	if (ret > ERROR_SUCCESS)
 	{
 		printf("Invalid device (%d); Do a GetDevices() to see valid devices  \n",devIdx);
+		XOPNotice("\015Invalid device\015");
 	}
+	
+	XOPNotice("\015Device OK\015");
+
 	return  ret;
 }
 
 
 
+
+
+
+
+
+
+
+
+
+/* This is our thread function.  It is like main(), but for a thread*/
+void *threadFunc(void *arg)
+{
+	char *str;
+	int i = 0;
+	
+	str=(char*)arg;
+	
+	tmp = odourPulses("cfgFile.odd");				//works
+
+	
+	while(i < 110 )
+	{
+		usleep(1);
+		printf("threadFunc says: %s\n",str);
+		XOPNotice("\015ThreadThing\015");
+		XOPNotice(str);
+		++i;
+	}
+	
+	return NULL;
+}
 
 
 
@@ -188,12 +223,17 @@ int initialise()
 	
 	printf("For testing. This function just tests each channel");
 	
+
+	
+	
+	
+	
+	
+	
+/*	
 	int			 ret;
 	int			 tmp;
-//	int			 i;
-//	int			 hangTime;
-	
-	
+		
 	unsigned char  pins0_7;
 	unsigned char  pins8_15;
 	unsigned char  pins16_23;
@@ -202,12 +242,20 @@ int initialise()
 	int            p8_15Input;
 	int			 p16_23Input;
 	int			 p24_31Input;
-	
+*/	
 	unsigned char  mask; 
 	unsigned char  data[4];
 	int            triState; 
 	
-	//boo
+
+ 
+	
+	
+	
+	
+	
+	
+ //boo
 	
 	printf("Configuring all DIO bytes for output...\n");
 	
@@ -300,6 +348,11 @@ int initialise()
 int odourPulses(char *cfgFileName)
 {
 	
+
+	
+	
+	
+/*	
 	
 	int			 ret;
 	int			 tmp;
@@ -317,10 +370,12 @@ int odourPulses(char *cfgFileName)
 //	int            p8_15Input;
 //	int			   p16_23Input;
 //	int			   p24_31Input;
-	
+
+*/ 
+ 
 	unsigned char  mask; 
 	unsigned char  data[4];
-	int            triState; 
+//	int            triState; 
 	
 	mask = 0;
 	mask = pins24_31 << 3;;			//these are shifted HEX values
@@ -329,7 +384,12 @@ int odourPulses(char *cfgFileName)
 	mask = mask | pins0_7; 
 	
 	
-	triState = 0;
+//	triState = 0;
+	
+	
+	
+	
+	
 	
 	
 	
@@ -1264,10 +1324,69 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	
 */
 	
+	XOPNotice("\015Trying a fork\015");
+	int pid;
+	pid=fork();
+	XOPNotice("\015Forked!  \015");
+	if (pid==0) {
+		XOPNotice("\015Running a child process.\015");
+	}
+	else {
+		XOPNotice("\015Running a parent process.\015");
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	pthread_t pth;	// this is our thread identifier
+	int i = 0;
+	
+	//pthread_create(&pth,NULL,threadFunc,"foo");
+	pthread_create(&pth,NULL,threadFunc,"cfgFile.odd");
+	
+	while(i < 100)
+	{
+		usleep(1);
+		printf("main is running...\n");
+		++i;
+	}
+	
+	printf("main waiting for thread to terminate...\n");
+	pthread_join(pth,NULL);
+/*	
+	pthread_t pth;	// this is our thread identifier
+	int i = 0;
+	
+	//pthread_create(&pth,NULL,threadFunc,"foo");
+	pthread_create(&pth,NULL,threadFunc,"cfgFile.odd");
+	
+	while(i < 100)
+	{
+		usleep(1);
+		printf("main is running...\n");
+		++i;
+	}
+	
+	printf("main waiting for thread to terminate...\n");
+	pthread_join(pth,NULL);
+	
+*/	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	//tmp = odourPulses(*p->str2);
-	tmp = odourPulses(cfg);				//almost works
+	tmp = odourPulses(cfg);				//works
 	//tmp = odourPulses("cfgFile.odd");		//works
 	XOPNotice("\015odourPulses OK\015");
 	
