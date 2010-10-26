@@ -1,5 +1,10 @@
 /*	XFUNC3.c -- illustrates Igor external string functions.
  
+ 
+ This XOP enables Igor Pro to operate the ACCES DIO cards and operate the solenoid valved on the ODD modules.
+ 
+ 
+ 
  */
 
 #include "XOPStandardHeaders.h"			// Include ANSI headers, Mac headers, IgorXOP.h, XOP.h and XOPSupport.h
@@ -103,33 +108,6 @@ int doIHaveAnError;
 
 
 
-int oddRunTest()
-{
-	XOPNotice("\015 Testing...\015");
-	return(0);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-///////////////////////////////////////////////
 
 
 #include "XOPStructureAlignmentTwoByte.h"	// All structures passed to Igor are two-byte aligned.
@@ -145,6 +123,14 @@ struct xstrcatParams  {
 //////////////////////////////////////////////////
 //My Functions
 //////////////////////////////////////////////////
+
+int oddRunTest()
+{
+	XOPNotice("\015 Testing...\015");
+	return(0);
+}
+
+
 static void
 MyHello(void){
 	XOPNotice("Hello. Now you're calling a function...\015");
@@ -152,7 +138,6 @@ MyHello(void){
 	XOPNotice("That should have worked. \015");
 	
 }
-
 
 
 void
@@ -174,87 +159,38 @@ validateIndex(int devIdx)
 		XOPNotice("\015Invalid device\015");
 	}
 	
-	XOPNotice("\015Device OK\015");
+	//XOPNotice("\015Device OK\015");
 
 	return  ret;
 }
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* This is our thread function.  It is like main(), but for a thread*/
-
-void *threadFunc(void *arg)
+void *threadFunc(void *arg)		/* This is the thread function.  It is like main(), but for a thread, and just runs the odourPulses() function*/
 {
 	char *str;
-//	int i = 0;
-	
-	
-	
-//TODO: Add If/THen so that cfgFile.odd is default (passed in by str)	
-	
-	int blah;
 	str=(char*)arg;
 	
-	XOPNotice(cfg);
-
-	blah=strlen((char*)cfg);
+	XOPNotice("\015New thread started.");
+	//XOPNotice(cfg);
 	
-//	XOPNotice(blah);
-	
-	//if(stringLen<1)
 	if(strlen(cfg)<1)
 	{
-		XOPNotice("StrLen small");
+		XOPNotice("\015No config file entered. Let's use the default:\015");
+		XOPNotice("\015TODO: output the .odd file\015");
 		tmp = odourPulses(str);				//works
 
 	}else {
 		
-		XOPNotice("\015StrLen Large\015");
+		XOPNotice("\015Config file entered. Let's use it.\015");
+		//XOPNotice("\015TODO: output the .odd file\015");
+		XOPNotice(cfg);
 		tmp = odourPulses(cfg);				//works
 
 	}
 
-	
-	//tmp = odourPulses("cfgFile.odd");				//works
-	//tmp = odourPulses(str);				//works
-	
-	
-//	while(i < 110 )
-//	{
-//		usleep(1);
-//		printf("threadFunc says: %s\n",str);
-//		XOPNotice("\015ThreadThing\015");
-//		XOPNotice(str);
-//		++i;
-//	}
-	
 	return NULL;
 }
-
-
-
-
-
-
-
 
 
 
@@ -262,12 +198,6 @@ int initialise()
 {
 	
 	printf("For testing. This function just tests each channel");
-	
-
-	
-	
-	
-	
 	
 	
 /*	
@@ -286,16 +216,6 @@ int initialise()
 	unsigned char  mask; 
 	unsigned char  data[4];
 	int            triState; 
-	
-
- 
-	
-	
-	
-	
-	
-	
- //boo
 	
 	printf("Configuring all DIO bytes for output...\n");
 	
@@ -371,26 +291,14 @@ int initialise()
 		printf ("\nDIO_Configure Failed  dev=0x%0x err=%d \n",(unsigned int)devIdx,ret);
 		return(0);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	return(0);
-	
+		
+	return(0);	
 	
 }
 
 
-int odourPulses(char *cfgFileName)
+int odourPulses(char *cfgFileName)		//Main function. The others are mostly just for testing, but I left them in case they are of some use in the future
 {
-	
-
-	
-	
 	
 /*	
 	
@@ -427,16 +335,10 @@ int odourPulses(char *cfgFileName)
 //	triState = 0;
 	
 	
-	
-	
-	
-	
-	
-	
 	strcpy(configFile,"/Users/ahodge/Desktop/");
 	strcat(configFile,cfgFileName);
 
-	XOPNotice("\015\015");
+	XOPNotice("\015Using the config file:\015");
 	XOPNotice(configFile);
 	XOPNotice("\015\015");
 
@@ -445,28 +347,16 @@ int odourPulses(char *cfgFileName)
 	sec = time(NULL);
 	//printf("%ld",sec);
 	
-	printf("\nCreating file pointers...");
+	//printf("\nCreating file pointers...");
 	XOPNotice("\015Creating file pointers...");
-	//	char line[80];
-	//	char logFile[] = "defaultLog.log";
-	//	char configFile[] = "cfgFile.odd";
-	//
 	FILE* fi; 
 	FILE* fo; 
-	//	void wrt(char *s);
-	//	void wrt(char *s);
-	//	char ch, s[80], chID1[10], chID2[10], chID3[10], chID4[10], chID5[10];
-	//	char s[80], chID1[10];
-	//	int d1,p1,o1,d2,p2,o2,d3,p3,o3,d4,p4,o4,d5,p5,o5;
-	
-	
-	
-	
-	printf("done");
+		
+	//printf("done");
 	XOPNotice("done");
 	
 	
-	printf("\nOpening files...");
+	//printf("\nOpening files...");
 	XOPNotice("\015Opening files...");
 	/*	if((fi=fopen("defaultcfg.ODD","r"))==NULL) { // open a file
 	 printf("could not open cfg file"); // print an error
@@ -475,7 +365,7 @@ int odourPulses(char *cfgFileName)
 	if((fi=fopen(configFile,"r"))==NULL) { // open a file
 	//if((fi=fopen("/Users/ahodge/Desktop/cfgFile.odd","r"))==NULL) { // open a file
 		printf("could not open cfg file"); // print an error
-		XOPNotice("could not open cfg file"); // print an error
+		XOPNotice("\015ERROR: could not open cfg file"); // print an error
 		return(0);
 	}
 	if((fo=fopen("/Users/ahodge/Desktop/logfiles/tempLog.txt","w"))==NULL) { // open a file
@@ -483,15 +373,13 @@ int odourPulses(char *cfgFileName)
 		//if((fo=fopen(str3,"w"))==NULL) { // open a file
 		//if((fo=fopen(logFile,"w"))==NULL) { // open a file
 		printf("could not open log file"); // print an error
-		XOPNotice("could not open log file"); // print an error
+		XOPNotice("\015ERROR: could not open log file"); // print an error
 		return(0);
 	}
-	printf("done");
+	//printf("done");
 	XOPNotice("done");
 	
-	
-	
-	
+//TODO: Change this to depend on the number of lines in the .odd file
 	for(i=0;i<10;i++)
 	{
 		
@@ -499,25 +387,21 @@ int odourPulses(char *cfgFileName)
 		//	printf("Read...\n");
 		//	printf("%s",s);
 		//	fprintf(fo,"%s",s);
-		sscanf(s,"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",&chID1, &d1, &p1, &o1, &d2, &p2, &o2, &d3, &p3, &o3, &d4, &p4, &o4, &d5, &p5, &o5);
+		sscanf(s,"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",(char*)chID1, &d1, &p1, &o1, &d2, &p2, &o2, &d3, &p3, &o3, &d4, &p4, &o4, &d5, &p5, &o5);
+		//sscanf(s,"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",&chID1, &d1, &p1, &o1, &d2, &p2, &o2, &d3, &p3, &o3, &d4, &p4, &o4, &d5, &p5, &o5);
 		
 		
 		
 		if (p1==0) {
-			XOPNotice("\015No stimuli\015");
-			//return(0);
+			XOPNotice("\015The first entry in this line is for zero duration. Not waiting for a trigger.\015");
 		}
-		
-		
 		
 		else
 		{
-			XOPNotice("\015Can I please have another trigger?\015");
-			tmp=triggerDetect();
-			
-			
-			//tmp = odourPulsesSimple(1000,5,1000);
-			
+			XOPNotice("\015I found an entry in the .odd file. Can I please have a trigger?\015");
+			tmp=triggerDetect();			
+//TODO: if/then for triggerDetect() return value
+
 			
 			stimTime=p1;
 			odour=o1;
@@ -936,35 +820,31 @@ int odourPulses(char *cfgFileName)
 					
 				}else{
 					printf("ERROR: Invalid odour");
+
 					return(0);
 				}
+
 			}
-			
+			XOPNotice("OK, Done that.\015");
+
 		}
 		
 	}
 	
-	XOPNotice("\015Closing files\015");
+	XOPNotice("\015Closing files.....");
 	fclose(fi);fclose(fo);
-	XOPNotice("\015OK\015");
+	XOPNotice("OK\015");
 	return(1);
 	
 }
 
 
 
-
-
-
-
-
-
-int odourPulse(int delay, int odour, int duration)
+int odourPulse(int delay, int odour, int duration)		//For now this is unused. It helps for testing. 
 {
 	
 	
 	int			 ret;
-//	int			 tmp;
 	int			 i;
 	int			 stimTime;
 	int			 delayTime;
@@ -994,10 +874,6 @@ int odourPulse(int delay, int odour, int duration)
 	i=odour;
 	stimTime = duration*1000;
 	delayTime = delay;
-	
-	
-	//printf("\n i = %d\n hangtime = %d\n",i,hangTime);
-	
 	
 	
 	usleep(1000*delayTime);
@@ -1082,44 +958,8 @@ int odourPulse(int delay, int odour, int duration)
 
 
 
-int odourPulsesSimple(int delay, int odour, int duration)
+int odourPulsesSimple(int delay, int odour, int duration)		//For now this is unused. It helps for testing.
 {
-	
-	
-//	int			 ret;
-//	int			 tmp;
-//	int			 i;
-//	int			 stimTime;
-//	int			 delayTime;
-	
-	
-//	unsigned char  pins0_7;
-//	unsigned char  pins8_15;
-//	unsigned char  pins16_23;
-//	unsigned char  pins24_31; 
-//	int            p0_7Input;
-//	int            p8_15Input;
-//	int			   p16_23Input;
-//	int			   p24_31Input;
-	
-//	unsigned char  mask; 
-//	unsigned char  data[4];
-//	int            triState; 
-	
-//	mask = 0;
-//	mask = pins24_31 << 3;;			//these are shifted HEX values
-//	mask = mask | pins16_23 << 2; 
-//	mask = mask | pins8_15 << 1; 
-//	mask = mask | pins0_7; 
-	
-	
-//	triState = 0;
-//	i=odour;
-//	stimTime = duration*1000;
-//	delayTime = delay;
-	
-	
-	//printf("\n i = %d\n hangtime = %d\n",i,hangTime);
 	
 	
 	
@@ -1211,10 +1051,9 @@ int odourPulsesSimple(int delay, int odour, int duration)
 
 int triggerDetect()
 {
-	
+
 	int						ret;
 	unsigned char           data[4];
-//	unsigned char           testThing;
     int						difference;
 	int						temp;
 	
@@ -1232,23 +1071,25 @@ int triggerDetect()
         return(0);
 	}
 	
+	
 	difference = 0;	
 	while (difference == 0) {
 		temp = data[3];
-		ret =   AIO_Usb_DIO_ReadAll (devIdx,
-									 (unsigned char *)&data[0]); 
-		difference = temp - data[3];
-		
+		ret =   AIO_Usb_DIO_ReadAll (devIdx,(unsigned char *)&data[0]); 
+		difference = temp - data[3];		
 		
 	}
+	
+	//XOPNotice("\015Trigger detected. Executing stimulus protocol...");
+	//usleep(100);
 	
 	// first 2 bytes unused for AI 16
 	//printf("\n PINs 0- 7: = 0x%x\n",data[0]);
 	//printf("\n PINs 0-15: = 0x%x\n",data[1]);
 	//printf("\n PINs 16-23: = 0x%x\n",data[2]);
-	printf("\n PINs 24:32: = 0x%x\n",data[3]);
+	//printf("\n PINs 24:32: = 0x%x\n",data[3]);
 	
-	
+	XOPNotice("\015Trigger detected. Executing protocol...");
 	
 	return(0);
 	
@@ -1283,17 +1124,7 @@ typedef struct xstrcatParams xstrcatParams;
 static int
 xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 {
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+		
 	Handle str1;						/* output handle */
 	long len2, len3;
 	int err=0;
@@ -1309,7 +1140,7 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	}
 	
 	len2 = GetHandleSize(p->str2);		/* length of string 2 */
-	stringLen = GetHandleSize(p->str2);
+//	stringLen = GetHandleSize(p->str2);
 	len3 = GetHandleSize(p->str3);		/* length of string 3 */
 	str1 = NewHandle(len2 + len3);		/* get output handle */
 	if (str1 == NIL) {
