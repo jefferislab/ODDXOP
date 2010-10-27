@@ -7,49 +7,25 @@
  
  */
 
-#include "XOPStandardHeaders.h"			// Include ANSI headers, Mac headers, IgorXOP.h, XOP.h and XOPSupport.h
-
-#include "XFUNC3.h"
-
-
-////////////////////////////////////////////////
-//Copied from DIO examples using NI API
-////////////////////////////////////////////////
-//#include <stdio.h>
-#include <time.h>
-//#include <string.h>
-//#include <stdlib.h>
-//#include <math.h>
-////////////////////////////////////////////////
-
-
-
-
-////////////////////////////////////////////////
-//Copied from ODDRun.c using ACCES API
-////////////////////////////////////////////////
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
-
+#include <time.h>
 #include <math.h>
-
-
-#include <pthread.h>   // for nanosleep() call
+#include <pthread.h>				// for nanosleep() call
 
 #include "aioUsbApi.h"
+#include "XOPStandardHeaders.h"		// Include ANSI headers, Mac headers, IgorXOP.h, XOP.h and XOPSupport.h
+#include "XFUNC3.h"
 
 
 int delay, odour, duration;
-int triggerDetect();
-int odourPulse(int delay, int odour, int duration);
 
 
 int   devIdx;
@@ -90,25 +66,16 @@ char cfg[20];
 char cfgForThread[20];
 int  stringLen;
 
+
+//Functions
+int triggerDetect();
+int odourPulse(int delay, int odour, int duration);
 int odourPulsesSimple(int delay, int odour, int duration);
 int odourPulses(char *cfgFileName);
-////////////////////////////////////////////////
-
-
-
-
-
-
 
 
 #define DAQmxErrChk(functionCall) { if( DAQmxFailed(error=(functionCall)) ) { goto Error; } }
 int doIHaveAnError;
-
-
-
-
-
-
 
 #include "XOPStructureAlignmentTwoByte.h"	// All structures passed to Igor are two-byte aligned.
 struct xstrcatParams  {
@@ -179,6 +146,9 @@ void *threadFunc(void *arg)		/* This is the thread function.  It is like main(),
 		XOPNotice("\015No config file entered. Let's use the default:\015");
 		XOPNotice("\015TODO: output the .odd file\015");
 		tmp = odourPulses(str);				//works
+		
+		
+		
 
 	}else {
 		
@@ -186,6 +156,14 @@ void *threadFunc(void *arg)		/* This is the thread function.  It is like main(),
 		//XOPNotice("\015TODO: output the .odd file\015");
 		XOPNotice(cfg);
 		tmp = odourPulses(cfg);				//works
+		
+		if (tmp==10) {
+			XOPNotice("\015ERROR: Could not open config file. Try again ya wee lass.\015");
+		}
+		if (tmp==11) {
+			XOPNotice("\015ERROR: Could not open log file. Does the directory path exist?\015");
+		}
+		
 
 	}
 
@@ -358,25 +336,15 @@ int odourPulses(char *cfgFileName)		//Main function. The others are mostly just 
 	
 	//printf("\nOpening files...");
 	XOPNotice("\015Opening files...");
-	/*	if((fi=fopen("defaultcfg.ODD","r"))==NULL) { // open a file
-	 printf("could not open cfg file"); // print an error
-	 return(0);
-	 }*/
-	if((fi=fopen(configFile,"r"))==NULL) { // open a file
-	//if((fi=fopen("/Users/ahodge/Desktop/cfgFile.odd","r"))==NULL) { // open a file
-		printf("could not open cfg file"); // print an error
-		XOPNotice("\015ERROR: could not open cfg file"); // print an error
-		return(0);
+
+	if((fi=fopen(configFile,"r"))==NULL) {										// open cfg file and return with an error value if fopen fails
+		return(10);		
 	}
-	if((fo=fopen("/Users/ahodge/Desktop/logfiles/tempLog.txt","w"))==NULL) { // open a file
-		//if((fo=fopen(str5,"w"))==NULL) { // open a file
-		//if((fo=fopen(str3,"w"))==NULL) { // open a file
-		//if((fo=fopen(logFile,"w"))==NULL) { // open a file
-		printf("could not open log file"); // print an error
-		XOPNotice("\015ERROR: could not open log file"); // print an error
-		return(0);
+	
+	if((fo=fopen("/Users/ahodge/Desktop/logfiles/tempLog.txt","w"))==NULL) {	// open log file and return with an error value if fopen fails
+		return(11);
 	}
-	//printf("done");
+
 	XOPNotice("done");
 	
 //TODO: Change this to depend on the number of lines in the .odd file
@@ -399,8 +367,18 @@ int odourPulses(char *cfgFileName)		//Main function. The others are mostly just 
 		else
 		{
 			XOPNotice("\015I found an entry in the .odd file. Can I please have a trigger?\015");
-			tmp=triggerDetect();			
-//TODO: if/then for triggerDetect() return value
+			tmp=triggerDetect();	
+			if (tmp==10) {
+				XOPNotice("\015Trigger detected. Executing protocol...");
+				//TODO: force error message to appear reliably. 				
+			}else if (tmp==15) {
+				XOPNotice("\015TriggerDetect() timed out.");
+				return(0);
+			}else if (tmp==0) {
+				XOPNotice("\015TriggerDetect() failed.");
+				return(0);
+			}
+			//TODO: if/then for triggerDetect() return value
 
 			
 			stimTime=p1;
@@ -1056,7 +1034,10 @@ int triggerDetect()
 	unsigned char           data[4];
     int						difference;
 	int						temp;
+	int						startTime;
 	
+	startTime = time(NULL);
+
 	
 	ret = validateIndex(devIdx);
 	if (ret > ERROR_SUCCESS)
@@ -1076,7 +1057,12 @@ int triggerDetect()
 	while (difference == 0) {
 		temp = data[3];
 		ret =   AIO_Usb_DIO_ReadAll (devIdx,(unsigned char *)&data[0]); 
-		difference = temp - data[3];		
+		difference = temp - data[3];	
+		
+		if (time(NULL)>=startTime+10) {
+			XOPNotice("\015Trigger timeout. Try to do better.\015");
+			return(15);
+		}
 		
 	}
 	
@@ -1089,27 +1075,12 @@ int triggerDetect()
 	//printf("\n PINs 16-23: = 0x%x\n",data[2]);
 	//printf("\n PINs 24:32: = 0x%x\n",data[3]);
 	
-	XOPNotice("\015Trigger detected. Executing protocol...");
+//	XOPNotice("Trigger detected. Executing protocol...");
 	
-	return(0);
+	return(10);
 	
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1164,109 +1135,39 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	GetCStringFromHandle(p->str2, cfg, 20);
 
 	
-	
-	
-	
-	
-	
-	//	AIO_Init();
-	//	ret = AIO_Usb_GetDevices(&aioDevices);
-	//	devIdx = aioDevices.aioDevList[0].devIdx;
-	//XOPNotice("How do yorfgaeguXXXXXXX like me now?\015");
 	MyHello();
 	XOPNotice("MyHello OK\015");
 	tmp = initialise();
 	XOPNotice("initialise OK\015");
 	
+//TODO: Handle errors here	
 	
 	
 	
-	
-/*	
-	XOPNotice("Can I have a trigger?\015");
-	tmp = triggerDetect();
-	
-	
-	
-	tmp = odourPulse(2000,20,500);
-	//	tmp = odourPulse(2000,21,500);
-	//	tmp = odourPulse(2000,22,500);
-	XOPNotice("\015odourPulse OK\015");
-	
-	
-	
-	
-*/
-
 	char *stringThing;
-	//	int i = 0;
-	
 	stringThing=(char*)cfg;
 	
 	XOPNotice("\015str = ");
 	XOPNotice(stringThing);
-	XOPNotice("015");
+	XOPNotice("\015");
 	
 	
-	
-	
-	
-	
-	pthread_t pth;	// this is our thread identifier
-//	int i = 0;
-	
+	pthread_t pth;	// this is our thread identifier, used to call odourPulses() from its own thread
+
 	//pthread_create(&pth,NULL,threadFunc,"foo");			//Original
-	
-	pthread_create(&pth,NULL,threadFunc,"cfgFile.odd");		//GOOD
-	//pthread_create(&pth,NULL,threadFunc,(char*)cfg);		//No Good
-	
-	pthread_detach(pth);
-	
-//	while(i < 100)
-//	{
-//		usleep(1);
-//		printf("main is running...\n");
-//		++i;
-//	}
-	
-//	printf("main waiting for thread to terminate...\n");
-//	pthread_join(pth,NULL);
+	pthread_create(&pth,NULL,threadFunc,"cfgFile.odd");		//GOOD: sets cfgFile.odd as the default config file in case there is no input
+	pthread_detach(pth);									//Don't want the original thread to wait for odourPulses() to finish
 	
 	
-	
-	
-	
-/*	
-	pthread_t pth;	// this is our thread identifier
-	int i = 0;
-	
-	//pthread_create(&pth,NULL,threadFunc,"foo");
-	pthread_create(&pth,NULL,threadFunc,"cfgFile.odd");
-	
-	while(i < 100)
-	{
-		usleep(1);
-		printf("main is running...\n");
-		++i;
-	}
-	
-	printf("main waiting for thread to terminate...\n");
-	pthread_join(pth,NULL);
-	
-*/	
-	
-	
-	
-	
-	
-	
+//	printf("main waiting for thread to terminate...\n");	//Old
+//	pthread_join(pth,NULL);									//Old
 	
 	
 	
 	//tmp = odourPulses(*p->str2);
 //	tmp = odourPulses(cfg);				//works  //Disable for testing threads
 	//tmp = odourPulses("cfgFile.odd");		//works
-	XOPNotice("\015odourPulses OK\015");
+//	XOPNotice("\015odourPulses OK\015");
 	
 
 	
@@ -1318,8 +1219,8 @@ static int
 DoFunction()
 {
 	int funcIndex;
-	void *p;				/* pointer to structure containing function parameters and result */
-	int err;				/* error code returned by function */
+	void *p;						/* pointer to structure containing function parameters and result */
+	int err;						/* error code returned by function */
 	
 	funcIndex = GetXOPItem(0);		/* which function invoked ? */
 	p = (void *)GetXOPItem(1);		/* get pointer to params/result */
@@ -1372,19 +1273,14 @@ main(IORecHandle ioRecHandle)
 	SetXOPEntry(XOPEntry);							/* set entry point for future calls */
 	
 	
-	AIO_Init();
+	AIO_Init();										// This should called BEFORE any other function in the API
+													// to populate the list of Acces devices
 	
-	// This should called BEFORE any other function in the API
-	// to populate the list of Acces devices
 	ret = AIO_Usb_GetDevices(&aioDevices);
 	
-	// use the first device found
-	devIdx = aioDevices.aioDevList[0].devIdx;
-	
-	
-	
+	devIdx = aioDevices.aioDevList[0].devIdx;		// use the first device found
+
 	tmp = initialise();
-	
 	
 	
 	
