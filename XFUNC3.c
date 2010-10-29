@@ -23,48 +23,45 @@
 #include "aioUsbApi.h"
 #include "XOPStandardHeaders.h"		// Include ANSI headers, Mac headers, IgorXOP.h, XOP.h and XOPSupport.h
 #include "XFUNC3.h"
+#include "XOPStructureAlignmentTwoByte.h"	// All structures passed to Igor are two-byte aligned.
+#include "XOPStructureAlignmentReset.h"
 
 
-int delay, odour, duration;
+int				devIdx;
+char			anyKey;
+int				ctlC;
 
 
-int   devIdx;
-char  anyKey;
-int   ctlC;
+int				ret;
+int				tmp;
+int				i;
+//int				hangTime;
+int				stimTime;
+int				delayTime;
+int				odour;
+int				doIHaveAnError;
+int				triggerTimeout;
 
-aioDeviceInfo aioDevices;
-
-int			   ret;
-int			   tmp;
-int			   i;
-int			   hangTime;
-int			   stimTime;
-int			   delayTime;
+char			configFile[80];
+char			cfg[20];
 
 
-unsigned char  pins0_7;
-unsigned char  pins8_15;
-unsigned char  pins16_23;
-unsigned char  pins24_31; 
-int            p0_7Input;
-int            p8_15Input;
-int			   p16_23Input;
-int			   p24_31Input;
+unsigned char	pins0_7;
+unsigned char	pins8_15;
+unsigned char	pins16_23;
+unsigned char	pins24_31; 
+int				p0_7Input;
+int				p8_15Input;
+int				p16_23Input;
+int				p24_31Input;
 
-unsigned char  mask; 
-unsigned char  data[4];
-int            triState; 
+unsigned char	mask; 
+unsigned char	data[4];
+int				triState; 
 
+//Values to be read from config file
 char ch, s[80], chID1[10], chID2[10], chID3[10], chID4[10], chID5[10];
 int d1,p1,o1,d2,p2,o2,d3,p3,o3,d4,p4,o4,d5,p5,o5;
-int isRunning;
-
-char cfgFileName;
-char configFile[80];
-char cfg[20];
-
-char cfgForThread[20];
-int  stringLen;
 
 
 //Functions
@@ -72,26 +69,32 @@ int triggerDetect();
 int odourPulse(int delay, int odour, int duration);
 int odourPulsesSimple(int delay, int odour, int duration);
 int odourPulses(char *cfgFileName);
+int oddRunTest();
+int validateIndex(int devIdx);
+int initialise();
+
+static void MyHello(void);
+void catchInterrupt (int signum);
 
 
-#define DAQmxErrChk(functionCall) { if( DAQmxFailed(error=(functionCall)) ) { goto Error; } }
-int doIHaveAnError;
-
-#include "XOPStructureAlignmentTwoByte.h"	// All structures passed to Igor are two-byte aligned.
 struct xstrcatParams  {
 	Handle str3;
 	Handle str2;
 	Handle result;
 };
 
+aioDeviceInfo aioDevices;
 
+
+typedef struct xstrcatParams xstrcatParams;
 
 
 //////////////////////////////////////////////////
 //My Functions
 //////////////////////////////////////////////////
 
-int oddRunTest()
+int 
+oddRunTest()
 {
 	XOPNotice("\015 Testing...\015");
 	return(0);
@@ -99,10 +102,16 @@ int oddRunTest()
 
 
 static void
-MyHello(void){
+MyHello(void)
+{
 	XOPNotice("Hello. Now you're calling a function...\015");
 	doIHaveAnError=oddRunTest();
-	XOPNotice("That should have worked. \015");
+	if (doIHaveAnError==0) {
+		XOPNotice("That should have worked. \015");
+
+	}else{
+		XOPNotice("\015Massive failure...\015");
+	}
 	
 }
 
@@ -117,7 +126,7 @@ catchInterrupt (int signum)
 int
 validateIndex(int devIdx)
 {
-//	int ret;
+	//	int ret;
 	
 	ret = AIO_UsbValidateDeviceIndex(devIdx);
 	if (ret > ERROR_SUCCESS)
@@ -127,13 +136,14 @@ validateIndex(int devIdx)
 	}
 	
 	//XOPNotice("\015Device OK\015");
-
+	
 	return  ret;
 }
 
 
 
-void *threadFunc(void *arg)		/* This is the thread function.  It is like main(), but for a thread, and just runs the odourPulses() function*/
+void 
+*threadFunc(void *arg)		/* This is the thread function.  It is like main(), but for a thread, and just runs the odourPulses() function*/
 {
 	char *str;
 	str=(char*)arg;
@@ -149,7 +159,7 @@ void *threadFunc(void *arg)		/* This is the thread function.  It is like main(),
 		
 		
 		
-
+		
 	}else {
 		
 		XOPNotice("\015Config file entered. Let's use it.\015");
@@ -164,33 +174,34 @@ void *threadFunc(void *arg)		/* This is the thread function.  It is like main(),
 			XOPNotice("\015ERROR: Could not open log file. Does the directory path exist?\015");
 		}
 		
-
+		
 	}
-
+	
 	return NULL;
 }
 
 
 
-int initialise()
+int 
+initialise()
 {
 	
 	printf("For testing. This function just tests each channel");
 	
 	
-/*	
-	int			 ret;
-	int			 tmp;
-		
-	unsigned char  pins0_7;
-	unsigned char  pins8_15;
-	unsigned char  pins16_23;
-	unsigned char  pins24_31; 
-	int            p0_7Input;
-	int            p8_15Input;
-	int			 p16_23Input;
-	int			 p24_31Input;
-*/	
+	/*	
+	 int			 ret;
+	 int			 tmp;
+	 
+	 unsigned char  pins0_7;
+	 unsigned char  pins8_15;
+	 unsigned char  pins16_23;
+	 unsigned char  pins24_31; 
+	 int            p0_7Input;
+	 int            p8_15Input;
+	 int			 p16_23Input;
+	 int			 p24_31Input;
+	 */	
 	unsigned char  mask; 
 	unsigned char  data[4];
 	int            triState; 
@@ -269,39 +280,40 @@ int initialise()
 		printf ("\nDIO_Configure Failed  dev=0x%0x err=%d \n",(unsigned int)devIdx,ret);
 		return(0);
 	}
-		
+	
 	return(0);	
 	
 }
 
 
-int odourPulses(char *cfgFileName)		//Main function. The others are mostly just for testing, but I left them in case they are of some use in the future
+int 
+odourPulses(char *cfgFileName)		//Main function. The others are mostly just for testing, but I left them in case they are of some use in the future
 {
 	
-/*	
+	/*	
+	 
+	 int			 ret;
+	 int			 tmp;
+	 int			 i;
+	 int			 stimTime;
+	 int			 delayTime;
+	 int          odour;
+	 
+	 
+	 unsigned char  pins0_7;
+	 unsigned char  pins8_15;
+	 unsigned char  pins16_23;
+	 unsigned char  pins24_31; 
+	 //	int            p0_7Input;
+	 //	int            p8_15Input;
+	 //	int			   p16_23Input;
+	 //	int			   p24_31Input;
+	 
+	 */ 
 	
-	int			 ret;
-	int			 tmp;
-	int			 i;
-	int			 stimTime;
-	int			 delayTime;
-	int          odour;
-	
-	
-	unsigned char  pins0_7;
-	unsigned char  pins8_15;
-	unsigned char  pins16_23;
-	unsigned char  pins24_31; 
-//	int            p0_7Input;
-//	int            p8_15Input;
-//	int			   p16_23Input;
-//	int			   p24_31Input;
-
-*/ 
- 
-	unsigned char  mask; 
-	unsigned char  data[4];
-//	int            triState; 
+//	unsigned char  mask; 
+//	unsigned char  data[4];
+	//	int            triState; 
 	
 	mask = 0;
 	mask = pins24_31 << 3;;			//these are shifted HEX values
@@ -310,16 +322,16 @@ int odourPulses(char *cfgFileName)		//Main function. The others are mostly just 
 	mask = mask | pins0_7; 
 	
 	
-//	triState = 0;
+	//	triState = 0;
 	
 	
 	strcpy(configFile,"/Users/ahodge/Desktop/");
 	strcat(configFile,cfgFileName);
-
+	
 	XOPNotice("\015Using the config file:\015");
 	XOPNotice(configFile);
 	XOPNotice("\015\015");
-
+	
 	//time
 	time_t sec;
 	sec = time(NULL);
@@ -329,14 +341,14 @@ int odourPulses(char *cfgFileName)		//Main function. The others are mostly just 
 	XOPNotice("\015Creating file pointers...");
 	FILE* fi; 
 	FILE* fo; 
-		
+	
 	//printf("done");
 	XOPNotice("done");
 	
 	
 	//printf("\nOpening files...");
 	XOPNotice("\015Opening files...");
-
+	
 	if((fi=fopen(configFile,"r"))==NULL) {										// open cfg file and return with an error value if fopen fails
 		return(10);		
 	}
@@ -344,10 +356,14 @@ int odourPulses(char *cfgFileName)		//Main function. The others are mostly just 
 	if((fo=fopen("/Users/ahodge/Desktop/logfiles/tempLog.txt","w"))==NULL) {	// open log file and return with an error value if fopen fails
 		return(11);
 	}
-
+	
 	XOPNotice("done");
 	
-//TODO: Change this to depend on the number of lines in the .odd file
+	
+	triggerTimeout=5;
+
+	
+	//TODO: Change this to depend on the number of lines in the .odd file
 	for(i=0;i<10;i++)
 	{
 		
@@ -357,7 +373,7 @@ int odourPulses(char *cfgFileName)		//Main function. The others are mostly just 
 		//	fprintf(fo,"%s",s);
 		sscanf(s,"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",(char*)chID1, &d1, &p1, &o1, &d2, &p2, &o2, &d3, &p3, &o3, &d4, &p4, &o4, &d5, &p5, &o5);
 		//sscanf(s,"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",&chID1, &d1, &p1, &o1, &d2, &p2, &o2, &d3, &p3, &o3, &d4, &p4, &o4, &d5, &p5, &o5);
-		
+
 		
 		
 		if (p1==0) {
@@ -379,6 +395,8 @@ int odourPulses(char *cfgFileName)		//Main function. The others are mostly just 
 				return(0);
 			}
 			//TODO: if/then for triggerDetect() return value
+
+			triggerTimeout=20;
 
 			
 			stimTime=p1;
@@ -798,13 +816,13 @@ int odourPulses(char *cfgFileName)		//Main function. The others are mostly just 
 					
 				}else{
 					printf("ERROR: Invalid odour");
-
+					
 					return(0);
 				}
-
+				
 			}
 			XOPNotice("OK, Done that.\015");
-
+			
 		}
 		
 	}
@@ -818,7 +836,8 @@ int odourPulses(char *cfgFileName)		//Main function. The others are mostly just 
 
 
 
-int odourPulse(int delay, int odour, int duration)		//For now this is unused. It helps for testing. 
+int 
+odourPulse(int delay, int odour, int duration)		//For now this is unused. It helps for testing. 
 {
 	
 	
@@ -832,14 +851,16 @@ int odourPulse(int delay, int odour, int duration)		//For now this is unused. It
 	unsigned char  pins8_15;
 	unsigned char  pins16_23;
 	unsigned char  pins24_31; 
-//	int            p0_7Input;
-//	int            p8_15Input;
-//	int			   p16_23Input;
-//	int			   p24_31Input;
+	//	int            p0_7Input;
+	//	int            p8_15Input;
+	//	int			   p16_23Input;
+	//	int			   p24_31Input;
 	
 	unsigned char  mask; 
 	unsigned char  data[4];
 	int            triState; 
+	
+	
 	
 	mask = 0;
 	mask = pins24_31 << 3;;			//these are shifted HEX values
@@ -936,7 +957,8 @@ int odourPulse(int delay, int odour, int duration)		//For now this is unused. It
 
 
 
-int odourPulsesSimple(int delay, int odour, int duration)		//For now this is unused. It helps for testing.
+int 
+odourPulsesSimple(int delay, int odour, int duration)		//For now this is unused. It helps for testing.
 {
 	
 	
@@ -1027,17 +1049,18 @@ int odourPulsesSimple(int delay, int odour, int duration)		//For now this is unu
 
 
 
-int triggerDetect()
+int 
+triggerDetect()
 {
-
-	int						ret;
-	unsigned char           data[4];
+	
+//	int						ret;
+//	unsigned char           data[4];
     int						difference;
 	int						temp;
 	int						startTime;
 	
 	startTime = time(NULL);
-
+	
 	
 	ret = validateIndex(devIdx);
 	if (ret > ERROR_SUCCESS)
@@ -1054,17 +1077,22 @@ int triggerDetect()
 	
 	
 	difference = 0;	
-	while (difference == 0) {
+	while (difference == 0&&time(NULL)<=startTime+triggerTimeout) {
 		temp = data[3];
 		ret =   AIO_Usb_DIO_ReadAll (devIdx,(unsigned char *)&data[0]); 
-		difference = temp - data[3];	
-		
-		if (time(NULL)>=startTime+10) {
-			XOPNotice("\015Trigger timeout. Try to do better.\015");
-			return(15);
-		}
+		difference = temp - data[3];			
 		
 	}
+	
+	if (time(NULL)>=startTime+triggerTimeout) {
+		XOPNotice("\015Trigger timeout. Try to do better.\015");
+		return(15);
+	}else {
+		XOPNotice("\015Trigger detected. Here we go....\015");
+		return(10);
+	}
+
+	
 	
 	//XOPNotice("\015Trigger detected. Executing stimulus protocol...");
 	//usleep(100);
@@ -1075,27 +1103,22 @@ int triggerDetect()
 	//printf("\n PINs 16-23: = 0x%x\n",data[2]);
 	//printf("\n PINs 24:32: = 0x%x\n",data[3]);
 	
-//	XOPNotice("Trigger detected. Executing protocol...");
+	//	XOPNotice("Trigger detected. Executing protocol...");
 	
-	return(10);
+	
 	
 	
 }
 
 
 
-
-//////////////////////////////////////////////////
-
-
-
-typedef struct xstrcatParams xstrcatParams;
-#include "XOPStructureAlignmentReset.h"
+//typedef struct xstrcatParams xstrcatParams;
+//#include "XOPStructureAlignmentReset.h"
 
 static int
 xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 {
-		
+	
 	Handle str1;						/* output handle */
 	long len2, len3;
 	int err=0;
@@ -1111,7 +1134,7 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	}
 	
 	len2 = GetHandleSize(p->str2);		/* length of string 2 */
-//	stringLen = GetHandleSize(p->str2);
+	//	stringLen = GetHandleSize(p->str2);
 	len3 = GetHandleSize(p->str3);		/* length of string 3 */
 	str1 = NewHandle(len2 + len3);		/* get output handle */
 	if (str1 == NIL) {
@@ -1119,13 +1142,11 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 		goto done;						/* out of memory */
 	}
 	
-
-	
-	
+/*	
 	XOPNotice("\015\015*p->str2");
 	XOPNotice(*p->str2);
 	XOPNotice("\015");
-	
+*/	
 	
 	memcpy(*str1, *p->str2, len2);
 	memcpy(*str1+len2, *p->str3, len3);
@@ -1133,43 +1154,43 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	//strcpy(cfg,"cfgFile.odd");//working
 	//strcpy(cfg,*p->str2);
 	GetCStringFromHandle(p->str2, cfg, 20);
-
 	
+/*	
 	MyHello();
 	XOPNotice("MyHello OK\015");
 	tmp = initialise();
 	XOPNotice("initialise OK\015");
 	
-//TODO: Handle errors here	
+	//TODO: Handle errors here	
 	
-	
-	
+*/	
+/*	
 	char *stringThing;
 	stringThing=(char*)cfg;
 	
 	XOPNotice("\015str = ");
 	XOPNotice(stringThing);
 	XOPNotice("\015");
-	
+*/	
 	
 	pthread_t pth;	// this is our thread identifier, used to call odourPulses() from its own thread
-
+	
 	//pthread_create(&pth,NULL,threadFunc,"foo");			//Original
 	pthread_create(&pth,NULL,threadFunc,"cfgFile.odd");		//GOOD: sets cfgFile.odd as the default config file in case there is no input
 	pthread_detach(pth);									//Don't want the original thread to wait for odourPulses() to finish
 	
 	
-//	printf("main waiting for thread to terminate...\n");	//Old
-//	pthread_join(pth,NULL);									//Old
+	//	printf("main waiting for thread to terminate...\n");	//Old
+	//	pthread_join(pth,NULL);									//Old
 	
 	
 	
 	//tmp = odourPulses(*p->str2);
-//	tmp = odourPulses(cfg);				//works  //Disable for testing threads
+	//	tmp = odourPulses(cfg);				//works  //Disable for testing threads
 	//tmp = odourPulses("cfgFile.odd");		//works
-//	XOPNotice("\015odourPulses OK\015");
+	//	XOPNotice("\015odourPulses OK\015");
 	
-
+	
 	
 done:
 	if (p->str2)
@@ -1274,12 +1295,12 @@ main(IORecHandle ioRecHandle)
 	
 	
 	AIO_Init();										// This should called BEFORE any other function in the API
-													// to populate the list of Acces devices
+	// to populate the list of Acces devices
 	
 	ret = AIO_Usb_GetDevices(&aioDevices);
 	
 	devIdx = aioDevices.aioDevList[0].devIdx;		// use the first device found
-
+	
 	tmp = initialise();
 	
 	
