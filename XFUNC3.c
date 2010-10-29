@@ -43,7 +43,9 @@ int				doIHaveAnError;
 int				triggerTimeout;
 
 char			configFile[80];
+char			logFile[80];
 char			cfg[20];
+char			lg[20];
 
 
 unsigned char	pins0_7;
@@ -332,6 +334,16 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 	XOPNotice(configFile);
 	XOPNotice("\015\015");
 	
+	strcpy(logFile,"/Users/ahodge/Desktop/logfiles/");
+	if (strlen(lg)<1) {
+		strcat(logFile,"defaultLogFile.txt");
+	}else{
+		strcat(logFile,(char*)lg);
+	}
+	
+	XOPNotice("\015Using the log file:\015");
+	XOPNotice(logFile);
+	XOPNotice("\015\015");
 	//time
 	time_t sec;
 	sec = time(NULL);
@@ -353,9 +365,11 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 		return(10);		
 	}
 	
-	if((fo=fopen("/Users/ahodge/Desktop/logfiles/tempLog.txt","w"))==NULL) {	// open log file and return with an error value if fopen fails
+	if((fo=fopen(logFile,"w"))==NULL) {	// open log file and return with an error value if fopen fails
+	//if((fo=fopen("/Users/ahodge/Desktop/logfiles/tempLog.txt","w"))==NULL) {	// open log file and return with an error value if fopen fails
 		return(11);
 	}
+	fprintf(fo, "%s", logFile);
 	
 	XOPNotice("done");
 	
@@ -364,7 +378,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 
 	
 	//TODO: Change this to depend on the number of lines in the .odd file
-	for(i=0;i<10;i++)
+	for(i=0;i<=10;i++)
 	{
 		
 		fgets(s,80,fi);
@@ -378,20 +392,29 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 		
 		if (p1==0) {
 			XOPNotice("\015The first entry in this line is for zero duration. Not waiting for a trigger.\015");
+			fprintf(fo, "\nThe first entry in line %d is for zero duration. Not waiting for a trigger.",i);
 		}
 		
 		else
 		{
 			XOPNotice("\015I found an entry in the .odd file. Can I please have a trigger?\015");
+			fprintf(fo, "\nNonzero p1 detected. Running line %d: %s",i,s);
 			tmp=triggerDetect();	
 			if (tmp==10) {
 				XOPNotice("\015Trigger detected. Executing protocol...");
+				fprintf(fo, "\nTrigger detected. Executing sequnce.");
 				//TODO: force error message to appear reliably. 				
 			}else if (tmp==15) {
 				XOPNotice("\015TriggerDetect() timed out.");
+				fprintf(fo, "\nTriggerDetect() timed out. Aborting");
+				fclose(fi);fclose(fo);
+
 				return(0);
 			}else if (tmp==0) {
 				XOPNotice("\015TriggerDetect() failed.");
+				fprintf(fo, "\nTriggerDetect() failed for some reason besides timeout.");
+				fclose(fi);fclose(fo);
+
 				return(0);
 			}
 			//TODO: if/then for triggerDetect() return value
@@ -1154,6 +1177,7 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	//strcpy(cfg,"cfgFile.odd");//working
 	//strcpy(cfg,*p->str2);
 	GetCStringFromHandle(p->str2, cfg, 20);
+	GetCStringFromHandle(p->str3, lg, 20);
 	
 /*	
 	MyHello();
