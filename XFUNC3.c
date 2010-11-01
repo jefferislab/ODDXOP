@@ -1112,84 +1112,30 @@ odourPulsesSimple(int delay, int odour, int duration)		//For now this is unused.
 int 
 triggerDetectFast()
 {
-	
-	//	int						ret;
-	//	unsigned char           data[4];
-//    int						difference;
 	int						temp;
 	int						startTime;
-	
-	startTime = time(NULL);
-	
-	/*	
-	 ret = validateIndex(devIdx);
-	 if (ret > ERROR_SUCCESS)
-	 return(0);
-	 */	
-//	ret =   AIO_Usb_DIO_ReadAll (devIdx,
-//								 (unsigned char *)&data[0]); 
-	
-//	if (ret > ERROR_SUCCESS)
-//	{
-//        printf ("\n\nReadAll Failed dev=0x%0x err=%d  \n\n",(unsigned int)devIdx,ret);
-//        return(0);
-//	}
-	
-	
-//	difference = 0;	
-	
-//	while (difference == 0&&time(NULL)<=startTime+triggerTimeout) {
-//		temp = data[3];
-//		ret =   AIO_Usb_DIO_ReadAll (devIdx,(unsigned char *)&data[0]); 
-//		difference = temp - data[3];
-//		fprintf(fo,"\n PINs 24:32: = 0x%x\n",data[3]);
-//		
-//		
-//	}
-	
 	unsigned char  byte;
 
-	
+	startTime = time(NULL);
 	temp = 0;
+	
 	while (temp == 0&&time(NULL)<=startTime+triggerTimeout) {
-//		temp = data[3];
-//		ret =   AIO_Usb_DIO_ReadAll (devIdx,(unsigned char *)&data[0]); 
-//		fprintf(fo,"\n PINs 24:32: = 0x%x\n",data[3]);
-
-		ret = AIO_Usb_DIO_Read8 (devIdx,1,&byte);		//This is strange. The sequence goes 2,3,0,1, so the last byte (DIO DXX has index 1 instead of 3 as you'd expect
-		//form: ret = AIO_Usb_DIO_Read8 (devIdx,byteIdx,&byte);
-		
-		
-//		difference = temp - data[3];
-//		fprintf(fo," \nPINs 24-32, using read8: 0x%x\n",(unsigned char)byte);
+		ret = AIO_Usb_DIO_Read8 (devIdx,1,&byte);		//This is strange. The sequence goes 2,3,0,1, so the 
+														//last byte (DIO DXX has index 1 instead of 3 as you'd expect
+														//form: ret = AIO_Usb_DIO_Read8 (devIdx,byteIdx,&byte);
+		//fprintf(fo," \nPINs 24-32, using read8: 0x%x\n",(unsigned char)byte);
 		temp=(unsigned char)byte;
-		
-		
 	}
+	
 	
 	if (time(NULL)>=startTime+triggerTimeout) {
 		XOPNotice("\015Trigger timeout. Try to do better.\015");
 		return(15);
 	}else {
+		fprintf(fo," \nTrigger PINs 24-32, using AIO_USB_read8: 0x%x\n",(unsigned char)byte);
 		XOPNotice("\015Trigger detected. Here we go....\015");
 		return(10);
 	}
-	
-	
-	
-	//XOPNotice("\015Trigger detected. Executing stimulus protocol...");
-	//usleep(100);
-	
-	// first 2 bytes unused for AI 16
-	//printf("\n PINs 0- 7: = 0x%x\n",data[0]);
-	//printf("\n PINs 0-15: = 0x%x\n",data[1]);
-	//printf("\n PINs 16-23: = 0x%x\n",data[2]);
-	//printf("\n PINs 24:32: = 0x%x\n",data[3]);
-	
-	//	XOPNotice("Trigger detected. Executing protocol...");
-	
-	
-	
 	
 }
 
@@ -1257,10 +1203,6 @@ triggerDetect()
 	
 }
 
-
-
-//typedef struct xstrcatParams xstrcatParams;
-//#include "XOPStructureAlignmentReset.h"
 
 static int
 xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
