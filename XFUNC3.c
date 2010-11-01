@@ -1146,25 +1146,21 @@ int
 triggerDetect()
 {
 	
-	//	int						ret;
-	//	unsigned char           data[4];
     int						difference;
 	int						temp;
 	int						startTime;
 	
 	startTime = time(NULL);
 	
-		
-//	 ret = validateIndex(devIdx);
-//	 if (ret > ERROR_SUCCESS)
-//	 return(0);
-	 	
-	ret =   AIO_Usb_DIO_ReadAll (devIdx,
-								 (unsigned char *)&data[0]); 
 	
+	ret = validateIndex(devIdx);
+	if (ret > ERROR_SUCCESS)
+		return(0);
+	
+	ret =   AIO_Usb_DIO_ReadAll (devIdx,(unsigned char *)&data[0]); 
 	if (ret > ERROR_SUCCESS)
 	{
-        printf ("\n\nReadAll Failed dev=0x%0x err=%d  \n\n",(unsigned int)devIdx,ret);
+        fprintf (fo,"\n\nReadAll Failed dev=0x%0x err=%d  \n\n",(unsigned int)devIdx,ret);
         return(0);
 	}
 	
@@ -1184,23 +1180,7 @@ triggerDetect()
 		XOPNotice("\015Trigger detected. Here we go....\015");
 		return(10);
 	}
-	
-	
-	
-	//XOPNotice("\015Trigger detected. Executing stimulus protocol...");
-	//usleep(100);
-	
-	// first 2 bytes unused for AI 16
-	//printf("\n PINs 0- 7: = 0x%x\n",data[0]);
-	//printf("\n PINs 0-15: = 0x%x\n",data[1]);
-	//printf("\n PINs 16-23: = 0x%x\n",data[2]);
-	//printf("\n PINs 24:32: = 0x%x\n",data[3]);
-	
-	//	XOPNotice("Trigger detected. Executing protocol...");
-	
-	
-	
-	
+
 }
 
 
