@@ -2,6 +2,7 @@
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "aioUsbApi.h"
 
@@ -2120,8 +2121,8 @@ AIO_Usb_WriteAll(unsigned long  devIdx,
  }
 
 
-  
-    
+
+
 /********************************************************************/
 //
 //  Function Name : AIO_Usb_DIO_ReadAll
@@ -2139,59 +2140,163 @@ unsigned long
 AIO_Usb_DIO_ReadAll (unsigned long   devIdx,
                      unsigned char  *pData)
 {
+	
+	int                          ret;
+	struct libusb_device_handle *handle;
+	
+	
+	if (pData == NULL)
+	{
+		debug("DBG>>AIO_ReadAll : pData is NULL \n"); 
+		return (ERROR_INVALID_PARAM); 
+	}
+	
+	ret = AIO_UsbValidateDeviceIndex(devIdx);
+	
+	if (ret > ERROR_SUCCESS)
+	{
+		debug("DBG>>AIO_DIO_ReadAll: invalid dev Index = 0x%0x \n",(unsigned int)devIdx); 
+		return (ret);
+	}
+	
+	ret = validateProductID(devIdx);
+	if (ret > ERROR_SUCCESS)
+	{
+		debug("DBG>>AIO_DIO_ReadAll: invalid Product ID for device = 0x%0x \n",(unsigned int)devIdx); 
+		return (ret);
+	}
+	
+	handle = getDevHandle(devIdx);
+	if (handle == NULL)
+	{
+		debug("DBG>> AIO_Usb_DIO_ReadAll : could not get device handle devIdx=%d \n",(unsigned int)devIdx);
+		return (ERROR_COULD_NOT_GET_DEVHANDLE);
+		
+	}
+	else
+	{
+		ret = libusb_control_transfer(handle,
+									  USB_READ_FROM_DEV,
+									  DIO_READ, 
+									  0, 
+									  0,
+									  pData,
+									  4, 
+									  TIMEOUT_1_SEC);
+		libusb_close(handle);
+		
+		if (ret < 0)
+		{
+			debug("DBG>> AIO_Usb_ReadALL : usb_control_msg failed dev = 0x%0x err=%d",(unsigned int)devIdx,ret);
+			return (ERROR_USB_CONTROL_MSG_FAILED);
+		}
+		else
+			return (ERROR_SUCCESS);
+	}
+}
 
-  int                          ret;
-  struct libusb_device_handle *handle;
 
 
-  if (pData == NULL)
-  {
-    debug("DBG>>AIO_ReadAll : pData is NULL \n"); 
-    return (ERROR_INVALID_PARAM); 
-  }
 
-  ret = AIO_UsbValidateDeviceIndex(devIdx);
+/********************************************************************/
+//
+//  Function Name : AIO_Usb_DIO_ReadTrigger
+//
+//  Description   :
+//
+//  Returns       :	
+//
+//  Notes
+//
+//  History	  :
+// 
+/********************************************************************/
+unsigned long
+AIO_Usb_DIO_ReadTrigger (unsigned long   devIdx,
+						 unsigned char  *pData,
+						 int trgTO)
+{
+	
+	int                 ret;
+    int					difference;
+	int					temp;
+	int					startTime; 
+	int					triggerTimeout;
+	
+	
+	
+	struct libusb_device_handle *handle;
+	
+	
+	if (pData == NULL)
+	{
+		debug("DBG>>AIO_ReadAll : pData is NULL \n"); 
+		return (ERROR_INVALID_PARAM); 
+	}
+	
+	ret = AIO_UsbValidateDeviceIndex(devIdx);
+	
+	if (ret > ERROR_SUCCESS)
+	{
+		debug("DBG>>AIO_DIO_ReadAll: invalid dev Index = 0x%0x \n",(unsigned int)devIdx); 
+		return (ret);
+	}
+	
+	ret = validateProductID(devIdx);
+	if (ret > ERROR_SUCCESS)
+	{
+		debug("DBG>>AIO_DIO_ReadAll: invalid Product ID for device = 0x%0x \n",(unsigned int)devIdx); 
+		return (ret);
+	}
+	
+	handle = getDevHandle(devIdx);
+	if (handle == NULL)
+	{
+		debug("DBG>> AIO_Usb_DIO_ReadAll : could not get device handle devIdx=%d \n",(unsigned int)devIdx);
+		return (ERROR_COULD_NOT_GET_DEVHANDLE);
+		
+	}
+	else
+	{
+		startTime = time(NULL);
+		difference = 0;	
+		triggerTimeout=trgTO;
+		
+//TODO: Change this so that temp is explicitly stated (probably 0) to save on the subtraction operation		
+		while (difference == 0&&time(NULL)<=startTime+triggerTimeout) {
+			temp = pData[3];
+			
+			ret = libusb_control_transfer(handle,
+										  USB_READ_FROM_DEV,
+										  DIO_READ, 
+										  0, 
+										  0,
+										  pData,
+										  4, 
+										  TIMEOUT_1_SEC);
+			difference = temp - pData[3];
+			//triggerTimeout=20;				//allows time for pulse train to finish
 
-  if (ret > ERROR_SUCCESS)
-  {
-    debug("DBG>>AIO_DIO_ReadAll: invalid dev Index = 0x%0x \n",(unsigned int)devIdx); 
-    return (ret);
-  }
-
-  ret = validateProductID(devIdx);
-  if (ret > ERROR_SUCCESS)
-  {
-    debug("DBG>>AIO_DIO_ReadAll: invalid Product ID for device = 0x%0x \n",(unsigned int)devIdx); 
-    return (ret);
-  }
-
-  handle = getDevHandle(devIdx);
-  if (handle == NULL)
-  {
-   debug("DBG>> AIO_Usb_DIO_ReadAll : could not get device handle devIdx=%d \n",(unsigned int)devIdx);
-   return (ERROR_COULD_NOT_GET_DEVHANDLE);
-
-  }
-  else
-  {
-    ret = libusb_control_transfer(handle,
-                        USB_READ_FROM_DEV,
-                        DIO_READ, 
-                        0, 
-                        0,
-                        pData,
-                        4, 
-                        TIMEOUT_1_SEC);
-   libusb_close(handle);
-   
-   if (ret < 0)
-   {
-     debug("DBG>> AIO_Usb_ReadALL : usb_control_msg failed dev = 0x%0x err=%d",(unsigned int)devIdx,ret);
-     return (ERROR_USB_CONTROL_MSG_FAILED);
-   }
-   else
-    return (ERROR_SUCCESS);
- }
+		}
+		
+		if (time(NULL)>=startTime+triggerTimeout) {
+			return(15);
+		}else {
+			return(10);
+		}
+		
+		
+		
+		libusb_close(handle);
+		
+		if (ret < 0)
+		{
+			debug("DBG>> AIO_Usb_ReadALL : usb_control_msg failed dev = 0x%0x err=%d",(unsigned int)devIdx,ret);
+			return (ERROR_USB_CONTROL_MSG_FAILED);
+		}
+		else
+			return (ERROR_SUCCESS);
+	}
 }
 
 

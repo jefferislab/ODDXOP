@@ -78,12 +78,19 @@ int d1,p1,o1,d2,p2,o2,d3,p3,o3,d4,p4,o4,d5,p5,o5;
 //Functions
 int triggerDetect();
 int triggerDetectFast();
+int triggerDetectFaster();
 int odourPulse(int delay, int odour, int duration);
 int odourPulsesSimple(int delay, int odour, int duration);
 int odourPulses(char *cfgFileName);
 int oddRunTest();
 int validateIndex(int devIdx);
 int initialise();
+
+//TODO: Figure out why I get an implicitly defined function wraning despite the fact that this definition is in aioUsbApi.h
+unsigned long
+AIO_Usb_DIO_ReadTrigger (unsigned long   devIdx,
+						 unsigned char  *pData,
+						 int trgTO);
 
 
 static void MyHello(void);
@@ -417,7 +424,8 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 		{
 			XOPNotice("\015I found an entry in the .odd file. Can I please have a trigger?\015");
 			fprintf(fo, "\nNonzero p1 detected. Running line %d: %s",i,s);
-			tmp=triggerDetectFast();	
+			tmp=triggerDetectFaster();	
+			//tmp=triggerDetectFast();	
 			//tmp=triggerDetect();	
 			if (tmp==10) {
 				XOPNotice("\015Trigger detected. Executing protocol...");
@@ -1116,14 +1124,14 @@ triggerDetectFast()
 	time_t					startTime;
 	unsigned char  byte;
 	byte = 0;
-
+	
 	startTime = time(NULL);
 	temp = 0;
 	
 	while (temp == 0&&time(NULL)<=startTime+triggerTimeout) {
 		ret = AIO_Usb_DIO_Read8 (devIdx,1,&byte);		//This is strange. The sequence goes 2,3,0,1, so the 
-														//last byte (DIO DXX has index 1 instead of 3 as you'd expect
-														//form: ret = AIO_Usb_DIO_Read8 (devIdx,byteIdx,&byte);
+		//last byte (DIO DXX has index 1 instead of 3 as you'd expect
+		//form: ret = AIO_Usb_DIO_Read8 (devIdx,byteIdx,&byte);
 		fprintf(fo," \nPINs 24-32, using read8: 0x%x\n",(unsigned char)byte);
 		temp=(unsigned char)byte;
 	}
@@ -1181,7 +1189,59 @@ triggerDetect()
 		XOPNotice("\015Trigger detected. Here we go....\015");
 		return(10);
 	}
+	
+}
+//TODO: Standardise the return values. These ones are kinda crazy
 
+
+
+int 
+triggerDetectFaster()
+{
+	
+//    int						difference;
+//	time_t					temp;
+//	int						startTime; 
+	
+//	startTime = time(NULL);
+	
+	
+	ret = validateIndex(devIdx);
+	if (ret > ERROR_SUCCESS)
+		return(0);
+	
+//	ret =   AIO_Usb_DIO_ReadTrigger (devIdx,(unsigned char *)&data[0]); 
+	
+	
+//	difference = 0;	
+//	while (difference == 0&&time(NULL)<=startTime+triggerTimeout) {
+//		temp = data[3];
+//		ret =   AIO_Usb_DIO_ReadAll (devIdx,(unsigned char *)&data[0]); 
+//		difference = temp - data[3];			
+//		
+//	}
+
+	XOPNotice("\015Attempting to use the trigger loop\015");
+	ret =   AIO_Usb_DIO_ReadTrigger (devIdx,(unsigned char *)&data[0],triggerTimeout); 
+	if (ret > ERROR_SUCCESS)
+	{
+        fprintf (fo,"\n\nReadAll Failed dev=0x%0x err=%d  \n\n",(unsigned int)devIdx,ret);
+        return(0);
+	}
+	
+	XOPNotice("\015I'm back from the trigger loop\015");
+
+	if (ret==15) {
+		XOPNotice("\015Trigger timeout. Try to do better.\015");
+	}else if (ret==10) {
+		XOPNotice("\015Trigger detected. Here we go....\015");
+
+	}
+		
+	
+	return(ret);
+	
+	
 }
 //TODO: Standardise the return values. These ones are kinda crazy
 

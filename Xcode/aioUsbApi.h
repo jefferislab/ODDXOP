@@ -361,6 +361,17 @@ AIO_Usb_DIO_Read8 (unsigned long  devIdx,
 unsigned long
 AIO_Usb_DIO_ReadAll (unsigned long   devIdx,
                      unsigned char  *pData);
+
+
+
+/////////////////////////
+unsigned long
+AIO_Usb_DIO_ReadTrigger (unsigned long   devIdx,
+						 unsigned char  *pData,
+						 int trgTO);
+
+
+
 unsigned long
 AIO_Usb_DIO_StreamOpen(unsigned long  devIdx,
                        unsigned long  streamOp);
