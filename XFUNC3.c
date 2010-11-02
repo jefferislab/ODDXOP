@@ -1113,8 +1113,9 @@ int
 triggerDetectFast()
 {
 	int						temp;
-	int						startTime;
+	time_t					startTime;
 	unsigned char  byte;
+	byte = 0;
 
 	startTime = time(NULL);
 	temp = 0;
@@ -1123,7 +1124,7 @@ triggerDetectFast()
 		ret = AIO_Usb_DIO_Read8 (devIdx,1,&byte);		//This is strange. The sequence goes 2,3,0,1, so the 
 														//last byte (DIO DXX has index 1 instead of 3 as you'd expect
 														//form: ret = AIO_Usb_DIO_Read8 (devIdx,byteIdx,&byte);
-		//fprintf(fo," \nPINs 24-32, using read8: 0x%x\n",(unsigned char)byte);
+		fprintf(fo," \nPINs 24-32, using read8: 0x%x\n",(unsigned char)byte);
 		temp=(unsigned char)byte;
 	}
 	
@@ -1147,7 +1148,7 @@ triggerDetect()
 {
 	
     int						difference;
-	int						temp;
+	time_t					temp;
 	int						startTime;
 	
 	startTime = time(NULL);
@@ -1182,6 +1183,8 @@ triggerDetect()
 	}
 
 }
+//TODO: Standardise the return values. These ones are kinda crazy
+
 
 
 static int
