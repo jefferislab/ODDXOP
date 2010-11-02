@@ -112,30 +112,6 @@ typedef struct xstrcatParams xstrcatParams;
 //////////////////////////////////////////////////
 
 
-/*
-int 
-oddRunTest()
-{
-	XOPNotice("\015 Testing...\015");
-	return(0);
-}
-
-
-static void
-MyHello(void)
-{
-	XOPNotice("Hello. Now you're calling a function...\015");
-	doIHaveAnError=oddRunTest();
-	if (doIHaveAnError==0) {
-		XOPNotice("That should have worked. \015");
-
-	}else{
-		XOPNotice("\015Massive failure...\015");
-	}
-	
-}
-*/
-
 void									//Old
 catchInterrupt (int signum) 
 {
@@ -159,7 +135,6 @@ validateIndex(int devIdx)
 	
 	return  ret;
 }
-
 
 
 void 
@@ -200,43 +175,22 @@ void
 	return NULL;
 }
 
+
 int 
 initialise()						//Just sets up the board for our use: all but one byte to be used as output
-{
-	
-	/*	
-	 int			 ret;
-	 int			 tmp;
-	 
-	 unsigned char  pins0_7;
-	 unsigned char  pins8_15;
-	 unsigned char  pins16_23;
-	 unsigned char  pins24_31; 
-	 int            p0_7Input;
-	 int            p8_15Input;
-	 int			 p16_23Input;
-	 int			 p24_31Input;
-	 */	
+{	
 	unsigned char  mask; 
 	unsigned char  data[4];
 	int            triState; 
-	
-//	fprintf(fo,"Configuring all DIO bytes...\n");
-	
-//	fprintf(fo,"Setting pins 0 - 7  as OUTput.\n");
-//	scanf("%x",&tmp);
 	pins0_7 = 1;
 	p0_7Input = 1;
-//	printf("Setting pins 8 - 15  as OUTput                                :  \n");
-//	scanf("%x",&tmp);
+	
 	pins8_15 = 1;
 	p8_15Input = 1;
-//	printf("Setting pins 16 - 23 as OUTput                                :  \n");
-//	scanf("%x",&tmp);
+	
 	pins16_23 = 1;
 	p16_23Input = 1;
-//	printf("Setting pins 24 - 31 as INput                                 :  \n");
-//	scanf("%x",&tmp);
+	
 	pins24_31 = 0;
 	p24_31Input = 0;
 	
@@ -246,23 +200,16 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 	mask = mask | pins8_15 << 1; 
 	mask = mask | pins0_7; 
 	
-	
-//			  printf("Enter Tristate (0=off; 1=on}                                    :  ");
-//			  scanf("%x",&tmp);
 	triState= 0;
 	
 	if (p0_7Input == 1)
 	{
-//		printf("Setting output byte  0 to 1                                      :  \n");
-		//scanf("%x",&tmp);
 		tmp = pow(2,0);
 		data[0] = tmp;
 	}
 	
 	if (p8_15Input == 1)
 	{
-//		printf("Setting output byte  1 to 0                                      :  \n");
-		//scanf("%x",&tmp);
 		tmp = 0;
 		data[1] = tmp;
 	}
@@ -270,16 +217,12 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 	
 	if (p16_23Input == 1)
 	{
-//		printf("Setting output byte  2 to 0                                      :  \n");
-		//scanf("%x",&tmp);
 		tmp = 0;
 		data[2] = tmp;
 	}
 	
 	if (p24_31Input == 1)
 	{
-//		printf("Setting output byte  2 to 0                                      :  \n");
-		//scanf("%x",&tmp);
 		tmp = 0;
 		data[3] = tmp;
 	}
@@ -302,42 +245,12 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 int 
 odourPulses(char *cfgFileName)		//Main function. The others are mostly just for testing, but I left them in case they are of some use in the future
 {
-	
-	/*	
-	 
-	 int			 ret;
-	 int			 tmp;
-	 int			 i;
-	 int			 stimTime;
-	 int			 delayTime;
-	 int          odour;
-	 
-	 
-	 unsigned char  pins0_7;
-	 unsigned char  pins8_15;
-	 unsigned char  pins16_23;
-	 unsigned char  pins24_31; 
-	 //	int            p0_7Input;
-	 //	int            p8_15Input;
-	 //	int			   p16_23Input;
-	 //	int			   p24_31Input;
-	 
-	 */ 
-	
-//	unsigned char  mask; 
-//	unsigned char  data[4];
-	//	int            triState; 
-	
 	mask = 0;
 	mask = pins24_31 << 3;;			//these are shifted HEX values
 	mask = mask | pins16_23 << 2; 
 	mask = mask | pins8_15 << 1; 
 	mask = mask | pins0_7; 
-	
-	
-	//	triState = 0;
-	
-	
+		
 	strcpy(configFile,"/Users/ahodge/Desktop/");
 	strcat(configFile,cfgFileName);
 	
@@ -355,31 +268,15 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 	XOPNotice("\015Using the log file:\015");
 	XOPNotice(logFile);
 	XOPNotice("\015\015");
+	
 	//time
 	time_t sec;
-	sec = time(NULL);
-	//printf("%ld",sec);
-	
-	//printf("\nCreating file pointers...");
-//	XOPNotice("\015Creating file pointers...");//FILE POINTERS NOW CREATED IN HEADER
-//	FILE* fi; 
-//	FILE* fo; 
-	
-	//printf("done");
-//	XOPNotice("done");  
-	
-	
-	
-	
-	
-	
-	
-	
+	sec = time(NULL);	
 	
 	//printf("\nOpening files...");
 	XOPNotice("\015Opening files...");
 	
-	if((fi=fopen(configFile,"r"))==NULL) {										// open cfg file and return with an error value if fopen fails
+	if((fi=fopen(configFile,"r"))==NULL) {// open cfg file and return with an error value if fopen fails
 		return(10);		
 	}
 	
@@ -393,22 +290,16 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 	
 	triggerTimeout=5;
 	
-	//TODO: Change this to depend on the number of lines in the .odd file
+//TODO: Change this to depend on the number of lines in the .odd file
 	for(i=1;i<=10;i++)
 	{
-		
 		fgets(s,80,fi);
-		//	printf("Read...\n");
-		//	printf("%s",s);
-		//	fprintf(fo,"%s",s);
 		sscanf(s,"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",(char*)chID1, &d1, &p1, &o1, &d2, &p2, &o2, &d3, &p3, &o3, &d4, &p4, &o4, &d5, &p5, &o5);
-		//sscanf(s,"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",&chID1, &d1, &p1, &o1, &d2, &p2, &o2, &d3, &p3, &o3, &d4, &p4, &o4, &d5, &p5, &o5);
 		
 		if (p1==0) {
 			XOPNotice("\015The first entry in this line is for zero duration. Not waiting for a trigger.\015");
 			fprintf(fo, "\nThe first entry in line %d is for zero duration. Not waiting for a trigger and not executing sequence:\n%s",i,s);
-		}
-		
+		}		
 		else
 		{
 			XOPNotice("\015I found an entry in the .odd file. Can I please have a trigger?\015");
@@ -439,8 +330,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 				
 				return(0);
 			}
-
-			//TODO: if/then for triggerDetect() return value
+//TODO: if/then for triggerDetect() return value
 
 			triggerTimeout=20;
 			
@@ -449,10 +339,8 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 			delayTime=d1;
 			
 			if (stimTime!=0) {
-				
 				usleep(1000*delayTime);
-				if (odour<8) {
-					
+				if (odour<8) {					
 					data[0]=pow(2,odour);
 					data[1]=0;
 					data[2]=0;
@@ -474,8 +362,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 												   &mask,
 												   data);
 					
-				}else if (odour>7&&odour<16) {
-					
+				}else if (odour>7&&odour<16) {					
 					data[0]=0;
 					data[1]=pow(2,odour-8);
 					data[2]=0;
@@ -498,7 +385,6 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 												   data);
 					
 				}else if (odour>15&&odour<24) {
-					
 					data[0]=0;
 					data[1]=0;
 					data[2]=pow(2,odour-16);
@@ -532,11 +418,9 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 			odour=o2;
 			delayTime=d2;
 			
-			if (stimTime!=0) {
-				
+			if (stimTime!=0) {				
 				usleep(1000*delayTime);
 				if (odour<8) {
-					
 					data[0]=pow(2,odour);
 					data[1]=0;
 					data[2]=0;
@@ -559,7 +443,6 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 												   data);
 					
 				}else if (odour>7&&odour<16) {
-					
 					data[0]=0;
 					data[1]=pow(2,odour-8);
 					data[2]=0;
@@ -582,7 +465,6 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 												   data);
 					
 				}else if (odour>15&&odour<24) {
-					
 					data[0]=0;
 					data[1]=0;
 					data[2]=pow(2,odour-16);
@@ -611,17 +493,13 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					return(0);
 				}
 				fprintf(fo, "Applied odour %d for %dms, after a %dms delay\n",odour,stimTime,delayTime);
-
 			}
 			stimTime=p3;
 			odour=o3;
 			delayTime=d3;
-			
 			if (stimTime!=0) {
-				
 				usleep(1000*delayTime);
 				if (odour<8) {
-					
 					data[0]=pow(2,odour);
 					data[1]=0;
 					data[2]=0;
@@ -644,7 +522,6 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 												   data);
 					
 				}else if (odour>7&&odour<16) {
-					
 					data[0]=0;
 					data[1]=pow(2,odour-8);
 					data[2]=0;
@@ -667,7 +544,6 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 												   data);
 					
 				}else if (odour>15&&odour<24) {
-					
 					data[0]=0;
 					data[1]=0;
 					data[2]=pow(2,odour-16);
@@ -703,10 +579,8 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 			delayTime=d4;
 			
 			if (stimTime!=0) {
-				
 				usleep(1000*delayTime);
 				if (odour<8) {
-					
 					data[0]=pow(2,odour);
 					data[1]=0;
 					data[2]=0;
@@ -729,7 +603,6 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 												   data);
 					
 				}else if (odour>7&&odour<16) {
-					
 					data[0]=0;
 					data[1]=pow(2,odour-8);
 					data[2]=0;
@@ -752,7 +625,6 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 												   data);
 					
 				}else if (odour>15&&odour<24) {
-					
 					data[0]=0;
 					data[1]=0;
 					data[2]=pow(2,odour-16);
@@ -788,10 +660,8 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 			delayTime=d5;
 			
 			if (stimTime!=0) {
-				
 				usleep(1000*delayTime);
 				if (odour<8) {
-					
 					data[0]=pow(2,odour);
 					data[1]=0;
 					data[2]=0;
@@ -814,7 +684,6 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 												   data);
 					
 				}else if (odour>7&&odour<16) {
-					
 					data[0]=0;
 					data[1]=pow(2,odour-8);
 					data[2]=0;
@@ -837,7 +706,6 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 												   data);
 					
 				}else if (odour>15&&odour<24) {
-					
 					data[0]=0;
 					data[1]=0;
 					data[2]=pow(2,odour-16);
@@ -867,12 +735,10 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					return(0);
 				}
 				fprintf(fo, "Applied odour %d for %dms, after a %dms delay\n",odour,stimTime,delayTime);
-
 			}
 			XOPNotice("OK, Odours done.\015");
 		}
 	}
-	
 	XOPNotice("\015Closing files.....");
 	fclose(fi);fclose(fo);
 	XOPNotice("OK\015");
@@ -1230,25 +1096,7 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	//strcpy(cfg,*p->str2);
 	GetCStringFromHandle(p->str2, cfg, 20);
 	GetCStringFromHandle(p->str3, lg, 20);
-	
-/*	
-	MyHello();
-	XOPNotice("MyHello OK\015");
-	tmp = initialise();
-	XOPNotice("initialise OK\015");
-	
-	//TODO: Handle errors here	
-	
-*/	
-/*	
-	char *stringThing;
-	stringThing=(char*)cfg;
-	
-	XOPNotice("\015str = ");
-	XOPNotice(stringThing);
-	XOPNotice("\015");
-*/	
-	
+		
 	pthread_t pulseThread;	// this is our thread identifier, used to call odourPulses() from its own thread
 	
 	//pthread_create(&pth,NULL,threadFunc,"foo");			//Original
@@ -1259,23 +1107,12 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	//	printf("main waiting for thread to terminate...\n");	//Old
 	//	pthread_join(pth,NULL);									//Old
 	
-	
-	
-	//tmp = odourPulses(*p->str2);
-	//	tmp = odourPulses(cfg);				//works  //Disable for testing threads
-	//tmp = odourPulses("cfgFile.odd");		//works
-	//	XOPNotice("\015odourPulses OK\015");
-	
-	
-	
 done:
 	if (p->str2)
 		DisposeHandle(p->str2);			/* we need to get rid of input parameters */
 	if (p->str3)
 		DisposeHandle(p->str3);			/* we need to get rid of input parameters */
 	p->result = str1;
-	
-	
 	
 	return(err);
 }
