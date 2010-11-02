@@ -2218,6 +2218,7 @@ AIO_Usb_DIO_ReadTrigger (unsigned long   devIdx,
 {
 	
 	int                 ret;
+	int					count;
     int					difference;
 	int					temp;
 	int					startTime; 
@@ -2261,6 +2262,7 @@ AIO_Usb_DIO_ReadTrigger (unsigned long   devIdx,
 		startTime = time(NULL);
 		difference = 0;	
 		triggerTimeout=trgTO;
+		//count = 0;
 		
 //TODO: Change this so that temp is explicitly stated (probably 0) to save on the subtraction operation		
 		while (difference == 0&&time(NULL)<=startTime+triggerTimeout) {
@@ -2276,10 +2278,12 @@ AIO_Usb_DIO_ReadTrigger (unsigned long   devIdx,
 										  TIMEOUT_1_SEC);
 			difference = temp - pData[3];
 			//triggerTimeout=20;				//allows time for pulse train to finish
+			//count++;
 
 		}
 		
-		if (time(NULL)>=startTime+triggerTimeout) {
+		if (time(NULL)>startTime+triggerTimeout) {
+			//return(count);
 			return(15);
 		}else {
 			return(10);
