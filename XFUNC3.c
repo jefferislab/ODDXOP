@@ -2,6 +2,10 @@
  
  
  This XOP enables Igor Pro to operate the ACCES DIO cards and operate the solenoid valved on the ODD modules.
+ From Igor Pro, it takes two strings as arguments: one for the config file and one for the logfile:
+ 
+ use:
+ oddRun("whateverConfigFile.odd, anyLogFile.log")
  
  
  
@@ -18,10 +22,10 @@
 #include <signal.h>
 #include <time.h>
 #include <math.h>
-#include <pthread.h>				// for nanosleep() call
+#include <pthread.h>						// for nanosleep() call
 
 #include "aioUsbApi.h"
-#include "XOPStandardHeaders.h"		// Include ANSI headers, Mac headers, IgorXOP.h, XOP.h and XOPSupport.h
+#include "XOPStandardHeaders.h"				// Include ANSI headers, Mac headers, IgorXOP.h, XOP.h and XOPSupport.h
 #include "XFUNC3.h"
 #include "XOPStructureAlignmentTwoByte.h"	// All structures passed to Igor are two-byte aligned.
 #include "XOPStructureAlignmentReset.h"
@@ -35,7 +39,6 @@ int				ctlC;
 int				ret;
 int				tmp;
 int				i;
-//int				hangTime;
 int				stimTime;
 int				delayTime;
 int				odour;
@@ -48,6 +51,10 @@ char			cfg[20];
 char			lg[20];
 
 
+//For the ACCES API calls
+unsigned char	mask; 
+unsigned char	data[4];
+int				triState; 
 unsigned char	pins0_7;
 unsigned char	pins8_15;
 unsigned char	pins16_23;
@@ -56,19 +63,14 @@ int				p0_7Input;
 int				p8_15Input;
 int				p16_23Input;
 int				p24_31Input;
+unsigned char   byte;
+unsigned int	byteIdx;
 
 
-	unsigned char  byte;
-	unsigned int   byteIdx;
+//Pointers to logfile and configfile
+FILE* fi; 
+FILE* fo; 
 
-	FILE* fi; 
-	FILE* fo; 
-
-
-
-unsigned char	mask; 
-unsigned char	data[4];
-int				triState; 
 
 //Values to be read from config file
 char ch, s[80], chID1[10], chID2[10], chID3[10], chID4[10], chID5[10];
@@ -85,6 +87,8 @@ int odourPulses(char *cfgFileName);
 int oddRunTest();
 int validateIndex(int devIdx);
 int initialise();
+//static void MyHello(void);				//Probably don't need
+void catchInterrupt (int signum);		//Before this was an XOP, could abort with ctrl-c
 
 //TODO: Figure out why I get an implicitly defined function wraning despite the fact that this definition is in aioUsbApi.h
 unsigned long
@@ -92,19 +96,13 @@ AIO_Usb_DIO_ReadTrigger (unsigned long   devIdx,
 						 unsigned char  *pData,
 						 int trgTO);
 
-
-static void MyHello(void);
-void catchInterrupt (int signum);
-
-
 struct xstrcatParams  {
 	Handle str3;
 	Handle str2;
-	Handle result;
+	Handle result;						//Not currently used, but can pass a string back to Igor 
 };
 
 aioDeviceInfo aioDevices;
-
 
 typedef struct xstrcatParams xstrcatParams;
 
@@ -113,6 +111,8 @@ typedef struct xstrcatParams xstrcatParams;
 //My Functions
 //////////////////////////////////////////////////
 
+
+/*
 int 
 oddRunTest()
 {
@@ -134,9 +134,9 @@ MyHello(void)
 	}
 	
 }
+*/
 
-
-void
+void									//Old
 catchInterrupt (int signum) 
 {
     ctlC = 1;
@@ -175,13 +175,16 @@ void
 	{
 		XOPNotice("\015No config file entered. Let's use the default:\015");
 		XOPNotice("\015TODO: output the .odd file\015");
-		tmp = odourPulses(str);				//works
+		tmp = odourPulses(str);				//This allows a default value to be set
 		
-		
-		
+		if (tmp==10) {
+			XOPNotice("\015ERROR: Could not open config file. Try again ya wee lass.\015");
+		}
+		if (tmp==11) {
+			XOPNotice("\015ERROR: Could not open log file. Does the directory path exist?\015");
+		}
 		
 	}else {
-		
 		XOPNotice("\015Config file entered. Let's use it.\015");
 		//XOPNotice("\015TODO: output the .odd file\015");
 		XOPNotice(cfg);
@@ -193,21 +196,13 @@ void
 		if (tmp==11) {
 			XOPNotice("\015ERROR: Could not open log file. Does the directory path exist?\015");
 		}
-		
-		
 	}
-	
 	return NULL;
 }
 
-
-
 int 
-initialise()
+initialise()						//Just sets up the board for our use: all but one byte to be used as output
 {
-	
-	printf("For testing. This function just tests each channel");
-	
 	
 	/*	
 	 int			 ret;
@@ -226,22 +221,22 @@ initialise()
 	unsigned char  data[4];
 	int            triState; 
 	
-	printf("Configuring all DIO bytes for output...\n");
+//	fprintf(fo,"Configuring all DIO bytes...\n");
 	
-	printf("Setting pins 0 - 7  as OUTput                                 :  \n");
-	//scanf("%x",&tmp);
+//	fprintf(fo,"Setting pins 0 - 7  as OUTput.\n");
+//	scanf("%x",&tmp);
 	pins0_7 = 1;
 	p0_7Input = 1;
-	printf("Setting pins 8 - 15  as OUTput                                :  \n");
-	//scanf("%x",&tmp);
+//	printf("Setting pins 8 - 15  as OUTput                                :  \n");
+//	scanf("%x",&tmp);
 	pins8_15 = 1;
 	p8_15Input = 1;
-	printf("Setting pins 16 - 23 as OUTput                                :  \n");
-	//scanf("%x",&tmp);
+//	printf("Setting pins 16 - 23 as OUTput                                :  \n");
+//	scanf("%x",&tmp);
 	pins16_23 = 1;
 	p16_23Input = 1;
-	printf("Setting pins 24 - 31 as INput                                 :  \n");
-	//scanf("%x",&tmp);
+//	printf("Setting pins 24 - 31 as INput                                 :  \n");
+//	scanf("%x",&tmp);
 	pins24_31 = 0;
 	p24_31Input = 0;
 	
@@ -252,13 +247,13 @@ initialise()
 	mask = mask | pins0_7; 
 	
 	
-	//		  printf("Enter Tristate (0=off; 1=on}                                    :  ");
-	//		  scanf("%x",&tmp);
+//			  printf("Enter Tristate (0=off; 1=on}                                    :  ");
+//			  scanf("%x",&tmp);
 	triState= 0;
 	
 	if (p0_7Input == 1)
 	{
-		printf("Setting output byte  0 to 1                                      :  \n");
+//		printf("Setting output byte  0 to 1                                      :  \n");
 		//scanf("%x",&tmp);
 		tmp = pow(2,0);
 		data[0] = tmp;
@@ -266,7 +261,7 @@ initialise()
 	
 	if (p8_15Input == 1)
 	{
-		printf("Setting output byte  1 to 0                                      :  \n");
+//		printf("Setting output byte  1 to 0                                      :  \n");
 		//scanf("%x",&tmp);
 		tmp = 0;
 		data[1] = tmp;
@@ -275,7 +270,7 @@ initialise()
 	
 	if (p16_23Input == 1)
 	{
-		printf("Setting output byte  2 to 0                                      :  \n");
+//		printf("Setting output byte  2 to 0                                      :  \n");
 		//scanf("%x",&tmp);
 		tmp = 0;
 		data[2] = tmp;
@@ -283,7 +278,7 @@ initialise()
 	
 	if (p24_31Input == 1)
 	{
-		printf("Setting output byte  2 to 0                                      :  \n");
+//		printf("Setting output byte  2 to 0                                      :  \n");
 		//scanf("%x",&tmp);
 		tmp = 0;
 		data[3] = tmp;
