@@ -1038,11 +1038,11 @@ triggerDetectFaster()		//This triggerDetect calls a function AIO_Usb_DIO_ReadTri
 	ret =   AIO_Usb_DIO_ReadTrigger (devIdx,(unsigned char *)&data[0],triggerTimeout); 
 	
 	
-//	if (ret > ERROR_SUCCESS)
-//	{
-//        fprintf (fo,"\n\nReadAll Failed dev=0x%0x err=%d  \n\n",(unsigned int)devIdx,ret);
-//        return(0);
-//	}
+	if (ret > ERROR_SUCCESS)
+	{
+        fprintf (fo,"\n\nReadAll Failed dev=0x%0x err=%d  \n\n",(unsigned int)devIdx,ret);
+        return(0);
+	}
 	
 	XOPNotice("...that worked. I'm back from the fast trigger loop\015");
 
