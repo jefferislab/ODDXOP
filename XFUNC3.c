@@ -962,6 +962,14 @@ triggerDetectFast()			//I thought that this triggerDetect() would be faster sinc
 	startTime = time(NULL);
 	temp = 0;
 	
+	
+	
+	
+	
+	
+	
+	
+	
 	while (temp == 0&&time(NULL)<=startTime+triggerTimeout) {
 		ret = AIO_Usb_DIO_Read8 (devIdx,1,&byte);		//This is strange. The sequence goes 2,3,0,1, so the 
 		//last byte (DIO DXX has index 1 instead of 3 as you'd expect
@@ -1033,6 +1041,11 @@ triggerDetectFaster()		//This triggerDetect calls a function AIO_Usb_DIO_ReadTri
 	ret = validateIndex(devIdx);
 	if (ret > ERROR_SUCCESS)
 		return(0);
+
+	//Only for testing the 96!!!!! Delete this later
+	return(10);
+	
+	
 	
 	XOPNotice("\015Attempting to use the fast trigger loop...");
 	ret =   AIO_Usb_DIO_ReadTrigger (devIdx,(unsigned char *)&data[0],triggerTimeout); 
