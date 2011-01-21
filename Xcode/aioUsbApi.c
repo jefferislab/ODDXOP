@@ -3150,7 +3150,8 @@ AIO_Usb_DIO_Configure(unsigned long  devIdx,
   unsigned long       counters;
 
   int                 ret;
-  unsigned char       toBoard[6];
+//	unsigned char       toBoard[6];//stock
+	unsigned char       toBoard[16];
 
   struct libusb_device_handle *handle;
 
@@ -3213,25 +3214,51 @@ AIO_Usb_DIO_Configure(unsigned long  devIdx,
     toBoard[4] = 0;
     toBoard[5] = 0; // reserved
    }
-   else
+   else if (DIOBytes ==2)
    {
-    toBoard[0] = pData[0];
-    toBoard[1] = pData[1];
-    toBoard[2] = pData[2]; 
-    toBoard[3] = pData[3];
-    toBoard[4] = *pOutMask;
-    toBoard[5] = 0; // reserved
+	   toBoard[0] = pData[0];
+	   toBoard[1] = pData[1];
+	   toBoard[2] = pData[2]; 
+	   toBoard[3] = pData[3];
+	   toBoard[4] = *pOutMask;
+	   toBoard[5] = 0; // reserved
    }
-
-    ret = libusb_control_transfer(handle,
-                          USB_WRITE_TO_DEV, 
-		          DIO_CONFIG,	
-                          triState, 
-                          0,
-                          (unsigned char *)toBoard, 
-                          6, 
-                          TIMEOUT_1_SEC);
-   
+   else 
+   {
+	   toBoard[0] = pData[0];
+	   toBoard[1] = pData[1];
+	   toBoard[2] = pData[2]; 
+	   toBoard[3] = pData[3];
+	   toBoard[4] = pData[4];
+	   toBoard[5] = pData[5];
+	   toBoard[6] = pData[6];
+	   toBoard[7] = pData[7];
+	   toBoard[8] = pData[8];
+	   toBoard[9] = pData[9];
+	   toBoard[10] = pData[10];
+	   toBoard[11] = pData[11];
+	   toBoard[12] = pOutMask[0];
+	   toBoard[13] = pOutMask[1];
+	   toBoard[14] = 0; // reserved
+   }
+	   
+	  ret = libusb_control_transfer(handle,
+									USB_WRITE_TO_DEV, 
+									DIO_CONFIG,	
+									triState, 
+									0,
+									(unsigned char *)toBoard, 
+									16, 
+									TIMEOUT_1_SEC);
+/*	  ret = libusb_control_transfer(handle,
+									USB_WRITE_TO_DEV, 
+									DIO_CONFIG,	
+									triState, 
+									0,
+									(unsigned char *)toBoard, 
+									6, 
+									TIMEOUT_1_SEC);
+*/	  
    libusb_close(handle);
    if (ret < 0)
    {
