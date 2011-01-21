@@ -203,6 +203,9 @@
 #define ACCES_VENDOR_ID			0x1605
 
 #define USB_DIO_32_ID_DEV		0x8001
+/////
+#define USB_DIO_96_ID_DEV		0x8003
+/////
 #define USB_DA12_8A_REVA_DEV		0xC001
 #define USB_DA12_8A_DEV			0xC002
 #define USB_IIRO_16_DEV 		0x8010

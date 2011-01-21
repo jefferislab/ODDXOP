@@ -52,8 +52,8 @@ char			lg[20];
 
 
 //For the ACCES API calls
-unsigned char	mask; 
-unsigned char	data[4];
+unsigned char	mask[2]; 
+unsigned char	data[12];
 int				triState; 
 unsigned char	pins0_7;
 unsigned char	pins8_15;
@@ -87,6 +87,8 @@ int odourPulses(char *cfgFileName);
 int oddRunTest();
 int validateIndex(int devIdx);
 int initialise();
+
+
 //static void MyHello(void);				//Probably don't need
 void catchInterrupt (int signum);		//Before this was an XOP, could abort with ctrl-c
 
@@ -179,8 +181,10 @@ void
 int 
 initialise()						//Just sets up the board for our use: all but one byte to be used as output
 {	
-	unsigned char  mask; 
-	unsigned char  data[4];
+	unsigned char  mask[2]; 
+//	unsigned short  mask; 
+//	unsigned char  data[4];			//for DIO_32
+	unsigned char  data[12];		//for DIO_96
 	int            triState; 
 	pins0_7 = 1;
 	p0_7Input = 1;
@@ -193,12 +197,27 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 	
 	pins24_31 = 0;
 	p24_31Input = 0;
+
 	
+	
+/*	
 	mask = 0;
-	mask = pins24_31 << 3;;			//these are shifted HEX values
+	mask = pins24_31 << 11;			//these are shifted HEX values
+	mask = mask | pins24_31 << 10; 
+	mask = mask | pins24_31 << 9; 
+	mask = mask | pins16_23 << 8; 
+	mask = mask | pins16_23 << 7; 
+	mask = mask | pins16_23 << 6; 
+	mask = mask | pins16_23 << 5; 
+	mask = mask | pins16_23 << 4; 
+	mask = mask | pins16_23 << 3; 
 	mask = mask | pins16_23 << 2; 
 	mask = mask | pins8_15 << 1; 
 	mask = mask | pins0_7; 
+
+*/	
+	mask[0]=0x00;
+	mask[1]=0x0;
 	
 	triState= 0;
 	
@@ -227,11 +246,26 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 		data[3] = tmp;
 	}
 	
+//	mask = 0xFFFF; 
+	data[0]=0x11;
+	data[1]=0x22;
+	data[2]=0x33;
+	data[3]=0x44;
+	data[4]=0x55;
+	data[5]=0x66;
+	data[6]=0x77;
+	data[7]=0x88;
+	data[8]=0x99;
+	data[9]=0xaa;
+	data[10]=0xbb;
+	data[11]=0xcc;
 	
 	ret =   AIO_Usb_DIO_Configure (devIdx,
 								   triState,
-								   &mask,
+								   mask,
 								   data);
+	
+	
 	
 	if (ret > ERROR_SUCCESS)
 	{
@@ -245,11 +279,25 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 int 
 odourPulses(char *cfgFileName)		//Main function. The others are mostly just for testing, but I left them in case they are of some use in the future
 {
+	
+/*	
 	mask = 0;
-	mask = pins24_31 << 3;;			//these are shifted HEX values
+	mask = pins16_23 << 11;			//these are shifted HEX values
+	mask = mask | pins16_23 << 10; 
+	mask = mask | pins16_23 << 9; 
+	mask = mask | pins16_23 << 8; 
+	mask = mask | pins16_23 << 7; 
+	mask = mask | pins16_23 << 6; 
+	mask = mask | pins16_23 << 5; 
+	mask = mask | pins16_23 << 4; 
+	mask = mask | pins16_23 << 3; 
 	mask = mask | pins16_23 << 2; 
 	mask = mask | pins8_15 << 1; 
 	mask = mask | pins0_7; 
+*/
+	
+	mask[0]=0xFF;
+	mask[1]=0xF;
 		
 	strcpy(configFile,"/Users/ahodge/Desktop/");
 	strcat(configFile,cfgFileName);
@@ -342,24 +390,43 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 				usleep(1000*delayTime);
 				if (odour<8) {					
 					data[0]=pow(2,odour);
-					data[1]=0;
-					data[2]=0;
-					data[3]=0;
+					data[1]=pow(2,odour);
+					data[2]=pow(2,odour);
+					data[3]=pow(2,odour);
+					data[4]=pow(2,odour);
+					data[5]=pow(2,odour);
+					data[6]=pow(2,odour);
+					data[7]=pow(2,odour);
+					data[8]=pow(2,odour);
+					data[9]=pow(2,odour);
+					data[10]=pow(2,odour);
+					data[11]=pow(2,odour);
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
+
+//					ret =   AIO_Usb_WriteAll (devIdx,
+//											  data);
 					
 					usleep(1000*stimTime);
 					data[0]=1;
 					data[1]=0;
 					data[2]=0;
 					data[3]=0;
+					data[3]=0;
+					data[3]=0;
+					data[3]=0;
+					data[3]=0;
+					data[3]=0;
+					data[3]=0;
+					data[3]=0;
+					data[3]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 				}else if (odour>7&&odour<16) {					
@@ -370,7 +437,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 					usleep(1000*stimTime);
@@ -381,7 +448,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 				}else if (odour>15&&odour<24) {
@@ -392,7 +459,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 					usleep(1000*stimTime);
@@ -403,7 +470,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 				}else{
@@ -428,7 +495,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 					usleep(1000*stimTime);
@@ -439,7 +506,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 				}else if (odour>7&&odour<16) {
@@ -450,7 +517,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 					usleep(1000*stimTime);
@@ -461,7 +528,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 				}else if (odour>15&&odour<24) {
@@ -472,7 +539,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 					usleep(1000*stimTime);
@@ -483,7 +550,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 				}else{
@@ -507,7 +574,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 					usleep(1000*stimTime);
@@ -518,7 +585,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 				}else if (odour>7&&odour<16) {
@@ -529,7 +596,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 					usleep(1000*stimTime);
@@ -540,7 +607,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 				}else if (odour>15&&odour<24) {
@@ -551,7 +618,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 					usleep(1000*stimTime);
@@ -562,7 +629,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 				}else{
@@ -588,7 +655,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 					usleep(1000*stimTime);
@@ -599,7 +666,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 				}else if (odour>7&&odour<16) {
@@ -610,7 +677,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 					usleep(1000*stimTime);
@@ -621,7 +688,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 				}else if (odour>15&&odour<24) {
@@ -632,7 +699,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 					usleep(1000*stimTime);
@@ -643,7 +710,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 				}else{
@@ -669,7 +736,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 					usleep(1000*stimTime);
@@ -680,7 +747,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 				}else if (odour>7&&odour<16) {
@@ -691,7 +758,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 					usleep(1000*stimTime);
@@ -702,7 +769,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 				}else if (odour>15&&odour<24) {
@@ -713,7 +780,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 					usleep(1000*stimTime);
@@ -724,7 +791,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
-												   &mask,
+												   mask,
 												   data);
 					
 				}else{
