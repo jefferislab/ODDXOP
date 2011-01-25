@@ -246,8 +246,7 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 		data[3] = tmp;
 	}
 	
-//	mask = 0xFFFF; 
-	data[0]=0x11;
+/*	data[0]=0x11;
 	data[1]=0x22;
 	data[2]=0x33;
 	data[3]=0x44;
@@ -259,7 +258,7 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 	data[9]=0xaa;
 	data[10]=0xbb;
 	data[11]=0xcc;
-/*	
+*/	
 	data[0]=0xff;
 	data[1]=0xff;
 	data[2]=0xff;
@@ -272,7 +271,7 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 	data[9]=0xff;
 	data[10]=0xff;
 	data[11]=0xff;
-*/	
+	
 	ret =   AIO_Usb_DIO_Configure (devIdx,
 								   triState,
 								   mask,
@@ -352,7 +351,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 	triggerTimeout=5;
 	
 //TODO: Change this to depend on the number of lines in the .odd file
-	for(i=1;i<=10;i++)
+	for(i=1;i<=13;i++)
 	{
 		fgets(s,80,fi);
 		sscanf(s,"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",(char*)chID1, &d1, &p1, &o1, &d2, &p2, &o2, &d3, &p3, &o3, &d4, &p4, &o4, &d5, &p5, &o5);
@@ -410,6 +409,39 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					data[5]=0;
 					data[6]=0;
 					data[7]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+
+//					ret =   AIO_Usb_WriteAll (devIdx,
+//											  data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+				}else if (odour>7&&odour<16) {					
+					data[0]=0;
+					data[1]=pow(2,odour-8);
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
 					data[8]=0;
 					data[9]=0;
 					data[10]=0;
@@ -419,9 +451,6 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 												   triState,
 												   mask,
 												   data);
-
-//					ret =   AIO_Usb_WriteAll (devIdx,
-//											  data);
 					
 					usleep(1000*stimTime);
 					data[0]=1;
@@ -442,11 +471,20 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 												   mask,
 												   data);
 					
-				}else if (odour>7&&odour<16) {					
+					
+				}else if (odour>15&&odour<24) {					
 					data[0]=0;
-					data[1]=pow(2,odour-8);
-//					data[2]=0;
-//					data[3]=0;
+					data[1]=0;
+					data[2]=pow(2,odour-16);
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
@@ -456,19 +494,36 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					usleep(1000*stimTime);
 					data[0]=1;
 					data[1]=0;
-//					data[2]=0;
-//					data[3]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
 												   mask,
 												   data);
 					
-				}else if (odour>15&&odour<24) {
+					
+				}else if (odour>23&&odour<32) {					
 					data[0]=0;
-//					data[1]=0;
-					data[2]=pow(2,odour-16);
-//					data[3]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=pow(2,odour-24);
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
@@ -477,14 +532,179 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					usleep(1000*stimTime);
 					data[0]=1;
-//					data[1]=0;
+					data[1]=0;
 					data[2]=0;
-//					data[3]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
 												   mask,
 												   data);
+					
+					
+				}else if (odour>31&&odour<40) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=pow(2,odour-32);
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					
+				}else if (odour>39&&odour<48) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=pow(2,odour-40);
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					
+				}else if (odour>47&&odour<56) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=pow(2,odour-48);
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					
+				}else if (odour>55&&odour<64) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=pow(2,odour-56);
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
 					
 				}else{
 					fprintf(fo,"\nERROR: you've asked for an odour that I can't provide. I'm quitting");
@@ -498,35 +718,54 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 			odour=o2;
 			delayTime=d2;
 			
-			if (stimTime!=0) {				
+			if (stimTime!=0) {
 				usleep(1000*delayTime);
-				if (odour<8) {
+				if (odour<8) {					
 					data[0]=pow(2,odour);
 					data[1]=0;
 					data[2]=0;
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
 												   mask,
 												   data);
+					
+					//					ret =   AIO_Usb_WriteAll (devIdx,
+					//											  data);
 					
 					usleep(1000*stimTime);
 					data[0]=1;
 					data[1]=0;
 					data[2]=0;
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
 												   mask,
 												   data);
 					
-				}else if (odour>7&&odour<16) {
+				}else if (odour>7&&odour<16) {					
 					data[0]=0;
 					data[1]=pow(2,odour-8);
 					data[2]=0;
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
@@ -538,17 +777,34 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					data[1]=0;
 					data[2]=0;
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
 												   mask,
 												   data);
 					
-				}else if (odour>15&&odour<24) {
+					
+				}else if (odour>15&&odour<24) {					
 					data[0]=0;
 					data[1]=0;
 					data[2]=pow(2,odour-16);
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
@@ -560,11 +816,216 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					data[1]=0;
 					data[2]=0;
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
 												   mask,
 												   data);
+					
+					
+				}else if (odour>23&&odour<32) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=pow(2,odour-24);
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					
+				}else if (odour>31&&odour<40) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=pow(2,odour-32);
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					
+				}else if (odour>39&&odour<48) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=pow(2,odour-40);
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					
+				}else if (odour>47&&odour<56) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					//data[6]=pow(2,odour-48);
+					data[6]=0xFF;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					
+				}else if (odour>55&&odour<64) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=pow(2,odour-56);
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
 					
 				}else{
 					fprintf(fo,"\nERROR: you've asked for an odour that I can't provide. I'm quitting");
@@ -579,33 +1040,52 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 			delayTime=d3;
 			if (stimTime!=0) {
 				usleep(1000*delayTime);
-				if (odour<8) {
+				if (odour<8) {					
 					data[0]=pow(2,odour);
 					data[1]=0;
 					data[2]=0;
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
 												   mask,
 												   data);
+					
+					//					ret =   AIO_Usb_WriteAll (devIdx,
+					//											  data);
 					
 					usleep(1000*stimTime);
 					data[0]=1;
 					data[1]=0;
 					data[2]=0;
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
 												   mask,
 												   data);
 					
-				}else if (odour>7&&odour<16) {
+				}else if (odour>7&&odour<16) {					
 					data[0]=0;
 					data[1]=pow(2,odour-8);
 					data[2]=0;
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
@@ -617,17 +1097,34 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					data[1]=0;
 					data[2]=0;
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
 												   mask,
 												   data);
 					
-				}else if (odour>15&&odour<24) {
+					
+				}else if (odour>15&&odour<24) {					
 					data[0]=0;
 					data[1]=0;
 					data[2]=pow(2,odour-16);
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
@@ -639,11 +1136,215 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					data[1]=0;
 					data[2]=0;
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
 												   mask,
 												   data);
+					
+					
+				}else if (odour>23&&odour<32) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=pow(2,odour-24);
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					
+				}else if (odour>31&&odour<40) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=pow(2,odour-32);
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					
+				}else if (odour>39&&odour<48) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=pow(2,odour-40);
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					
+				}else if (odour>47&&odour<56) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=pow(2,odour-48);
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					
+				}else if (odour>55&&odour<64) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=pow(2,odour-56);
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
 					
 				}else{
 					fprintf(fo,"\nERROR: you've asked for an odour that I can't provide. I'm quitting");
@@ -652,7 +1353,6 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					return(0);
 				}
 				fprintf(fo, "Applied odour %d for %dms, after a %dms delay\n",odour,stimTime,delayTime);
-
 			}
 			stimTime=p4;
 			odour=o4;
@@ -660,33 +1360,52 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 			
 			if (stimTime!=0) {
 				usleep(1000*delayTime);
-				if (odour<8) {
+				if (odour<8) {					
 					data[0]=pow(2,odour);
 					data[1]=0;
 					data[2]=0;
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
 												   mask,
 												   data);
+					
+					//					ret =   AIO_Usb_WriteAll (devIdx,
+					//											  data);
 					
 					usleep(1000*stimTime);
 					data[0]=1;
 					data[1]=0;
 					data[2]=0;
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
 												   mask,
 												   data);
 					
-				}else if (odour>7&&odour<16) {
+				}else if (odour>7&&odour<16) {					
 					data[0]=0;
 					data[1]=pow(2,odour-8);
 					data[2]=0;
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
@@ -698,17 +1417,34 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					data[1]=0;
 					data[2]=0;
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
 												   mask,
 												   data);
 					
-				}else if (odour>15&&odour<24) {
+					
+				}else if (odour>15&&odour<24) {					
 					data[0]=0;
 					data[1]=0;
 					data[2]=pow(2,odour-16);
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
@@ -720,11 +1456,215 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					data[1]=0;
 					data[2]=0;
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
 												   mask,
 												   data);
+					
+					
+				}else if (odour>23&&odour<32) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=pow(2,odour-24);
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					
+				}else if (odour>31&&odour<40) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=pow(2,odour-32);
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					
+				}else if (odour>39&&odour<48) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=pow(2,odour-40);
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					
+				}else if (odour>47&&odour<56) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=pow(2,odour-48);
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					
+				}else if (odour>55&&odour<64) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=pow(2,odour-56);
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
 					
 				}else{
 					fprintf(fo,"\nERROR: you've asked for an odour that I can't provide. I'm quitting");
@@ -733,7 +1673,6 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					return(0);
 				}
 				fprintf(fo, "Applied odour %d for %dms, after a %dms delay\n",odour,stimTime,delayTime);
-
 			}
 			stimTime=p5;
 			odour=o5;
@@ -741,33 +1680,52 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 			
 			if (stimTime!=0) {
 				usleep(1000*delayTime);
-				if (odour<8) {
+				if (odour<8) {					
 					data[0]=pow(2,odour);
 					data[1]=0;
 					data[2]=0;
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
 												   mask,
 												   data);
+					
+					//					ret =   AIO_Usb_WriteAll (devIdx,
+					//											  data);
 					
 					usleep(1000*stimTime);
 					data[0]=1;
 					data[1]=0;
 					data[2]=0;
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
 												   mask,
 												   data);
 					
-				}else if (odour>7&&odour<16) {
+				}else if (odour>7&&odour<16) {					
 					data[0]=0;
 					data[1]=pow(2,odour-8);
 					data[2]=0;
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
@@ -779,17 +1737,34 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					data[1]=0;
 					data[2]=0;
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
 												   mask,
 												   data);
 					
-				}else if (odour>15&&odour<24) {
+					
+				}else if (odour>15&&odour<24) {					
 					data[0]=0;
 					data[1]=0;
 					data[2]=pow(2,odour-16);
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
@@ -801,17 +1776,220 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					data[1]=0;
 					data[2]=0;
 					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
 					
 					ret =   AIO_Usb_DIO_Configure (devIdx,
 												   triState,
 												   mask,
 												   data);
+					
+					
+				}else if (odour>23&&odour<32) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=pow(2,odour-24);
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					
+				}else if (odour>31&&odour<40) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=pow(2,odour-32);
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					
+				}else if (odour>39&&odour<48) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=pow(2,odour-40);
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					
+				}else if (odour>47&&odour<56) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=pow(2,odour-48);
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					
+				}else if (odour>55&&odour<64) {					
+					data[0]=0;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=pow(2,odour-56);
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
+					usleep(1000*stimTime);
+					data[0]=1;
+					data[1]=0;
+					data[2]=0;
+					data[3]=0;
+					data[4]=0;
+					data[5]=0;
+					data[6]=0;
+					data[7]=0;
+					data[8]=0;
+					data[9]=0;
+					data[10]=0;
+					data[11]=0;
+					
+					ret =   AIO_Usb_DIO_Configure (devIdx,
+												   triState,
+												   mask,
+												   data);
+					
 					
 				}else{
 					fprintf(fo,"\nERROR: you've asked for an odour that I can't provide. I'm quitting");
 					XOPNotice("\015ERROR: you've asked for an odour that I can't provide. I'm quitting");
 					fclose(fi);fclose(fo);
-					
 					return(0);
 				}
 				fprintf(fo, "Applied odour %d for %dms, after a %dms delay\n",odour,stimTime,delayTime);
