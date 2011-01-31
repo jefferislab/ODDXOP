@@ -7,7 +7,7 @@
  use:
  oddRun("whateverConfigFile.odd, anyLogFile.log")
  
- 
+ Alex Hodge
  
  */
 
@@ -34,7 +34,6 @@
 int				devIdx;
 char			anyKey;
 int				ctlC;
-
 
 int				ret;
 int				tmp;
@@ -259,18 +258,18 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 	data[10]=0xbb;
 	data[11]=0xcc;
 */	
-	data[0]=0xff;
-	data[1]=0xff;
-	data[2]=0xff;
-	data[3]=0xff;
-	data[4]=0xff;
-	data[5]=0xff;
-	data[6]=0x02;
-	data[7]=0xff;
-	data[8]=0xff;
-	data[9]=0xff;
-	data[10]=0xff;
-	data[11]=0xff;
+	data[0]=0x01;
+	data[1]=0x00;
+	data[2]=0x00;
+	data[3]=0x00;
+	data[4]=0x00;
+	data[5]=0x00;
+	data[6]=0x00;
+	data[7]=0x00;
+	data[8]=0x00;
+	data[9]=0x00;
+	data[10]=0x00;
+	data[11]=0x00;
 	
 	ret =   AIO_Usb_DIO_Configure (devIdx,
 								   triState,
@@ -308,8 +307,8 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 	mask = mask | pins0_7; 
 */
 	
-	mask[0]=0xFF;
-	mask[1]=0x0;
+	mask[0]=0xFF;	//sets the first 8 ports to output
+	mask[1]=0x0;	//sets all remaining ports to input
 		
 	strcpy(configFile,"/Users/ahodge/Desktop/");
 	strcat(configFile,cfgFileName);
@@ -410,13 +409,13 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					data[6]=0;
 					data[7]=0;
 					
-					ret =   AIO_Usb_DIO_Configure (devIdx,
-												   triState,
-												   mask,
-												   data);
+//					ret =   AIO_Usb_DIO_Configure (devIdx,
+//												   triState,
+//												   mask,
+//												   data);
 
-//					ret =   AIO_Usb_WriteAll (devIdx,
-//											  data);
+					ret =   AIO_Usb_WriteAll (devIdx,
+											  data);
 					
 					usleep(1000*stimTime);
 					data[0]=1;

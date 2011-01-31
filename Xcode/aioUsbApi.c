@@ -2101,15 +2101,23 @@ AIO_Usb_WriteAll(unsigned long  devIdx,
    return (ERROR_COULD_NOT_GET_DEVHANDLE);
   }
   
-  ret = libusb_control_transfer(handle,
-             		            USB_WRITE_TO_DEV, 
-				                DIO_WRITE,	
-                       		    0, 
-							    0,
-			    	            pData,
-								4, 
-								TIMEOUT_1_SEC);
-  libusb_close(handle);
+	ret = libusb_control_transfer(handle,
+								  USB_WRITE_TO_DEV, 
+								  DIO_WRITE,	
+								  0, 
+								  0,
+								  pData,
+								  14,					//changed to 14 to accommodate 96-channel card
+								  TIMEOUT_1_SEC);
+/*	ret = libusb_control_transfer(handle,
+								  USB_WRITE_TO_DEV, 
+								  DIO_WRITE,	
+								  0, 
+								  0,
+								  pData,
+								  4, 
+								  TIMEOUT_1_SEC);*/
+	libusb_close(handle);
   if (ret  < 0 ) 
   {
     debug("DBG>> AIO_Usb_WriteAll: usb_control_msg failed on WRITE_TO_DEV dev=0x%0x err=%d\n",(unsigned int)devIdx,ret);
