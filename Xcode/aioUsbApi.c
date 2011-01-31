@@ -3214,7 +3214,7 @@ AIO_Usb_DIO_Configure(unsigned long  devIdx,
     toBoard[4] = 0;
     toBoard[5] = 0; // reserved
    }
-   else if (DIOBytes ==2)
+   else if (DIOBytes ==4)
    {
 	   toBoard[0] = pData[0];
 	   toBoard[1] = pData[1];
@@ -3223,6 +3223,10 @@ AIO_Usb_DIO_Configure(unsigned long  devIdx,
 	   toBoard[4] = *pOutMask;
 	   toBoard[5] = 0; // reserved
    }
+	  
+	  
+	  
+	  /////////////////////////////////////////My code to allow use of newer dio-96
    else 
    {
 	   toBoard[0] = pData[0];
@@ -3241,14 +3245,16 @@ AIO_Usb_DIO_Configure(unsigned long  devIdx,
 	   toBoard[13] = pOutMask[1];
 	   toBoard[14] = 0; // reserved
    }
-	   
+	  ////////////////////////////////////////End of my code
+	  
+	  
 	  ret = libusb_control_transfer(handle,
 									USB_WRITE_TO_DEV, 
 									DIO_CONFIG,	
 									triState, 
 									0,
 									(unsigned char *)toBoard, 
-									16, 
+									14,								//Writes to more bytes for dio-96
 									TIMEOUT_1_SEC);
 /*	  ret = libusb_control_transfer(handle,
 									USB_WRITE_TO_DEV, 

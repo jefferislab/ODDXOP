@@ -216,8 +216,8 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 	mask = mask | pins0_7; 
 
 */	
-	mask[0]=0xFF;
-	mask[1]=0xF;
+	mask[0]=0xFF;	//sets the first 8 ports to output
+	mask[1]=0x0;	//sets the rest of the board for input
 	
 	triState= 0;
 	
@@ -265,7 +265,7 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 	data[3]=0xff;
 	data[4]=0xff;
 	data[5]=0xff;
-	data[6]=0xff;
+	data[6]=0x02;
 	data[7]=0xff;
 	data[8]=0xff;
 	data[9]=0xff;
@@ -309,7 +309,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 */
 	
 	mask[0]=0xFF;
-	mask[1]=0xF;
+	mask[1]=0x0;
 		
 	strcpy(configFile,"/Users/ahodge/Desktop/");
 	strcat(configFile,cfgFileName);
@@ -636,6 +636,8 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					data[4]=0;
 					data[5]=0;
 					data[6]=pow(2,odour-48);
+					//data[6]=pow(2,odour-48);
+					//data[6]=0;//x05; //won't write 0x2 or 0x4 to port 6
 					data[7]=0;
 					data[8]=0;
 					data[9]=0;
@@ -956,7 +958,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					data[4]=0;
 					data[5]=0;
 					//data[6]=pow(2,odour-48);
-					data[6]=0xFF;
+					data[6]=pow(2,odour-48);
 					data[7]=0;
 					data[8]=0;
 					data[9]=0;
@@ -1916,6 +1918,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					data[4]=0;
 					data[5]=0;
 					data[6]=pow(2,odour-48);
+					//data[6]=0x2;
 					data[7]=0;
 					data[8]=0;
 					data[9]=0;
