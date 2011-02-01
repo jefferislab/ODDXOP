@@ -2189,8 +2189,16 @@ AIO_Usb_DIO_ReadAll (unsigned long   devIdx,
 									  0, 
 									  0,
 									  pData,
-									  4, 
+									  14,						//changed to 14 to accommodate 96-channel board
 									  TIMEOUT_1_SEC);
+/*		ret = libusb_control_transfer(handle,					//Stock function
+									  USB_READ_FROM_DEV,
+									  DIO_READ, 
+									  0, 
+									  0,
+									  pData,
+									  4, 
+									  TIMEOUT_1_SEC);*/
 		libusb_close(handle);
 		
 		if (ret < 0)
@@ -2210,11 +2218,11 @@ AIO_Usb_DIO_ReadAll (unsigned long   devIdx,
 //
 //  Function Name : AIO_Usb_DIO_ReadTrigger
 //
-//  Description   :
+//  Description   : 
 //
 //  Returns       :	
 //
-//  Notes
+//  Notes		:Added by Alex Hodge to permit one port of a usb-dio-96 to be used as a trigger
 //
 //  History	  :
 // 
@@ -2269,12 +2277,16 @@ AIO_Usb_DIO_ReadTrigger (unsigned long   devIdx,
 	{
 		startTime = time(NULL);
 		difference = 0;	
+		
+		pData[11]=0;
+		
 		triggerTimeout=trgTO;
 		//count = 0;
 		
 //TODO: Change this so that temp is explicitly stated (probably 0) to save on the subtraction operation		
-		while (difference == 0&&time(NULL)<=startTime+triggerTimeout) {
-			temp = pData[3];
+		while (pData[11] == 0&&time(NULL)<=startTime+triggerTimeout) {
+		//while (difference == 0&&time(NULL)<=startTime+triggerTimeout) {
+			temp = pData[11];
 			
 			ret = libusb_control_transfer(handle,
 										  USB_READ_FROM_DEV,
@@ -2282,9 +2294,11 @@ AIO_Usb_DIO_ReadTrigger (unsigned long   devIdx,
 										  0, 
 										  0,
 										  pData,
-										  4, 
+										  14, //changed from the original 4 to work with 96-channel board
 										  TIMEOUT_1_SEC);
-			difference = temp - pData[3];
+			
+//			difference = temp - pData[11];	//use for generic trigger
+//			difference = pData[11];			//use if using "difference" in if statement, otherwise don't need
 			//triggerTimeout=20;				//allows time for pulse train to finish
 			//count++;
 
