@@ -54,14 +54,14 @@ char			lg[20];
 unsigned char	mask[2]; 
 unsigned char	data[12];
 int				triState; 
-unsigned char	pins0_7;
-unsigned char	pins8_15;
-unsigned char	pins16_23;
-unsigned char	pins24_31; 
-int				p0_7Input;
-int				p8_15Input;
-int				p16_23Input;
-int				p24_31Input;
+//unsigned char	pins0_7;
+//unsigned char	pins8_15;
+//unsigned char	pins16_23;
+//unsigned char	pins24_31; 
+//int				p0_7Input;
+//int				p8_15Input;
+//int				p16_23Input;
+//int				p24_31Input;
 unsigned char   byte;
 unsigned int	byteIdx;
 
@@ -185,6 +185,9 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 //	unsigned char  data[4];			//for DIO_32
 	unsigned char  data[12];		//for DIO_96
 	int            triState; 
+
+	
+/*	
 	pins0_7 = 1;
 	p0_7Input = 1;
 	
@@ -196,7 +199,7 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 	
 	pins24_31 = 0;
 	p24_31Input = 0;
-
+*/
 	
 	
 /*	
@@ -220,6 +223,8 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 	
 	triState= 0;
 	
+
+/*	
 	if (p0_7Input == 1)
 	{
 		tmp = pow(2,0);
@@ -244,7 +249,7 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 		tmp = 0;
 		data[3] = tmp;
 	}
-	
+*/	
 /*	data[0]=0x11;
 	data[1]=0x22;
 	data[2]=0x33;
@@ -355,6 +360,27 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 		fgets(s,80,fi);
 		sscanf(s,"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",(char*)chID1, &d1, &p1, &o1, &d2, &p2, &o2, &d3, &p3, &o3, &d4, &p4, &o4, &d5, &p5, &o5);
 		
+
+		
+		
+		
+		data[0]=1;
+		data[1]=0;
+		data[2]=0;
+		data[3]=0;
+		data[4]=0;
+		data[5]=0;
+		data[6]=0;
+		data[7]=0;
+		
+		ret =   AIO_Usb_WriteAll (devIdx,
+								  data);
+		
+		
+		
+		
+		
+		
 		if (p1==0) {
 			XOPNotice("\015The first entry in this line is for zero duration. Not waiting for a trigger.\015");
 			fprintf(fo, "\nThe first entry in line %d is for zero duration. Not waiting for a trigger and not executing sequence:\n%s",i,s);
@@ -396,6 +422,9 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 			stimTime=p1;
 			odour=o1;
 			delayTime=d1;
+
+			
+			
 			
 			if (stimTime!=0) {
 				usleep(1000*delayTime);
