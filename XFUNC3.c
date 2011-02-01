@@ -54,14 +54,6 @@ char			lg[20];
 unsigned char	mask[2]; 
 unsigned char	data[12];
 int				triState; 
-//unsigned char	pins0_7;
-//unsigned char	pins8_15;
-//unsigned char	pins16_23;
-//unsigned char	pins24_31; 
-//int				p0_7Input;
-//int				p8_15Input;
-//int				p16_23Input;
-//int				p24_31Input;
 unsigned char   byte;
 unsigned int	byteIdx;
 
@@ -181,89 +173,17 @@ int
 initialise()						//Just sets up the board for our use: all but one byte to be used as output
 {	
 	unsigned char  mask[2]; 
-//	unsigned short  mask; 
+//	unsigned short  mask;			//for DIO_32
 //	unsigned char  data[4];			//for DIO_32
 	unsigned char  data[12];		//for DIO_96
 	int            triState; 
 
-	
-/*	
-	pins0_7 = 1;
-	p0_7Input = 1;
-	
-	pins8_15 = 1;
-	p8_15Input = 1;
-	
-	pins16_23 = 1;
-	p16_23Input = 1;
-	
-	pins24_31 = 0;
-	p24_31Input = 0;
-*/
-	
-	
-/*	
-	mask = 0;
-	mask = pins24_31 << 11;			//these are shifted HEX values
-	mask = mask | pins24_31 << 10; 
-	mask = mask | pins24_31 << 9; 
-	mask = mask | pins16_23 << 8; 
-	mask = mask | pins16_23 << 7; 
-	mask = mask | pins16_23 << 6; 
-	mask = mask | pins16_23 << 5; 
-	mask = mask | pins16_23 << 4; 
-	mask = mask | pins16_23 << 3; 
-	mask = mask | pins16_23 << 2; 
-	mask = mask | pins8_15 << 1; 
-	mask = mask | pins0_7; 
-
-*/	
 	mask[0]=0xFF;	//sets the first 8 ports to output
 	mask[1]=0x0;	//sets the rest of the board for input
 	
 	triState= 0;
 	
-
-/*	
-	if (p0_7Input == 1)
-	{
-		tmp = pow(2,0);
-		data[0] = tmp;
-	}
-	
-	if (p8_15Input == 1)
-	{
-		tmp = 0;
-		data[1] = tmp;
-	}
-	
-	
-	if (p16_23Input == 1)
-	{
-		tmp = 0;
-		data[2] = tmp;
-	}
-	
-	if (p24_31Input == 1)
-	{
-		tmp = 0;
-		data[3] = tmp;
-	}
-*/	
-/*	data[0]=0x11;
-	data[1]=0x22;
-	data[2]=0x33;
-	data[3]=0x44;
-	data[4]=0x55;
-	data[5]=0x66;
-	data[6]=0x77;
-	data[7]=0x88;
-	data[8]=0x99;
-	data[9]=0xaa;
-	data[10]=0xbb;
-	data[11]=0xcc;
-*/	
-	data[0]=0x01;
+	data[0]=0x01;	//sets the data lines. Defaults to position 0 on data 0 "open" to allow gas flow through the first blank
 	data[1]=0x00;
 	data[2]=0x00;
 	data[3]=0x00;
@@ -276,12 +196,10 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 	data[10]=0x00;
 	data[11]=0x00;
 	
-	ret =   AIO_Usb_DIO_Configure (devIdx,
+	ret =   AIO_Usb_DIO_Configure (devIdx,	//writes and configures
 								   triState,
 								   mask,
 								   data);
-	
-	
 	
 	if (ret > ERROR_SUCCESS)
 	{
@@ -296,22 +214,7 @@ int
 odourPulses(char *cfgFileName)		//Main function. The others are mostly just for testing, but I left them in case they are of some use in the future
 {
 	
-/*	
-	mask = 0;
-	mask = pins16_23 << 11;			//these are shifted HEX values
-	mask = mask | pins16_23 << 10; 
-	mask = mask | pins16_23 << 9; 
-	mask = mask | pins16_23 << 8; 
-	mask = mask | pins16_23 << 7; 
-	mask = mask | pins16_23 << 6; 
-	mask = mask | pins16_23 << 5; 
-	mask = mask | pins16_23 << 4; 
-	mask = mask | pins16_23 << 3; 
-	mask = mask | pins16_23 << 2; 
-	mask = mask | pins8_15 << 1; 
-	mask = mask | pins0_7; 
-*/
-	
+	//setting the mask here is redundant since I am now using writeAll() instead of Configure()
 	mask[0]=0xFF;	//sets the first 8 ports to output
 	mask[1]=0x0;	//sets all remaining ports to input
 		
@@ -2222,211 +2125,6 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 }
 
 
-/*
-int 
-odourPulse(int delay, int odour, int duration)		//For now this is unused. It helps for testing so I'll just comment it out. 
-{
-	
-	
-	int			 ret;
-	int			 i;
-	int			 stimTime;
-	int			 delayTime;
-	
-	unsigned char  pins0_7;
-	unsigned char  pins8_15;
-	unsigned char  pins16_23;
-	unsigned char  pins24_31; 
-	
-	unsigned char  mask; 
-	unsigned char  data[4];
-	int            triState; 
-	
-	
-	
-	mask = 0;
-	mask = pins24_31 << 3;;			//these are shifted HEX values
-	mask = mask | pins16_23 << 2; 
-	mask = mask | pins8_15 << 1; 
-	mask = mask | pins0_7; 
-	
-	
-	triState = 0;
-	i=odour;
-	stimTime = duration*1000;
-	delayTime = delay;
-	
-	
-	usleep(1000*delayTime);
-	if (odour<8) {
-		
-		data[0]=pow(2,i);
-		data[1]=0;
-		data[2]=0;
-		data[3]=0;
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		
-		usleep(stimTime);
-		data[0]=1;
-		data[1]=0;
-		data[2]=0;
-		data[3]=0;
-		
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		//return(1);
-	}else if (odour>7&&odour<16) {
-		
-		data[0]=0;
-		data[1]=pow(2,i-8);
-		data[2]=0;
-		data[3]=0;
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		
-		usleep(stimTime);
-		data[0]=1;
-		data[1]=0;
-		data[2]=0;
-		data[3]=0;
-		
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		//return(1);
-	}else if (odour>15&&odour<24) {
-		
-		data[0]=0;
-		data[1]=0;
-		data[2]=pow(2,i-16);
-		data[3]=0;
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		
-		usleep(stimTime);
-		data[0]=1;
-		data[1]=0;
-		data[2]=0;
-		data[3]=0;
-		
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		//return(1);
-	}else{
-		printf("ERROR: Invalid odour");
-		return(0);
-	}
-	return(1);
-}
-*/
-
-/*
-int 
-odourPulsesSimple(int delay, int odour, int duration)		//For now this is unused. It helps for testing.
-{
-	
-	
-	
-	usleep(1000*delayTime);
-	if (odour<8) {
-		
-		data[0]=pow(2,i);
-		data[1]=0;
-		data[2]=0;
-		data[3]=0;
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		
-		usleep(stimTime);
-		data[0]=1;
-		data[1]=0;
-		data[2]=0;
-		data[3]=0;
-		
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		//return(1);
-	}else if (odour>7&&odour<16) {
-		
-		data[0]=0;
-		data[1]=pow(2,i-8);
-		data[2]=0;
-		data[3]=0;
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		
-		usleep(stimTime);
-		data[0]=1;
-		data[1]=0;
-		data[2]=0;
-		data[3]=0;
-		
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		//return(1);
-	}else if (odour>15&&odour<24) {
-		
-		data[0]=0;
-		data[1]=0;
-		data[2]=pow(2,i-16);
-		data[3]=0;
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		
-		usleep(stimTime);
-		data[0]=1;
-		data[1]=0;
-		data[2]=0;
-		data[3]=0;
-		
-		
-		ret =   AIO_Usb_DIO_Configure (devIdx,
-									   triState,
-									   &mask,
-									   data);
-		//return(1);
-	}else{
-		printf("ERROR: Invalid odour");
-		return(0);
-	}
-	return(1);
-}
-*/
-
-
 int 
 triggerDetectFast()			//I thought that this triggerDetect() would be faster since is calls AIO_Usb_DIO_Read8()
 {							//HOWEVER, AIO_Usb_DIO_Read8() just uses AIO_Usb_DIO_ReadAll() anyway, so in fact this is slower
@@ -2437,14 +2135,6 @@ triggerDetectFast()			//I thought that this triggerDetect() would be faster sinc
 	
 	startTime = time(NULL);
 	temp = 0;
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	while (temp == 0&&time(NULL)<=startTime+triggerTimeout) {
 		ret = AIO_Usb_DIO_Read8 (devIdx,1,&byte);		//This is strange. The sequence goes 2,3,0,1, so the 
@@ -2518,15 +2208,11 @@ triggerDetectFaster()		//This triggerDetect calls a function AIO_Usb_DIO_ReadTri
 	if (ret > ERROR_SUCCESS)
 		return(0);
 
-	//Only for testing the 96!!!!! Delete this later
+	//Only for testing the 96!!!!! use this if you don't want to wait for triggers. Delete this later
 	//return(10);
-	
-	
 	
 	XOPNotice("\015Attempting to use the fast trigger loop...");
 	ret =   AIO_Usb_DIO_ReadTrigger (devIdx,(unsigned char *)&data[0],triggerTimeout); 
-	
-	
 	
 	if (ret > ERROR_SUCCESS)
 	{
