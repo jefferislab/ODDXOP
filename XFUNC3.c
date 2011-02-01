@@ -43,6 +43,7 @@ int				delayTime;
 int				odour;
 int				doIHaveAnError;
 int				triggerTimeout;
+int				blank;
 
 char			configFile[80];
 char			logFile[80];
@@ -78,6 +79,7 @@ int odourPulses(char *cfgFileName);
 int oddRunTest();
 int validateIndex(int devIdx);
 int initialise();
+void dataReset(int blank);
 
 
 //static void MyHello(void);				//Probably don't need
@@ -210,6 +212,25 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 }
 
 
+void
+dataReset(int blank)
+{
+	data[0]=0;
+	data[1]=0;
+	data[2]=0;
+	data[3]=0;
+	data[4]=0;
+	data[5]=0;
+	data[6]=0;
+	data[7]=0;
+	
+	data[blank]=1;
+	
+	ret =   AIO_Usb_WriteAll (devIdx,
+							  data);
+	
+}
+
 int 
 odourPulses(char *cfgFileName)		//Main function. The others are mostly just for testing, but I left them in case they are of some use in the future
 {
@@ -333,13 +354,13 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 				usleep(1000*delayTime);
 				if (odour<8) {					
 					data[0]=pow(2,odour);
-					data[1]=0;
-					data[2]=0;
-					data[3]=0;
-					data[4]=0;
-					data[5]=0;
-					data[6]=0;
-					data[7]=0;
+//					data[1]=0;
+//					data[2]=0;
+//					data[3]=0;
+//					data[4]=0;
+//					data[5]=0;
+//					data[6]=0;
+//					data[7]=0;
 					
 //					ret =   AIO_Usb_DIO_Configure (devIdx,
 //												   triState,
@@ -349,37 +370,40 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					ret =   AIO_Usb_WriteAll (devIdx,
 											  data);
 					
+					
 					usleep(1000*stimTime);
 					data[0]=1;
-					data[1]=0;
-					data[2]=0;
-					data[3]=0;
-					data[4]=0;
-					data[5]=0;
-					data[6]=0;
-					data[7]=0;
+//					data[1]=0;
+//					data[2]=0;
+//					data[3]=0;
+//					data[4]=0;
+//					data[5]=0;
+//					data[6]=0;
+//					data[7]=0;
 					
 					//					ret =   AIO_Usb_DIO_Configure (devIdx,
 					//												   triState,
 					//												   mask,
 					//												   data);
 					
-					ret =   AIO_Usb_WriteAll (devIdx,
-											  data);
+//					ret =   AIO_Usb_WriteAll (devIdx,
+//											  data);
+					dataReset(0);
+
 					
 				}else if (odour>7&&odour<16) {					
-					data[0]=0;
+//					data[0]=0;
 					data[1]=pow(2,odour-8);
-					data[2]=0;
-					data[3]=0;
-					data[4]=0;
-					data[5]=0;
-					data[6]=0;
-					data[7]=0;
-					data[8]=0;
-					data[9]=0;
-					data[10]=0;
-					data[11]=0;
+//					data[2]=0;
+//					data[3]=0;
+//					data[4]=0;
+//					data[5]=0;
+//					data[6]=0;
+//					data[7]=0;
+//					data[8]=0;
+//					data[9]=0;
+//					data[10]=0;
+//					data[11]=0;
 					
 					//					ret =   AIO_Usb_DIO_Configure (devIdx,
 					//												   triState,
@@ -391,17 +415,17 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					
 					usleep(1000*stimTime);
 					data[0]=1;
-					data[1]=0;
-					data[2]=0;
-					data[3]=0;
-					data[4]=0;
-					data[5]=0;
-					data[6]=0;
-					data[7]=0;
-					data[8]=0;
-					data[9]=0;
-					data[10]=0;
-					data[11]=0;
+//					data[1]=0;
+//					data[2]=0;
+//					data[3]=0;
+//					data[4]=0;
+//					data[5]=0;
+//					data[6]=0;
+//					data[7]=0;
+//					data[8]=0;
+//					data[9]=0;
+//					data[10]=0;
+//					data[11]=0;
 					
 					//					ret =   AIO_Usb_DIO_Configure (devIdx,
 					//												   triState,
