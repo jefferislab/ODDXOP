@@ -243,7 +243,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 	//setting the mask here is redundant since I am now using writeAll() instead of Configure()
 	mask[0]=0xFF;	//sets the first 8 ports to output
 //	mask[1]=0x0;	//sets all remaining ports to input
-	mask[1]=0xC;	//sets ports 8 and 9 for output, 10 and 11 for input. Port 11 is reserved for the trigger and port 10 can be GPIO
+	mask[1]=0x3;	//sets ports 8 and 9 for output, 10 and 11 for input. Port 11 is reserved for the trigger and port 10 can be GPIO
 
 	strcpy(configFile,"/Users/ahodge/Desktop/");
 	strcat(configFile,cfgFileName);
@@ -974,7 +974,7 @@ triggerDetectFaster()		//This triggerDetect calls a function AIO_Usb_DIO_ReadTri
 		return(0);
 
 	//Only for testing the 96!!!!! use this if you don't want to wait for triggers. Delete this later
-	return(10);
+	//return(10);
 	
 	XOPNotice("\015Attempting to use the fast trigger loop...");
 	ret =   AIO_Usb_DIO_ReadTrigger (devIdx,(unsigned char *)&data[0],triggerTimeout); 
