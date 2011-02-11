@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		310106D411EB6F5B00C3C7E8 /* nidaqmxbaselv.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 310106D211EB6F5B00C3C7E8 /* nidaqmxbaselv.framework */; };
-		310106D511EB6F5B00C3C7E8 /* nidaqmxbase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 310106D311EB6F5B00C3C7E8 /* nidaqmxbase.framework */; };
 		31317004125DEA4D00FB8BC9 /* aioUsbApi.c in Sources */ = {isa = PBXBuildFile; fileRef = 31317002125DEA4D00FB8BC9 /* aioUsbApi.c */; };
 		31317005125DEA4D00FB8BC9 /* aioUsbApi.h in Headers */ = {isa = PBXBuildFile; fileRef = 31317003125DEA4D00FB8BC9 /* aioUsbApi.h */; };
 		3131702C125DEB4500FB8BC9 /* libusb.h in Headers */ = {isa = PBXBuildFile; fileRef = 3131702B125DEB4500FB8BC9 /* libusb.h */; };
@@ -37,8 +35,6 @@
 /* Begin PBXFileReference section */
 		089C167EFE841241C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		08EA7FFBFE8413EDC02AAC07 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
-		310106D211EB6F5B00C3C7E8 /* nidaqmxbaselv.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = nidaqmxbaselv.framework; path = /Library/Frameworks/nidaqmxbaselv.framework; sourceTree = "<absolute>"; };
-		310106D311EB6F5B00C3C7E8 /* nidaqmxbase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = nidaqmxbase.framework; path = /Library/Frameworks/nidaqmxbase.framework; sourceTree = "<absolute>"; };
 		31317002125DEA4D00FB8BC9 /* aioUsbApi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aioUsbApi.c; sourceTree = "<group>"; };
 		31317003125DEA4D00FB8BC9 /* aioUsbApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aioUsbApi.h; sourceTree = "<group>"; };
 		3131702B125DEB4500FB8BC9 /* libusb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libusb.h; sourceTree = "<group>"; };
@@ -59,8 +55,6 @@
 			files = (
 				8D01CCCE0486CAD60068D4B7 /* Carbon.framework in Frameworks */,
 				AAB6C124058803B000D4AD2E /* libXOPSupport.a in Frameworks */,
-				310106D411EB6F5B00C3C7E8 /* nidaqmxbaselv.framework in Frameworks */,
-				310106D511EB6F5B00C3C7E8 /* nidaqmxbase.framework in Frameworks */,
 				31317055125DFDEA00FB8BC9 /* libusb-1.0.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -83,8 +77,6 @@
 			isa = PBXGroup;
 			children = (
 				31317054125DFDEA00FB8BC9 /* libusb-1.0.a */,
-				310106D211EB6F5B00C3C7E8 /* nidaqmxbaselv.framework */,
-				310106D311EB6F5B00C3C7E8 /* nidaqmxbase.framework */,
 				08EA7FFBFE8413EDC02AAC07 /* Carbon.framework */,
 				AAB6C123058803B000D4AD2E /* libXOPSupport.a */,
 			);
