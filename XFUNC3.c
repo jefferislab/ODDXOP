@@ -47,10 +47,10 @@ int				triggerTimeout;
 int				blank;
 int				dataBlank;
 
-char			configFile[80];
-char			logFile[80];
-char			cfg[20];
-char			lg[20];
+char			configFile[255];
+char			logFile[255];
+char			cfg[255];
+char			lg[255];
 
 
 //For the ACCES API calls
@@ -244,20 +244,21 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 	mask[0]=0xFF;	//sets the first 8 ports to output
 //	mask[1]=0x0;	//sets all remaining ports to input
 	mask[1]=0x3;	//sets ports 8 and 9 for output, 10 and 11 for input. Port 11 is reserved for the trigger and port 10 can be GPIO
-
-	strcpy(configFile,"/Users/ahodge/Desktop/");
-	strcat(configFile,cfgFileName);
+		
+	//strcpy(configFile,"/Users/ahodge/Desktop/");
+	strcpy(configFile,cfgFileName);
 	
 	XOPNotice("\015Using the config file:\015");
 	XOPNotice(configFile);
 	XOPNotice("\015\015");
 	
-	strcpy(logFile,"/Users/ahodge/Desktop/logfiles/");
-	if (strlen(lg)<1) {
-		strcat(logFile,"defaultLogFile.txt");
-	}else{
-		strcat(logFile,(char*)lg);
-	}
+	strcpy(logFile,(char*)lg);
+	//strcpy(logFile,"/Users/ahodge/Desktop/logfiles/");
+//	if (strlen(lg)<1) {
+//		strcat(logFile,"defaultLogFile.txt");
+//	}else{
+//		strcat(logFile,(char*)lg);
+//	}
 	
 	XOPNotice("\015Using the log file:\015");
 	XOPNotice(logFile);
@@ -1035,8 +1036,8 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	
 	//strcpy(cfg,"cfgFile.odd");//working
 	//strcpy(cfg,*p->str2);
-	GetCStringFromHandle(p->str2, cfg, 20);
-	GetCStringFromHandle(p->str3, lg, 20);
+	GetCStringFromHandle(p->str2, cfg, 255);
+	GetCStringFromHandle(p->str3, lg, 255);
 		
 	pthread_t pulseThread;	// this is our thread identifier, used to call odourPulses() from its own thread
 	
@@ -1147,8 +1148,9 @@ main(IORecHandle ioRecHandle)
 	
 	devIdx = aioDevices.aioDevList[0].devIdx;		// use the first device found
 	
+	// Initialise the Acces DIO board so that pins have a default direction and state
+	// (so that air starts to flow through ODD)
 	tmp = initialise();
-	
 	
 	
 	if (igorVersion < 200)
