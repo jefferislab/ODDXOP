@@ -355,6 +355,7 @@
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				HEADER_SEARCH_PATHS = "/usr/local/include//**";
 				LIBRARY_SEARCH_PATHS = "/usr/local/lib//**";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				VALID_ARCHS = i386;
 			};
@@ -363,12 +364,14 @@
 		8915522A093FB1640062870E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 			};
 			name = Release;
 		};
 		8915522B093FB1640062870E /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 			};
 			name = Default;
 		};
