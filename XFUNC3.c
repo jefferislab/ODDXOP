@@ -27,9 +27,6 @@
 #include "aioUsbApi.h"
 #include "XOPStandardHeaders.h"				// Include ANSI headers, Mac headers, IgorXOP.h, XOP.h and XOPSupport.h
 #include "XFUNC3.h"
-#include "XOPStructureAlignmentTwoByte.h"	// All structures passed to Igor are two-byte aligned.
-#include "XOPStructureAlignmentReset.h"
-
 
 int				devIdx;
 char			anyKey;
