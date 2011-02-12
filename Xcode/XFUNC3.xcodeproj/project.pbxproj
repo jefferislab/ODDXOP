@@ -245,8 +245,8 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
 				LIBRARY_SEARCH_PATHS = (
-					"../aiousbapi-mac-1.0/libusb_test/libusb/.libs/**",
 					../../XOPSupport/Xcode,
+					"$(SRCROOT)",
 				);
 				LIBRARY_STYLE = Bundle;
 				OTHER_CFLAGS = "";
@@ -288,8 +288,8 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
 				LIBRARY_SEARCH_PATHS = (
-					"../aiousbapi-mac-1.0/libusb_test/libusb/.libs/**",
 					../../XOPSupport/Xcode,
+					"$(SRCROOT)",
 				);
 				LIBRARY_STYLE = Bundle;
 				OTHER_CFLAGS = "";
@@ -329,8 +329,8 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
 				LIBRARY_SEARCH_PATHS = (
-					"../aiousbapi-mac-1.0/libusb_test/libusb/.libs/**",
 					../../XOPSupport/Xcode,
+					"$(SRCROOT)",
 				);
 				LIBRARY_STYLE = Bundle;
 				OTHER_CFLAGS = "";
