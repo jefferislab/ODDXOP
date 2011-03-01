@@ -32,6 +32,7 @@
 #define MAX_ODOUR_PORTS 8 
 #define BITS_PER_PORT 8
 #define MAX_ODOURS (BITS_PER_PORT * MAX_ODOUR_PORTS)
+#define BLANK_NOT_SET -1
 
 int				devIdx;
 char			anyKey;
@@ -47,7 +48,6 @@ int				odour;
 int				doIHaveAnError;
 int				triggerTimeout;
 int				blank;
-int				dataBlank;
 
 char			configFile[255];
 char			logFile[255];
@@ -83,7 +83,7 @@ int odourPulses(char *cfgFileName);
 int oddRunTest();
 int validateIndex(int devIdx);
 int initialise();
-void dataReset(int blank);
+void dataReset(int blankPort, int blankChan);
 
 
 //static void MyHello(void);				//Probably don't need
@@ -218,7 +218,7 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 
 
 void
-dataReset(int dataBlank)
+dataReset(int blankPort, int blankChan)
 {
 	data[0]=0;
 	data[1]=0;
@@ -231,8 +231,9 @@ dataReset(int dataBlank)
 	
 	data[9]=0x00;
 	
-	if (dataBlank>=0 && dataBlank<MAX_ODOUR_PORTS) {
-		data[dataBlank]=1;
+	if (blankPort >= 0 && blankPort < MAX_ODOUR_PORTS 
+			&& blankChan >= 0 && blankChan < BITS_PER_PORT) {
+		data[blankPort]=pow(2,blankChan);
 	}
 	
 	ret =   AIO_Usb_WriteAll (devIdx,
@@ -295,11 +296,30 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 	int stimTimes[MAX_ODOURS_PER_LINE];
 	int odours[MAX_ODOURS_PER_LINE];
 	int delayTimes[MAX_ODOURS_PER_LINE];
-	
+	char key[50];
+    int values[2];
+	int blankPort = BLANK_NOT_SET;
+	int blankchan = BLANK_NOT_SET;
+
 	while (fgets(s, 80, fi) != NULL) {
 		
-		if(s[0]=='#') continue; // Comments
-		if(s[0]==':') continue; // Special lines containing instructions (TBD)
+		if (s[0]=='#') continue; // Comments
+		if (s[0]=='!') {
+			// Instructions in form:
+			// ! keyword = intval1 [intval2]
+			if(1 != sscanf(s,"! %s = ", key)){
+				// malformed key value pair.
+				continue;
+			}
+			if (0==strcmp("blank", key)) {
+				if (3 == sscanf(s,"! %s = %d %d", key, &values[0], &values[1])){
+					blankPort = values[0];
+					blankchan = values[1];
+				}
+			}
+			continue;
+		}
+		
 		i++;
 
 		sscanf(s,"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",(char*)chID1, 
@@ -314,71 +334,76 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 		if (stimTimes[0]==0) {
 			XOPNotice("\015The first entry in this line is for zero duration. Not waiting for a trigger.\015");
 			fprintf(fo, "\nThe first entry in line %d is for zero duration. Not waiting for a trigger and not executing sequence:\n%s",i,s);
-		}		
-		else
-		{
-			XOPNotice("\015I found an entry in the .odd file. Can I please have a trigger?\015");
-			fprintf(fo, "\nNonzero p1 detected. Running line %d: %s",i,s);
-			tmp=triggerDetectFaster();	
-			//tmp=triggerDetectFast();	
-			//tmp=triggerDetect();	
-			if (tmp==10) {
-				XOPNotice("\015Trigger detected. Executing protocol...");
-				fprintf(fo, "Trigger detected. Executing sequence.\n");
-				//TODO: force error message to appear reliably. 				
-			}else if (tmp==15) {
-				XOPNotice("\015TriggerDetect() timed out.");
-				fprintf(fo, "TriggerDetect() timed out. Aborting");
-				fclose(fi);fclose(fo);
+			continue;
+		}
+		
+		XOPNotice("\015I found an entry in the .odd file. Can I please have a trigger?\015");
+		fprintf(fo, "\nNonzero p1 detected. Running line %d: %s",i,s);
+		tmp=triggerDetectFaster();
+		//tmp=triggerDetectFast();
+		//tmp=triggerDetect();
+		if (tmp==10) {
+			XOPNotice("\015Trigger detected. Executing protocol...");
+			fprintf(fo, "Trigger detected. Executing sequence.\n");
+			//TODO: force error message to appear reliably. 				
+		}else if (tmp==15) {
+			XOPNotice("\015TriggerDetect() timed out.");
+			fprintf(fo, "TriggerDetect() timed out. Aborting");
+			fclose(fi);fclose(fo);
 
-				return(0);
-			}else if (tmp==0) {
-				XOPNotice("\015TriggerDetect() failed.");
-				fprintf(fo, "TriggerDetect() failed for some reason besides timeout.");
-				fclose(fi);fclose(fo);
+			return(0);
+		}else if (tmp==0) {
+			XOPNotice("\015TriggerDetect() failed.");
+			fprintf(fo, "TriggerDetect() failed for some reason besides timeout.");
+			fclose(fi);fclose(fo);
 
-				return(0);
-			}else {
-				XOPNotice("\015TriggerDetect() timed out.");
-				fprintf(fo, "\nTime dout with counter = %d\n",tmp);
-				fclose(fi);fclose(fo);
-				
-				return(0);
-			}
-//TODO: if/then for triggerDetect() return value
-
-			triggerTimeout=20;
+			return(0);
+		}else {
+			XOPNotice("\015TriggerDetect() timed out.");
+			fprintf(fo, "\nTimed out with counter = %d\n",tmp);
+			fclose(fi);fclose(fo);
 			
-			int j, port;
-			for(j=0;j < MAX_ODOURS_PER_LINE; j++){
-				
-				stimTime=stimTimes[j];
-				odour=odours[j];
-				delayTime=delayTimes[j];
-				
-				
-				if (stimTime!=0) {
-					port = odour/BITS_PER_PORT;
-					if (odour>=0 && odour<MAX_ODOURS) {
-						
-						dataReset(port);
-						data[9]=1;
-						usleep(1000*delayTime);
-						data[port]=pow(2, odour % BITS_PER_PORT);
-						ret =   AIO_Usb_WriteAll (devIdx,
-												  data);
-						usleep(1000*stimTime);
-						dataReset(port);
-						usleep(1000*postDelay);
-						
+			return(0);
+		}
+
+		triggerTimeout=20;
+		
+		int j, port;
+		for(j=0;j < MAX_ODOURS_PER_LINE; j++){
+			
+			stimTime=stimTimes[j];
+			odour=odours[j];
+			delayTime=delayTimes[j];
+			
+			
+			if (stimTime!=0) {
+				port = odour/BITS_PER_PORT;
+				if (odour>=0 && odour<MAX_ODOURS) {
+					if (blankPort == BLANK_NOT_SET) {
+						dataReset(port, 0);
 					} else {
-						fprintf(fo,"\nERROR: you've asked for an odour that I can't provide. I'm quitting");
-						XOPNotice("\015ERROR: you've asked for an odour that I can't provide. I'm quitting");
-						fclose(fi);fclose(fo);
-						return(0);
+						dataReset(blankPort, blankchan);
 					}
-					fprintf(fo, "Applied odour %d for %dms, after a %dms delay\n",odour,stimTime,delayTime);
+					data[9]=1;
+					usleep(1000*delayTime);
+					data[port]=pow(2, odour % BITS_PER_PORT);
+					ret =   AIO_Usb_WriteAll (devIdx,
+											  data);
+					usleep(1000*stimTime);
+					if (blankPort == BLANK_NOT_SET) {
+						dataReset(port, 0);
+					} else {
+						dataReset(blankPort, blankchan);
+					}
+					usleep(1000*postDelay);
+					
+				} else {
+					fprintf(fo,"\nERROR: you've asked for an odour that I can't provide. I'm quitting");
+					XOPNotice("\015ERROR: you've asked for an odour that I can't provide. I'm quitting");
+					fclose(fi);fclose(fo);
+					return(0);
 				}
+				fprintf(fo, "Applied odour %d for %dms, after a %dms delay\n",odour,stimTime,delayTime);
 			}
 
 			XOPNotice("OK, Odours done.\015");
