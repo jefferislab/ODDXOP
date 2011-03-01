@@ -231,11 +231,12 @@ dataReset(int dataBlank)
 	
 	data[9]=0x00;
 	
-	data[dataBlank]=1;
+	if (dataBlank>=0 && dataBlank<MAX_ODOUR_PORTS) {
+		data[dataBlank]=1;
+	}
 	
 	ret =   AIO_Usb_WriteAll (devIdx,
 							  data);
-	
 }
 
 int 
