@@ -47,7 +47,6 @@ int				postDelay;
 int				odour;
 int				doIHaveAnError;
 int				triggerTimeout;
-int				blank;
 
 char			configFile[255];
 char			logFile[255];
