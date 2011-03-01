@@ -82,7 +82,7 @@ int odourPulses(char *cfgFileName);
 int oddRunTest();
 int validateIndex(int devIdx);
 int initialise();
-void dataReset(int blankPort, int blankChan);
+void dataReset(int blankOdour);
 
 
 //static void MyHello(void);				//Probably don't need
@@ -217,7 +217,7 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 
 
 void
-dataReset(int blankPort, int blankChan)
+dataReset(int blankOdour)
 {
 	data[0]=0;
 	data[1]=0;
@@ -230,9 +230,9 @@ dataReset(int blankPort, int blankChan)
 	
 	data[9]=0x00;
 	
-	if (blankPort >= 0 && blankPort < MAX_ODOUR_PORTS 
-			&& blankChan >= 0 && blankChan < BITS_PER_PORT) {
-		data[blankPort]=pow(2,blankChan);
+	if (blankOdour >= 0 && blankOdour < MAX_ODOURS ) {
+		int port = blankOdour/BITS_PER_PORT;
+		data[port]=pow(2, blankOdour % BITS_PER_PORT);
 	}
 	
 	ret =   AIO_Usb_WriteAll (devIdx,
@@ -297,8 +297,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 	int delayTimes[MAX_ODOURS_PER_LINE];
 	char key[50];
     int values[2];
-	int blankPort = BLANK_NOT_SET;
-	int blankchan = BLANK_NOT_SET;
+	int blankOdour = BLANK_NOT_SET;
 
 	while (fgets(s, 80, fi) != NULL) {
 		
@@ -312,9 +311,8 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 				continue;
 			}
 			if (0==strcmp("blank", key)) {
-				if (3 == sscanf(s,"! %s = %d %d", key, &values[0], &values[1])){
-					blankPort = values[0];
-					blankchan = values[1];
+				if (2 == sscanf(s,"! %s = %d", key, &values[0])){
+					blankOdour = values[0];
 				} else {
 					fprintf(fo,"\nERROR: malformed key value pair. Skipping line.");
 					XOPNotice("\015ERROR: malformed key value pair. Skipping line.");
@@ -385,10 +383,11 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 			if (stimTime!=0) {
 				port = odour/BITS_PER_PORT;
 				if (odour>=0 && odour<MAX_ODOURS) {
-					if (blankPort == BLANK_NOT_SET) {
-						dataReset(port, 0);
+					if (blankOdour == BLANK_NOT_SET) {
+						dataReset(port*BITS_PER_PORT);
 					} else {
-						dataReset(blankPort, blankchan);
+						
+						dataReset(blankOdour);
 					}
 					data[9]=1;
 					usleep(1000*delayTime);
@@ -396,10 +395,10 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					ret =   AIO_Usb_WriteAll (devIdx,
 											  data);
 					usleep(1000*stimTime);
-					if (blankPort == BLANK_NOT_SET) {
-						dataReset(port, 0);
+					if (blankOdour == BLANK_NOT_SET) {
+						dataReset(port*BITS_PER_PORT);
 					} else {
-						dataReset(blankPort, blankchan);
+						dataReset(blankOdour);
 					}
 					usleep(1000*postDelay);
 					
