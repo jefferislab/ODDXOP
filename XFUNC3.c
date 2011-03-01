@@ -29,6 +29,9 @@
 #include "XFUNC3.h"
 
 #define MAX_ODOURS_PER_LINE 5
+#define MAX_ODOUR_PORTS 8 
+#define BITS_PER_PORT 8
+#define MAX_ODOURS (BITS_PER_PORT * MAX_ODOUR_PORTS)
 
 int				devIdx;
 char			anyKey;
@@ -345,111 +348,29 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 
 			triggerTimeout=20;
 			
-			int j=0;
+			int j, port;
 			for(j=0;j < MAX_ODOURS_PER_LINE; j++){
 				
 				stimTime=stimTimes[j];
 				odour=odours[j];
 				delayTime=delayTimes[j];
 				
+				
 				if (stimTime!=0) {
-					if (odour<8) {
+					port = odour/BITS_PER_PORT;
+					if (odour>=0 && odour<MAX_ODOURS) {
 						
-						dataReset(0);
+						dataReset(port);
 						data[9]=1;
 						usleep(1000*delayTime);
-						data[0]=pow(2,odour);
+						data[port]=pow(2, odour % BITS_PER_PORT);
 						ret =   AIO_Usb_WriteAll (devIdx,
 												  data);
 						usleep(1000*stimTime);
-						dataReset(0);
+						dataReset(port);
 						usleep(1000*postDelay);
 						
-					}else if (odour>7&&odour<16) {
-						
-						dataReset(1);
-						data[9]=1;
-						usleep(1000*delayTime);
-						data[1]=pow(2,odour-8);
-						ret =   AIO_Usb_WriteAll (devIdx,
-												  data);
-						usleep(1000*stimTime);
-						dataReset(1);
-						usleep(1000*postDelay);
-						
-					}else if (odour>15&&odour<24) {	
-						
-						dataReset(2);
-						data[9]=1;
-						usleep(1000*delayTime);
-						data[2]=pow(2,odour-16);
-						ret =   AIO_Usb_WriteAll (devIdx,
-												  data);
-						usleep(1000*stimTime);
-						dataReset(2);
-						usleep(1000*postDelay);
-						
-					}else if (odour>23&&odour<32) {	
-						
-						dataReset(3);
-						data[9]=1;
-						usleep(1000*delayTime);
-						data[3]=pow(2,odour-24);
-						ret =   AIO_Usb_WriteAll (devIdx,
-												  data);
-						usleep(1000*stimTime);
-						dataReset(3);
-						usleep(1000*postDelay);
-						
-					}else if (odour>31&&odour<40) {	
-						
-						dataReset(4);
-						data[9]=1;
-						usleep(1000*delayTime);
-						data[4]=pow(2,odour-32);
-						ret =   AIO_Usb_WriteAll (devIdx,
-												  data);
-						usleep(1000*stimTime);
-						dataReset(4);
-						usleep(1000*postDelay);
-						
-					}else if (odour>39&&odour<48) {
-						
-						dataReset(5);
-						data[9]=1;
-						usleep(1000*delayTime);
-						data[5]=pow(2,odour-40);
-						ret =   AIO_Usb_WriteAll (devIdx,
-												  data);
-						usleep(1000*stimTime);
-						dataReset(5);
-						usleep(1000*postDelay);
-						
-					}else if (odour>47&&odour<56) {
-						
-						dataReset(6);
-						data[9]=1;
-						usleep(1000*delayTime);
-						data[6]=pow(2,odour-48);
-						ret =   AIO_Usb_WriteAll (devIdx,
-												  data);
-						usleep(1000*stimTime);
-						dataReset(6);
-						usleep(1000*postDelay);
-						
-					}else if (odour>55&&odour<64) {	
-						
-						dataReset(7);
-						data[9]=1;
-						usleep(1000*delayTime);
-						data[7]=pow(2,odour-56);
-						ret =   AIO_Usb_WriteAll (devIdx,
-												  data);
-						usleep(1000*stimTime);
-						dataReset(7);
-						usleep(1000*postDelay);
-						
-					}else{
+					} else {
 						fprintf(fo,"\nERROR: you've asked for an odour that I can't provide. I'm quitting");
 						XOPNotice("\015ERROR: you've asked for an odour that I can't provide. I'm quitting");
 						fclose(fi);fclose(fo);
