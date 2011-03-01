@@ -308,14 +308,21 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 			// Instructions in form:
 			// ! keyword = intval1 [intval2]
 			if(1 != sscanf(s,"! %s = ", key)){
-				// malformed key value pair.
+				fprintf(fo,"\nERROR: malformed key value pair. Skipping line.");
+				XOPNotice("\015ERROR: malformed key value pair. Skipping line.");
 				continue;
 			}
 			if (0==strcmp("blank", key)) {
 				if (3 == sscanf(s,"! %s = %d %d", key, &values[0], &values[1])){
 					blankPort = values[0];
 					blankchan = values[1];
+				} else {
+					fprintf(fo,"\nERROR: malformed key value pair. Skipping line.");
+					XOPNotice("\015ERROR: malformed key value pair. Skipping line.");
 				}
+			} else {
+				fprintf(fo,"\nERROR: unrecognised key value. Skipping line.");
+				XOPNotice("\015ERROR: malformed key value. Skipping line.");
 			}
 			continue;
 		}
