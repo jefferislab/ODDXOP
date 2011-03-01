@@ -385,6 +385,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 		XOPNotice("\015I found an entry in the .odd file. Can I please have a trigger?\015");
 		fprintf(fo, "\nNonzero p1 detected. Running line %d: %s",i,s);
 		tmp=triggerDetectFaster();
+		uint64_t triggerTime=GetPIDTimeInNanoseconds();
 		//tmp=triggerDetectFast();
 		//tmp=triggerDetect();
 		if (tmp==10) {
@@ -430,7 +431,16 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 						dataReset(blankOdour);
 					}
 					data[9]=1;
+					
 					usleep(1000*delayTime);
+					uint64_t stimStartTime = 1e6*delayTime+triggerTime; // nb convert ms -> ns
+					uint64_t deltaStartTime;
+					while (1) {
+						deltaStartTime=GetPIDTimeInNanoseconds()-stimStartTime;
+						if	(deltaStartTime>=0) {
+							break;
+						}
+					}
 					data[port]=pow(2, odour % BITS_PER_PORT);
 					ret =   AIO_Usb_WriteAllH(usbhandle,
 											  data);
@@ -441,6 +451,8 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 						dataReset(blankOdour);
 					}
 					usleep(1000*postDelay);
+					fprintf(fo,"\015INFO: deltaStartTime was %g.",(double) deltaStartTime);
+					
 					
 				} else {
 					fprintf(fo,"\nERROR: you've asked for an odour that I can't provide. I'm quitting");
@@ -487,14 +499,14 @@ triggerDetectFaster()		//This triggerDetect calls a function AIO_Usb_DIO_ReadTri
         return(0);
 	}
 	
-	XOPNotice("...that worked. I'm back from the fast trigger loop\015");
+//	XOPNotice("...that worked. I'm back from the fast trigger loop\015");
 
 	if (ret==15) {
 		XOPNotice("Trigger timeout. Try to do better.\015");
 	}else if (ret==10) {
-		XOPNotice("Trigger detected. Here we go....\015");
+//		XOPNotice("Trigger detected. Here we go....\015");
 	}
-			
+	
 	return(ret);
 }
 //TODO: Standardise the return values. These ones are kinda crazy
