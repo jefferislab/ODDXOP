@@ -2304,18 +2304,12 @@ AIO_Usb_DIO_ReadTrigger (unsigned long   devIdx,
 
 		}
 		
+		libusb_close(handle);
 		if (time(NULL)>startTime+triggerTimeout) {
-			//return(count);
 			return(15);
-			libusb_close(handle);
 		}else {
 			return(10);
-			libusb_close(handle);
 		}
-		
-		
-		
-		libusb_close(handle);
 		
 		if (ret < 0)
 		{
