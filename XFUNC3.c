@@ -285,9 +285,13 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 	postDelay=1000;
 	
 //TODO: Change this to depend on the number of lines in the .odd file
-	for(i=1;i<=13;i++)
-	{
-		fgets(s,80,fi);
+	int i=0;
+	while (fgets(s, 80, fi) != NULL) {
+		
+		if(s[0]=='#') continue; // Comments
+		if(s[0]==':') continue; // Special lines containing instructions (TBD)
+		i++;
+
 		sscanf(s,"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",(char*)chID1, &d1, &p1, &o1, &d2, &p2, &o2, &d3, &p3, &o3, &d4, &p4, &o4, &d5, &p5, &o5);
 		
 		//this might be unnecessary but will enable default blank selection from the config file later
