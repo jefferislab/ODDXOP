@@ -24,6 +24,10 @@
 #include <math.h>
 #include <pthread.h>						
 
+#include <assert.h>
+#include <mach/mach.h>
+#include <mach/mach_time.h>
+
 #include "libusb.h"
 #include "aioUsbExts.h"
 #include "XOPStandardHeaders.h"				// Include ANSI headers, Mac headers, IgorXOP.h, XOP.h and XOPSupport.h
@@ -79,6 +83,7 @@ int odourPulses(char *cfgFileName);
 int validateIndex(int devIdx);
 int initialise();
 void dataReset(int blankOdour);
+uint64_t GetPIDTimeInNanoseconds(void);
 
 struct xstrcatParams  {
 	Handle str3;
@@ -94,6 +99,54 @@ typedef struct xstrcatParams xstrcatParams;
 //////////////////////////////////////////////////
 //My Functions
 //////////////////////////////////////////////////
+
+// See
+// http://developer.apple.com/library/mac/#qa/qa2004/qa1398.html
+uint64_t GetPIDTimeInNanoseconds(void)
+{
+    uint64_t        start;
+    uint64_t        end;
+    uint64_t        elapsed;
+    uint64_t        elapsedNano;
+    static mach_timebase_info_data_t    sTimebaseInfo;
+
+    // Start the clock.
+
+    start = mach_absolute_time();
+
+    // Call getpid.  This will produce inaccurate results because
+    // we're only making a single system call.  For more accurate
+    // results you should call getpid multiple times and average
+    // the results.
+
+    (void) getpid();
+
+    // Stop the clock.
+
+    end = mach_absolute_time();
+
+    // Calculate the duration.
+
+    elapsed = end - start;
+
+    // Convert to nanoseconds.
+
+    // If this is the first time we've run, get the timebase.
+    // We can use denom == 0 to indicate that sTimebaseInfo is
+    // uninitialised because it makes no sense to have a zero
+    // denominator is a fraction.
+
+    if ( sTimebaseInfo.denom == 0 ) {
+        (void) mach_timebase_info(&sTimebaseInfo);
+    }
+
+    // Do the maths.  We hope that the multiplication doesn't
+    // overflow; the price you pay for working in fixed point.
+
+    elapsedNano = elapsed * sTimebaseInfo.numer / sTimebaseInfo.denom;
+
+    return elapsedNano;
+}
 
 
 void									//Old
@@ -486,7 +539,7 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	//strcpy(cfg,*p->str2);
 	GetCStringFromHandle(p->str2, cfg, 255);
 	GetCStringFromHandle(p->str3, lg, 255);
-	
+		
 	// Get a handle for current USB device
 	if(usbhandle!=NULL){
 		// already open - we need to close it
@@ -515,7 +568,7 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 		err = CANT_ACCESS_ACCES;
 		goto done;
 	}
-
+	
 //	if(ret!=ERROR_SUCCESS){
 //		// We didn't manage to get a handle
 //		XOPNotice("Failed to get a handle to Access DIO USB device");
