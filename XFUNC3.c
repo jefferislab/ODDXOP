@@ -38,9 +38,6 @@ int				devIdx;
 char			anyKey;
 int				ctlC;
 
-int				ret;
-int				tmp;
-int				i;
 int				stimTime;
 int				delayTime;
 int				postDelay;
@@ -106,7 +103,7 @@ catchInterrupt (int signum)
 int
 validateIndex(int devIdx)
 {
-	//	int ret;
+	int ret;
 	
 	ret = AIO_UsbValidateDeviceIndex(devIdx);
 	if (ret > ERROR_SUCCESS)
@@ -126,6 +123,7 @@ void
 {
 	char *str;
 	str=(char*)arg;
+	int	tmp;
 	
 	XOPNotice("\015New thread started.");
 	//XOPNotice(cfg);
@@ -159,7 +157,8 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 //	unsigned short  mask;			//for DIO_32
 //	unsigned char  data[4];			//for DIO_32
 	unsigned char  data[12];		//for DIO_96
-	int            triState; 
+	int            triState;
+	int	ret;
 
 	mask[0]=0xFF;	//sets the first 8 ports to output
 //	mask[1]=0x0;	//sets the rest of the board for input
@@ -197,6 +196,8 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 void
 dataReset(int blankPort, int blankChan)
 {
+	int ret;
+	
 	data[0]=0;
 	data[1]=0;
 	data[2]=0;
@@ -277,6 +278,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
     int values[2];
 	int blankPort = BLANK_NOT_SET;
 	int blankchan = BLANK_NOT_SET;
+	int tmp,ret;
 
 	while (fgets(s, 80, fi) != NULL) {
 		
@@ -402,6 +404,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 int 
 triggerDetectFaster()		//This triggerDetect calls a function AIO_Usb_DIO_ReadTrigger() that I added to the API
 {							//It is sufficiently fast
+	int ret;
 	ret = validateIndex(devIdx);
 	if (ret > ERROR_SUCCESS)
 		return(0);
@@ -569,6 +572,8 @@ XOPEntry(void)
 HOST_IMPORT void
 main(IORecHandle ioRecHandle)
 {	
+	int tmp,ret;
+		
 	XOPInit(ioRecHandle);							/* do standard XOP initialization */
 	SetXOPEntry(XOPEntry);							/* set entry point for future calls */
 	
