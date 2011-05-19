@@ -70,6 +70,8 @@
 //
 //************************************************************************ 
 
+#ifndef AIOUSBAPI_H
+#define AIOUSBAPI_H
 
 
 // Debugging output macro 
@@ -550,9 +552,4 @@ AIO_loadFW(unsigned long devIdx);
 int
 AIO_Init();
 
-
-
-
-
-
-
+#endif
