@@ -28,43 +28,19 @@ AIO_Usb_DIO_ReadTrigger (unsigned long   devIdx,
 						 unsigned char  *pData,
 						 int trgTO)
 {
-	
 	int                 ret;
     int					difference;
 	int					temp;
 	int					startTime; 
 	int					triggerTimeout;
 	
-	
-	
 	struct libusb_device_handle *handle;
 	
-	
-	if (pData == NULL)
-	{
-		debug("DBG>>AIO_ReadAll : pData is NULL \n"); 
-		return (ERROR_INVALID_PARAM); 
-	}
-	
-	ret = AIO_UsbValidateDeviceIndex(devIdx);
-	
+	ret=AIO_Usb_DIO_GetHandle(devIdx,handle);
+
 	if (ret > ERROR_SUCCESS)
 	{
-		debug("DBG>>AIO_DIO_ReadAll: invalid dev Index = 0x%0x \n",(unsigned int)devIdx); 
-		return (ret);
-	}
-	
-	ret = validateProductID(devIdx);
-	if (ret > ERROR_SUCCESS)
-	{
-		debug("DBG>>AIO_DIO_ReadAll: invalid Product ID for device = 0x%0x \n",(unsigned int)devIdx); 
-		return (ret);
-	}
-	
-	handle = getDevHandle(devIdx);
-	if (handle == NULL)
-	{
-		debug("DBG>> AIO_Usb_DIO_ReadAll : could not get device handle devIdx=%d \n",(unsigned int)devIdx);
+		debug("DBG>> AIO_Usb_DIO_ReadTrigger : could not get device handle devIdx=%d \n",(unsigned int)devIdx);
 		return (ERROR_COULD_NOT_GET_DEVHANDLE);
 		
 	}
