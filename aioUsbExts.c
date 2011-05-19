@@ -202,3 +202,56 @@ unsigned long AIO_Usb_DIO_GetHandle(unsigned long devIdx, struct libusb_device_h
 	}
 	return ERROR_SUCCESS;	
 }
+
+/********************************************************************/
+//
+//  Function Name : AIO_Usb_WriteAllH
+//
+//  Description   : Given a handle and an input buffer, writes all
+//
+//  Returns       :	error code to indicate if write was successful
+//
+//  Notes		: Added by Greg Jefferis,
+//    Depends on handle obtained by AIO_Usb_DIO_GetHandle
+//
+//  History	  : Based on AIO_Usb_WriteAllH
+//
+/********************************************************************/
+
+unsigned long
+AIO_Usb_WriteAllH(struct libusb_device_handle *handle,
+                 unsigned char *pData)
+{
+	
+	int                          ret;
+	
+	if (pData == NULL)
+	{
+		debug("DBG>>AIO_WriteAll : pData is NULL \n");
+		return (ERROR_INVALID_PARAM);
+	}
+	
+	if (handle == NULL)
+	{
+		debug("DBG>> AIO_Usb_DIO_WriteAll : could not get device handle devIdx=%d \n",(unsigned int)devIdx);
+		return (ERROR_COULD_NOT_GET_DEVHANDLE);
+	}
+	
+	ret = libusb_control_transfer(handle,
+								  USB_WRITE_TO_DEV,
+								  DIO_WRITE,
+								  0,
+								  0,
+								  pData,
+								  14,					//changed to 14 to accommodate 96-channel card
+								  TIMEOUT_1_SEC);
+
+	if (ret  < 0 )
+	{
+		debug("DBG>> AIO_Usb_WriteAll: usb_control_msg failed on WRITE_TO_DEV dev=0x%0x err=%d\n",(unsigned int)devIdx,ret);
+		return (ERROR_USB_CONTROL_MSG_FAILED);
+	}
+	else
+		return (ERROR_SUCCESS);
+	
+}
