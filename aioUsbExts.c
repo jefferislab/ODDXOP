@@ -94,6 +94,64 @@ AIO_Usb_DIO_ReadTrigger (unsigned long   devIdx,
 
 /********************************************************************/
 //
+//  Function Name : AIO_Usb_DIO_ReadTriggerH
+//
+//  Description   : Given a handle and an output buffer polls trigger
+//
+//  Returns       :	error code to indicate if trigger was received
+//
+//  Notes		: Added by Greg Jefferis, 
+//    Depends on handle obtained by AIO_Usb_DIO_GetHandle
+//
+//  History	  :
+// 
+/********************************************************************/
+
+
+unsigned long
+AIO_Usb_DIO_ReadTriggerH (struct libusb_device_handle *handle,
+						 unsigned char  *pData,
+						 int triggerTimeout)
+{
+	int startTime, endTime; 
+	int	temp, ret;
+	
+	startTime = time(NULL);
+	endTime = startTime+triggerTimeout;
+	pData[11]=0;
+	
+	//TODO: Change this so that temp is explicitly stated (probably 0) to save on the subtraction operation
+	while (pData[11] == 0 && time(NULL) <= endTime) {
+
+		temp = pData[11];
+		
+		ret = libusb_control_transfer(handle,
+									  USB_READ_FROM_DEV,
+									  DIO_READ, 
+									  0, 
+									  0,
+									  pData,
+									  14, //changed from the original 4 to work with 96-channel board
+									  TIMEOUT_1_SEC);
+	}
+	
+	if (time(NULL)>startTime+triggerTimeout) {
+		return(15);
+	}else {
+		return(10);
+	}
+	
+	if (ret < 0)
+	{
+		debug("DBG>> AIO_Usb_DIO_ReadTriggerH : usb_control_msg failed dev = 0x%0x err=%d",(unsigned int)devIdx,ret);
+		return (ERROR_USB_CONTROL_MSG_FAILED);
+	}
+	else
+		return (ERROR_SUCCESS);
+}
+
+/********************************************************************/
+//
 //  Function Name : AIO_Usb_DIO_GetHandle
 //
 //  Description   : Given an AIO devide index returns a handle
