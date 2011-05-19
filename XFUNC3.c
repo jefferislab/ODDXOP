@@ -72,7 +72,6 @@ int d1,p1,o1,d2,p2,o2,d3,p3,o3,d4,p4,o4,d5,p5,o5;
 //Functions
 int triggerDetectFaster();
 int odourPulses(char *cfgFileName);
-int oddRunTest();
 int validateIndex(int devIdx);
 int initialise();
 void dataReset(int blankPort, int blankChan);
@@ -186,8 +185,12 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 	
 	if (ret > ERROR_SUCCESS)
 	{
-		printf ("\nDIO_Configure Failed  dev=0x%0x err=%d \n",(unsigned int)devIdx,ret);
+		char temp[256];
+		sprintf(temp, "\015DIO_Configure Failed dev=0x%0x err=%d\015Have you run AccesLoader?\015",(unsigned int)devIdx,ret);
+		XOPNotice(temp);
 		return(0);
+	} else {
+		XOPNotice("Successfully intialised Acces DIO card!\015");
 	}
 	return(0);	
 }
