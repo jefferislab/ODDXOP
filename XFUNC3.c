@@ -73,11 +73,7 @@ int d1,p1,o1,d2,p2,o2,d3,p3,o3,d4,p4,o4,d5,p5,o5;
 
 
 //Functions
-int triggerDetect();
-int triggerDetectFast();
 int triggerDetectFaster();
-int odourPulse(int delay, int odour, int duration);
-int odourPulsesSimple(int delay, int odour, int duration);
 int odourPulses(char *cfgFileName);
 int oddRunTest();
 int validateIndex(int devIdx);
@@ -402,83 +398,6 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 	XOPNotice("OK\015");
 	return(1);
 }
-
-
-int 
-triggerDetectFast()			//I thought that this triggerDetect() would be faster since is calls AIO_Usb_DIO_Read8()
-{							//HOWEVER, AIO_Usb_DIO_Read8() just uses AIO_Usb_DIO_ReadAll() anyway, so in fact this is slower
-	int						temp;
-	time_t					startTime;
-	unsigned char  byte;
-	byte = 0;
-	
-	startTime = time(NULL);
-	temp = 0;
-	
-	while (temp == 0&&time(NULL)<=startTime+triggerTimeout) {
-		ret = AIO_Usb_DIO_Read8 (devIdx,1,&byte);		//This is strange. The sequence goes 2,3,0,1, so the 
-		//last byte (DIO DXX has index 1 instead of 3 as you'd expect
-		//form: ret = AIO_Usb_DIO_Read8 (devIdx,byteIdx,&byte);
-		fprintf(fo," \nPINs 24-32, using read8: 0x%x\n",(unsigned char)byte);
-		temp=(unsigned char)byte;
-	}
-	
-	
-	if (time(NULL)>=startTime+triggerTimeout) {
-		XOPNotice("\015Trigger timeout. Try to do better.\015");
-		return(15);
-	}else {
-		fprintf(fo,"\nTrigger PINs 24-32, using AIO_USB_read8: 0x%x\n",(unsigned char)byte);
-		XOPNotice("\015Trigger detected. Here we go....\015");
-		return(10);
-	}
-	
-}
-
-
-int						//This triggerDetect() is OK, but it calls AIO_Usb_DIO_ReadAll(), which is pretty slow. 
-triggerDetect()			//Count on a 100ms trigger pulse at least
-{
-	
-    int						difference;
-	time_t					temp;
-	int						startTime;
-	
-	startTime = time(NULL);
-	
-	
-	ret = validateIndex(devIdx);
-	if (ret > ERROR_SUCCESS)
-		return(0);
-	
-	ret =   AIO_Usb_DIO_ReadAll (devIdx,(unsigned char *)&data[0]); 
-	if (ret > ERROR_SUCCESS)
-	{
-        fprintf (fo,"\n\nReadAll Failed dev=0x%0x err=%d  \n\n",(unsigned int)devIdx,ret);
-        return(0);
-	}
-	
-	
-	difference = 0;	
-	while (difference == 0&&time(NULL)<=startTime+triggerTimeout) {
-		temp = data[3];
-		ret =   AIO_Usb_DIO_ReadAll (devIdx,(unsigned char *)&data[0]); 
-		difference = temp - data[3];			
-		
-	}
-	
-	if (time(NULL)>=startTime+triggerTimeout) {
-		XOPNotice("\015Trigger timeout. Try to do better.\015");
-		return(15);
-	}else {
-		XOPNotice("\015Trigger detected. Here we go....\015");
-		return(10);
-	}
-	
-}
-//TODO: Standardise the return values. These ones are kinda crazy
-
-
 
 int 
 triggerDetectFaster()		//This triggerDetect calls a function AIO_Usb_DIO_ReadTrigger() that I added to the API
