@@ -24,7 +24,7 @@
 #include <math.h>
 #include <pthread.h>						// for nanosleep() call
 
-#include "aioUsbApi.h"
+#include "aioUsbExts.h"
 #include "XOPStandardHeaders.h"				// Include ANSI headers, Mac headers, IgorXOP.h, XOP.h and XOPSupport.h
 #include "XFUNC3.h"
 

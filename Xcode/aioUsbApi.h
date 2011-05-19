@@ -72,6 +72,13 @@
 
 
 
+// Debugging output macro 
+#ifdef DEBUG
+#define debug(...)  { (void) fprintf (stdout, __VA_ARGS__); }
+#else
+#define debug(...)  ((void) 0)
+#endif
+
 // USB Vendor Specific Requests
 
 #define DIO_CONFIG				0x12
@@ -364,16 +371,6 @@ AIO_Usb_DIO_Read8 (unsigned long  devIdx,
 unsigned long
 AIO_Usb_DIO_ReadAll (unsigned long   devIdx,
                      unsigned char  *pData);
-
-
-
-/////////////////////////
-unsigned long
-AIO_Usb_DIO_ReadTrigger (unsigned long   devIdx,
-						 unsigned char  *pData,
-						 int trgTO);
-
-
 
 unsigned long
 AIO_Usb_DIO_StreamOpen(unsigned long  devIdx,

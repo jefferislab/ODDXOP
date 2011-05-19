@@ -18,6 +18,8 @@
 		AAB6C124058803B000D4AD2E /* libXOPSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAB6C123058803B000D4AD2E /* libXOPSupport.a */; };
 		EF7475D91306ABEC0025C66D /* libusb-1.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EF7475D81306ABEC0025C66D /* libusb-1.0.dylib */; };
 		EFC5DBF51385422100E070A0 /* XFUNC3.h in Headers */ = {isa = PBXBuildFile; fileRef = EFC5DBF41385422100E070A0 /* XFUNC3.h */; };
+		EFC5DC09138545D900E070A0 /* aioUsbExts.h in Headers */ = {isa = PBXBuildFile; fileRef = EFC5DC07138545D900E070A0 /* aioUsbExts.h */; };
+		EFC5DC0A138545D900E070A0 /* aioUsbExts.c in Sources */ = {isa = PBXBuildFile; fileRef = EFC5DC08138545D900E070A0 /* aioUsbExts.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -46,6 +48,8 @@
 		AAB6C123058803B000D4AD2E /* libXOPSupport.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libXOPSupport.a; path = ../../XOPSupport/Xcode/libXOPSupport.a; sourceTree = SOURCE_ROOT; };
 		EF7475D81306ABEC0025C66D /* libusb-1.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libusb-1.0.dylib"; path = "/usr/local/lib/libusb-1.0.dylib"; sourceTree = "<absolute>"; };
 		EFC5DBF41385422100E070A0 /* XFUNC3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XFUNC3.h; path = ../XFUNC3.h; sourceTree = SOURCE_ROOT; };
+		EFC5DC07138545D900E070A0 /* aioUsbExts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = aioUsbExts.h; path = ../aioUsbExts.h; sourceTree = SOURCE_ROOT; };
+		EFC5DC08138545D900E070A0 /* aioUsbExts.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = aioUsbExts.c; path = ../aioUsbExts.c; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +106,8 @@
 				AAB6C1150588037500D4AD2E /* XFUNC3.c */,
 				EFC5DBF41385422100E070A0 /* XFUNC3.h */,
 				AAB6C1160588037500D4AD2E /* XFUNC3.r */,
+				EFC5DC07138545D900E070A0 /* aioUsbExts.h */,
+				EFC5DC08138545D900E070A0 /* aioUsbExts.c */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -125,6 +131,7 @@
 				31317005125DEA4D00FB8BC9 /* aioUsbApi.h in Headers */,
 				3131702C125DEB4500FB8BC9 /* libusb.h in Headers */,
 				EFC5DBF51385422100E070A0 /* XFUNC3.h in Headers */,
+				EFC5DC09138545D900E070A0 /* aioUsbExts.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -205,6 +212,7 @@
 			files = (
 				AAB6C1170588037500D4AD2E /* XFUNC3.c in Sources */,
 				31317004125DEA4D00FB8BC9 /* aioUsbApi.c in Sources */,
+				EFC5DC0A138545D900E070A0 /* aioUsbExts.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
