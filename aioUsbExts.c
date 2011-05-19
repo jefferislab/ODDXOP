@@ -30,7 +30,6 @@ AIO_Usb_DIO_ReadTrigger (unsigned long   devIdx,
 {
 	
 	int                 ret;
-	int					count;
     int					difference;
 	int					temp;
 	int					startTime; 
