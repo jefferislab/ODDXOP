@@ -149,27 +149,19 @@ void
 		XOPNotice("\015No config file entered. Let's use the default:\015");
 		XOPNotice("\015TODO: output the .odd file\015");
 		tmp = odourPulses(str);				//This allows a default value to be set
-		
-		if (tmp==10) {
-			XOPNotice("\015ERROR: Could not open config file. Try again ya wee lass.\015");
-		}
-		if (tmp==11) {
-			XOPNotice("\015ERROR: Could not open log file. Does the directory path exist?\015");
-		}
-		
-	}else {
+	} else {
 		XOPNotice("\015Config file entered. Let's use it.\015");
-		//XOPNotice("\015TODO: output the .odd file\015");
 		XOPNotice(cfg);
 		tmp = odourPulses(cfg);				//works
-		
-		if (tmp==10) {
-			XOPNotice("\015ERROR: Could not open config file. Try again ya wee lass.\015");
-		}
-		if (tmp==11) {
-			XOPNotice("\015ERROR: Could not open log file. Does the directory path exist?\015");
-		}
 	}
+	
+	if (tmp==10) {
+		XOPNotice("\015ERROR: Could not open config file. Try again ya wee lass.\015");
+	}
+	if (tmp==11) {
+		XOPNotice("\015ERROR: Could not open log file. Does the directory path exist?\015");
+	}
+	
 	return NULL;
 }
 
