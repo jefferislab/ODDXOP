@@ -20,9 +20,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
-#include <time.h>
+#include <time.h>	// for nanosleep() call
 #include <math.h>
-#include <pthread.h>						// for nanosleep() call
+#include <pthread.h>						
 
 #include "aioUsbExts.h"
 #include "XOPStandardHeaders.h"				// Include ANSI headers, Mac headers, IgorXOP.h, XOP.h and XOPSupport.h
