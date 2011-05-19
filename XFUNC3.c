@@ -84,16 +84,6 @@ int validateIndex(int devIdx);
 int initialise();
 void dataReset(int blankPort, int blankChan);
 
-
-//static void MyHello(void);				//Probably don't need
-void catchInterrupt (int signum);		//Before this was an XOP, could abort with ctrl-c
-
-//TODO: Figure out why I get an implicitly defined function wraning despite the fact that this definition is in aioUsbApi.h
-unsigned long
-AIO_Usb_DIO_ReadTrigger (unsigned long   devIdx,
-						 unsigned char  *pData,
-						 int trgTO);
-
 struct xstrcatParams  {
 	Handle str3;
 	Handle str2;
