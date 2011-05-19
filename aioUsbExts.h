@@ -15,3 +15,7 @@ unsigned long
 AIO_Usb_DIO_ReadTrigger (unsigned long   devIdx,
 						 unsigned char  *pData,
 						 int trgTO);
+
+unsigned long
+	AIO_Usb_DIO_GetHandle(unsigned long devIdx,
+						  struct libusb_device_handle *handle);

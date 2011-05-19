@@ -116,3 +116,55 @@ AIO_Usb_DIO_ReadTrigger (unsigned long   devIdx,
 	}
 }
 
+/********************************************************************/
+//
+//  Function Name : AIO_Usb_DIO_GetHandle
+//
+//  Description   : Given an AIO devide index returns a handle
+//
+//  Returns       :	lib_usb_device_handle for specified device
+//
+//  Notes		: Added by Greg Jefferis to permit faster batched read/writes
+//				  NB don't expect this to be used throughout a session
+//				  rather for a single sweep or perhaps series of sweeps
+//
+//  History	  :
+// 
+/********************************************************************/
+
+// Actually this seems more or less equivalent to getDevHandle
+
+unsigned long AIO_Usb_DIO_GetHandle(unsigned long devIdx, struct libusb_device_handle *handle)
+{
+	int                          ret;
+	
+//	if (pData == NULL)
+//	{
+//		debug("DBG>>AIO_ReadAll : pData is NULL \n"); 
+//		return (ERROR_INVALID_PARAM); 
+//	}
+	
+	ret = AIO_UsbValidateDeviceIndex(devIdx);
+	
+	if (ret > ERROR_SUCCESS)
+	{
+		debug("DBG>>AIO_Usb_DIO_GetHandle: invalid dev Index = 0x%0x \n",(unsigned int)devIdx); 
+		return (ret);
+	}
+	
+	ret = validateProductID(devIdx);
+	if (ret > ERROR_SUCCESS)
+	{
+		debug("DBG>>AIO_Usb_DIO_GetHandle: invalid Product ID for device = 0x%0x \n",(unsigned int)devIdx); 
+		return (ret);
+	}
+	
+	handle = getDevHandle(devIdx);
+	if (handle == NULL)
+	{
+		debug("DBG>> AIO_Usb_DIO_GetHandle : could not get device handle devIdx=%d \n",(unsigned int)devIdx);
+		return (ERROR_COULD_NOT_GET_DEVHANDLE);
+		
+	}
+	return ERROR_SUCCESS;	
+}
