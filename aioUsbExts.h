@@ -19,3 +19,12 @@ AIO_Usb_DIO_ReadTrigger (unsigned long   devIdx,
 unsigned long
 	AIO_Usb_DIO_GetHandle(unsigned long devIdx,
 						  struct libusb_device_handle *handle);
+
+unsigned long
+AIO_Usb_DIO_ReadTriggerH (struct libusb_device_handle *handle,
+						  unsigned char  *pData,
+						  int triggerTimeout);
+
+unsigned long
+AIO_Usb_WriteAllH(struct libusb_device_handle *handle,
+				  unsigned char *pData);
