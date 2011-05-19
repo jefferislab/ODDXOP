@@ -24,6 +24,7 @@
 #include <math.h>
 #include <pthread.h>						
 
+#include "libusb.h"
 #include "aioUsbExts.h"
 #include "XOPStandardHeaders.h"				// Include ANSI headers, Mac headers, IgorXOP.h, XOP.h and XOPSupport.h
 #include "XFUNC3.h"
@@ -35,6 +36,9 @@
 #define BLANK_NOT_SET -1
 
 int				devIdx;
+struct libusb_device_handle *usbhandle=NULL;
+pthread_t pulseThread;	// this is our thread identifier, used to call odourPulses() from its own thread
+
 char			anyKey;
 int				ctlC;
 
@@ -217,7 +221,7 @@ dataReset(int blankOdour)
 		data[port]=pow(2, blankOdour % BITS_PER_PORT);
 	}
 	
-	ret =   AIO_Usb_WriteAll (devIdx,
+	ret =   AIO_Usb_WriteAllH(usbhandle,
 							  data);
 }
 
@@ -281,6 +285,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
     int values[2];
 	int blankOdour = BLANK_NOT_SET;
 	int tmp,ret;
+	int retval=1;
 
 	while (fgets(s, 80, fi) != NULL) {
 		
@@ -336,21 +341,20 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 		}else if (tmp==15) {
 			XOPNotice("\015TriggerDetect() timed out.");
 			fprintf(fo, "TriggerDetect() timed out. Aborting");
-			fclose(fi);fclose(fo);
+			retval =0;
+			goto threaddone;
 
 			return(0);
 		}else if (tmp==0) {
 			XOPNotice("\015TriggerDetect() failed.");
 			fprintf(fo, "TriggerDetect() failed for some reason besides timeout.");
-			fclose(fi);fclose(fo);
-
-			return(0);
+			retval =0;
+			goto threaddone;
 		}else {
 			XOPNotice("\015TriggerDetect() timed out.");
 			fprintf(fo, "\nTimed out with counter = %d\n",tmp);
-			fclose(fi);fclose(fo);
-			
-			return(0);
+			retval =0;
+			goto threaddone;
 		}
 
 		triggerTimeout=20;
@@ -375,7 +379,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					data[9]=1;
 					usleep(1000*delayTime);
 					data[port]=pow(2, odour % BITS_PER_PORT);
-					ret =   AIO_Usb_WriteAll (devIdx,
+					ret =   AIO_Usb_WriteAllH(usbhandle,
 											  data);
 					usleep(1000*stimTime);
 					if (blankOdour == BLANK_NOT_SET) {
@@ -397,10 +401,17 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 			XOPNotice("OK, Odours done.\015");
 		}
 	}
+threaddone:
 	XOPNotice("\015Closing files.....");
 	fclose(fi);fclose(fo);
 	XOPNotice("OK\015");
-	return(1);
+	XOPNotice("\015Closing usb handle .....");
+	libusb_close(usbhandle);
+	// set handle to null explicitly (thought this would happen anyway, but ...
+	usbhandle=NULL;
+	// set pthread to null
+	pulseThread = NULL;
+	return(retval);
 }
 
 int 
@@ -415,7 +426,7 @@ triggerDetectFaster()		//This triggerDetect calls a function AIO_Usb_DIO_ReadTri
 	//return(10);
 	
 	XOPNotice("\015Attempting to use the fast trigger loop...");
-	ret =   AIO_Usb_DIO_ReadTrigger (devIdx,(unsigned char *)&data[0],triggerTimeout); 
+	ret =   AIO_Usb_DIO_ReadTriggerH(usbhandle,(unsigned char *)&data[0],triggerTimeout);
 	
 	if (ret > ERROR_SUCCESS)
 	{
@@ -445,11 +456,11 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	
 	str1 = NIL;							/* if error occurs, result is NIL */
 	if (p->str2 == NIL) {				/* error –– input string does not exist */
-		err = NO_INPUT_STRING;
+		err = MISSING_INPUT_PARAM;
 		goto done;
 	}
 	if (p->str3 == NIL)	{				/* error –– input string does not exist */
-		err = NO_INPUT_STRING;
+		err = MISSING_INPUT_PARAM;
 		goto done;
 	}
 	
@@ -475,8 +486,41 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 	//strcpy(cfg,*p->str2);
 	GetCStringFromHandle(p->str2, cfg, 255);
 	GetCStringFromHandle(p->str3, lg, 255);
-		
-	pthread_t pulseThread;	// this is our thread identifier, used to call odourPulses() from its own thread
+	
+	// Get a handle for current USB device
+	if(usbhandle!=NULL){
+		// already open - we need to close it
+		// and kill the thread
+		XOPNotice("Usb handle already open - bailing to wait for previous thread to timeout");
+		err = ACCES_STILL_RUNNING;
+		goto done;
+	}
+//	if(pulseThread!=NULL){
+//		XOPNotice("Cancelling existing thread");
+//		int ret = pthread_cancel(pulseThread);
+//		// bail if we failed to kill thread - this is problaby going to mean 
+//		// a restart
+//		if (ret>0) {
+//			XOPNotice("Failed to cancel existing thread, bailing out");
+//			goto done;
+//		}
+//		pulseThread=NULL;
+//	}
+	// Get device handle
+	XOPNotice("Obtaining ACCES DIO device handle\015");
+	usbhandle=getDevHandle(devIdx);
+//	ret=AIO_Usb_DIO_GetHandle(devIdx, usbhandle);
+	if(usbhandle==NULL){
+		XOPNotice("Failed to get a handle to Access DIO USB device");
+		err = CANT_ACCESS_ACCES;
+		goto done;
+	}
+
+//	if(ret!=ERROR_SUCCESS){
+//		// We didn't manage to get a handle
+//		XOPNotice("Failed to get a handle to Access DIO USB device");
+//		goto done;
+//	}
 	
 	//pthread_create(&pth,NULL,threadFunc,"foo");			//Original
 	pthread_create(&pulseThread,NULL,threadFunc,"cfgFile.odd");		//GOOD: sets cfgFile.odd as the default config file in case there is no input
