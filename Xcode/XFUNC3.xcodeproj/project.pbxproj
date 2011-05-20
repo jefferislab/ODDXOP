@@ -44,10 +44,10 @@
 		8D01CCD10486CAD60068D4B7 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8D01CCD20486CAD60068D4B7 /* XFUNC3.xop */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XFUNC3.xop; sourceTree = BUILT_PRODUCTS_DIR; };
 		AAB6C1150588037500D4AD2E /* XFUNC3.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = XFUNC3.c; path = ../XFUNC3.c; sourceTree = SOURCE_ROOT; };
-		AAB6C1160588037500D4AD2E /* XFUNC3.r */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.rez; name = XFUNC3.r; path = ../XFUNC3.r; sourceTree = SOURCE_ROOT; };
+		AAB6C1160588037500D4AD2E /* XFUNC3.r */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.rez; lineEnding = 0; name = XFUNC3.r; path = ../XFUNC3.r; sourceTree = SOURCE_ROOT; };
 		AAB6C123058803B000D4AD2E /* libXOPSupport.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libXOPSupport.a; path = ../../XOPSupport/Xcode/libXOPSupport.a; sourceTree = SOURCE_ROOT; };
 		EF7475D81306ABEC0025C66D /* libusb-1.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libusb-1.0.dylib"; path = "/usr/local/lib/libusb-1.0.dylib"; sourceTree = "<absolute>"; };
-		EFC5DBF41385422100E070A0 /* XFUNC3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XFUNC3.h; path = ../XFUNC3.h; sourceTree = SOURCE_ROOT; };
+		EFC5DBF41385422100E070A0 /* XFUNC3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = XFUNC3.h; path = ../XFUNC3.h; sourceTree = SOURCE_ROOT; };
 		EFC5DC07138545D900E070A0 /* aioUsbExts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = aioUsbExts.h; path = ../aioUsbExts.h; sourceTree = SOURCE_ROOT; };
 		EFC5DC08138545D900E070A0 /* aioUsbExts.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = aioUsbExts.c; path = ../aioUsbExts.c; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
