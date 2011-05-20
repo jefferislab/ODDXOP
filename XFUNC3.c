@@ -74,7 +74,7 @@ int triggerDetectFaster();
 int odourPulses(char *cfgFileName);
 int validateIndex(int devIdx);
 int initialise();
-void dataReset(int blankPort, int blankChan);
+void dataReset(int blankOdour);
 
 struct xstrcatParams  {
 	Handle str3;
@@ -132,18 +132,18 @@ void
 		XOPNotice("\015No config file entered. Let's use the default:\015");
 		XOPNotice("\015TODO: output the .odd file\015");
 		tmp = odourPulses(str);				//This allows a default value to be set
-	} else {
+	}else {
 		XOPNotice("\015Config file entered. Let's use it.\015");
 		XOPNotice(cfg);
 		tmp = odourPulses(cfg);				//works
 	}
-	
-	if (tmp==10) {
-		XOPNotice("\015ERROR: Could not open config file. Try again ya wee lass.\015");
-	}
-	if (tmp==11) {
-		XOPNotice("\015ERROR: Could not open log file. Does the directory path exist?\015");
-	}
+		
+		if (tmp==10) {
+			XOPNotice("\015ERROR: Could not open config file. Try again ya wee lass.\015");
+		}
+		if (tmp==11) {
+			XOPNotice("\015ERROR: Could not open log file. Does the directory path exist?\015");
+		}
 	
 	return NULL;
 }
@@ -156,7 +156,7 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 //	unsigned short  mask;			//for DIO_32
 //	unsigned char  data[4];			//for DIO_32
 	unsigned char  data[12];		//for DIO_96
-	int            triState;
+	int            triState; 
 	int	ret;
 
 	mask[0]=0xFF;	//sets the first 8 ports to output
@@ -197,7 +197,7 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 
 
 void
-dataReset(int blankPort, int blankChan)
+dataReset(int blankOdour)
 {
 	int ret;
 	
@@ -212,9 +212,9 @@ dataReset(int blankPort, int blankChan)
 	
 	data[9]=0x00;
 	
-	if (blankPort >= 0 && blankPort < MAX_ODOUR_PORTS 
-			&& blankChan >= 0 && blankChan < BITS_PER_PORT) {
-		data[blankPort]=pow(2,blankChan);
+	if (blankOdour >= 0 && blankOdour < MAX_ODOURS ) {
+		int port = blankOdour/BITS_PER_PORT;
+		data[port]=pow(2, blankOdour % BITS_PER_PORT);
 	}
 	
 	ret =   AIO_Usb_WriteAll (devIdx,
@@ -279,8 +279,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 	int delayTimes[MAX_ODOURS_PER_LINE];
 	char key[50];
     int values[2];
-	int blankPort = BLANK_NOT_SET;
-	int blankchan = BLANK_NOT_SET;
+	int blankOdour = BLANK_NOT_SET;
 	int tmp,ret;
 
 	while (fgets(s, 80, fi) != NULL) {
@@ -295,9 +294,8 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 				continue;
 			}
 			if (0==strcmp("blank", key)) {
-				if (3 == sscanf(s,"! %s = %d %d", key, &values[0], &values[1])){
-					blankPort = values[0];
-					blankchan = values[1];
+				if (2 == sscanf(s,"! %s = %d", key, &values[0])){
+					blankOdour = values[0];
 				} else {
 					fprintf(fo,"\nERROR: malformed key value pair. Skipping line.");
 					XOPNotice("\015ERROR: malformed key value pair. Skipping line.");
@@ -368,10 +366,11 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 			if (stimTime!=0) {
 				port = odour/BITS_PER_PORT;
 				if (odour>=0 && odour<MAX_ODOURS) {
-					if (blankPort == BLANK_NOT_SET) {
-						dataReset(port, 0);
+					if (blankOdour == BLANK_NOT_SET) {
+						dataReset(port*BITS_PER_PORT);
 					} else {
-						dataReset(blankPort, blankchan);
+						
+						dataReset(blankOdour);
 					}
 					data[9]=1;
 					usleep(1000*delayTime);
@@ -379,10 +378,10 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					ret =   AIO_Usb_WriteAll (devIdx,
 											  data);
 					usleep(1000*stimTime);
-					if (blankPort == BLANK_NOT_SET) {
-						dataReset(port, 0);
+					if (blankOdour == BLANK_NOT_SET) {
+						dataReset(port*BITS_PER_PORT);
 					} else {
-						dataReset(blankPort, blankchan);
+						dataReset(blankOdour);
 					}
 					usleep(1000*postDelay);
 					
