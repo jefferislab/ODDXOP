@@ -19,11 +19,11 @@ resource 'STR#' (1100) {					/* custom error messages */
 		/* [2] */
 		"XFUNC3 XOP was called to execute an unknown function.",
 		/* [3] */
-		"Missing input parameter.",
+		"ODD: Missing input parameter.",
 		/* [4] */
-		"Unable to communicate with Acces DIO card.",
+		"ODD: Unable to communicate with Acces DIO card.",
 		/* [5] */
-		"Previous stimulus still running - please wait for timeout",
+		"ODD: Previous stimulus still running - please wait for timeout",
 	}
 };
 
