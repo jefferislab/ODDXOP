@@ -166,7 +166,6 @@
 			isa = PBXProject;
 			buildConfigurationList = 89155228093FB1640062870E /* Build configuration list for PBXProject "XFUNC3" */;
 			compatibilityVersion = "Xcode 2.4";
-			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				English,
