@@ -3,11 +3,16 @@
 	089C1669FE841209C02AAC07 /* Project object */ = {
 		activeArchitecturePreference = i386;
 		activeBuildConfigurationName = Debug;
+		activeExecutable = 3137309D1386EBF200245D14 /* Igor */;
+		activeSDKPreference = macosx10.5;
 		activeTarget = 8D01CCC60486CAD60068D4B7 /* XFUNC3 */;
 		addToTargets = (
 			8D01CCC60486CAD60068D4B7 /* XFUNC3 */,
 		);
 		codeSenseManager = 313074CF11C002DA005E3702 /* Code sense */;
+		executables = (
+			3137309D1386EBF200245D14 /* Igor */,
+		);
 		perUserDictionary = {
 			PBXConfiguration.PBXFileTableDataSource3.PBXErrorsWarningsDataSource = {
 				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
@@ -29,7 +34,7 @@
 				PBXFileTableDataSourceColumnWidthsKey = (
 					22,
 					300,
-					534.58349609375,
+					788,
 				);
 				PBXFileTableDataSourceColumnsKey = (
 					PBXExecutablesDataSource_ActiveFlagID,
@@ -92,7 +97,7 @@
 				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
-					1070,
+					860,
 					60,
 					20,
 					48,
@@ -109,8 +114,8 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 327609999;
-			PBXWorkspaceStateSaveDate = 327609999;
+			PBXPerProjectTemplateStateSaveDate = 327609877;
+			PBXWorkspaceStateSaveDate = 327609877;
 		};
 		perUserProjectItems = {
 			310106F011EB7F0A00C3C7E8 /* PBXTextBookmark */ = 310106F011EB7F0A00C3C7E8 /* PBXTextBookmark */;
@@ -119,6 +124,8 @@
 			31317017125DEAFE00FB8BC9 /* PBXTextBookmark */ = 31317017125DEAFE00FB8BC9 /* PBXTextBookmark */;
 			31317043125DEB9700FB8BC9 /* PBXTextBookmark */ = 31317043125DEB9700FB8BC9 /* PBXTextBookmark */;
 			313170A6125E16AF00FB8BC9 /* PBXTextBookmark */ = 313170A6125E16AF00FB8BC9 /* PBXTextBookmark */;
+			313730AE1386EDDA00245D14 /* PBXTextBookmark */ = 313730AE1386EDDA00245D14 /* PBXTextBookmark */;
+			3197109B1386EE170097039F /* PBXTextBookmark */ = 3197109B1386EE170097039F /* PBXTextBookmark */;
 			31A46C5C1225547D0081BFB7 /* PBXTextBookmark */ = 31A46C5C1225547D0081BFB7 /* PBXTextBookmark */;
 			31B66B2011E7245D00BF2BE2 /* PBXTextBookmark */ = 31B66B2011E7245D00BF2BE2 /* PBXTextBookmark */;
 			31B66B2211E7245D00BF2BE2 /* PBXTextBookmark */ = 31B66B2211E7245D00BF2BE2 /* PBXTextBookmark */;
@@ -229,6 +236,74 @@
 		vrLen = 902;
 		vrLoc = 919;
 	};
+	3137309D1386EBF200245D14 /* Igor */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 0;
+		configStateDict = {
+			"PBXLSLaunchAction-0" = {
+				PBXLSLaunchAction = 0;
+				PBXLSLaunchStartAction = 1;
+				PBXLSLaunchStdioStyle = 2;
+				PBXLSLaunchStyle = 0;
+				class = PBXLSRunLaunchConfig;
+				commandLineArgs = (
+				);
+				displayName = "Executable Runner";
+				environment = {
+				};
+				identifier = com.apple.Xcode.launch.runConfig;
+				remoteHostInfo = "";
+				startActionInfo = "";
+			};
+		};
+		customDataFormattersEnabled = 1;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		launchableReference = 3137309E1386EBF200245D14 /* Igor Pro.app */;
+		libgmallocEnabled = 0;
+		name = Igor;
+		sourceDirectories = (
+		);
+		startupPath = "/Applications/Igor Pro 6.2 Folder/Igor Extensions";
+	};
+	3137309E1386EBF200245D14 /* Igor Pro.app */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = wrapper.application;
+		name = "Igor Pro.app";
+		path = "/Applications/Igor Pro 6.2 Folder/Igor Pro.app";
+		sourceTree = "<absolute>";
+	};
+	313730AE1386EDDA00245D14 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = AAB6C1150588037500D4AD2E /* XFUNC3.c */;
+		name = "XFUNC3.c: 174";
+		rLen = 0;
+		rLoc = 3932;
+		rType = 0;
+		vrLen = 1501;
+		vrLoc = 5134;
+	};
+	3197109B1386EE170097039F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = AAB6C1150588037500D4AD2E /* XFUNC3.c */;
+		name = "XFUNC3.c: 174";
+		rLen = 0;
+		rLoc = 3932;
+		rType = 0;
+		vrLen = 1486;
+		vrLoc = 5134;
+	};
 	31A46C5C1225547D0081BFB7 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = 32BAE0B30371A71500C91783 /* XFUNC3_Prefix.pch */;
@@ -277,9 +352,9 @@
 	};
 	AAB6C1150588037500D4AD2E /* XFUNC3.c */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1311, 18213}}";
-			sepNavSelRange = "{20236, 0}";
-			sepNavVisRange = "{18592, 771}";
+			sepNavIntBoundsRect = "{{0, 0}, {1078, 8820}}";
+			sepNavSelRange = "{3932, 0}";
+			sepNavVisRange = "{5134, 1486}";
 			sepNavWindowFrame = "{{1342, 473}, {985, 795}}";
 		};
 	};
