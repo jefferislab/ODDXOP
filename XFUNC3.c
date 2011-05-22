@@ -46,6 +46,7 @@ pthread_t pulseThread;	// this is our thread identifier, used to call odourPulse
 char			anyKey;
 int				ctlC;
 
+int				delayTime;
 int				postDelay;
 int				doIHaveAnError;
 int				triggerTimeout;
