@@ -39,14 +39,13 @@
 #define MAX_ODOURS (BITS_PER_PORT * MAX_ODOUR_PORTS)
 #define BLANK_NOT_SET -1
 
-int				devIdx;
+int				myDevIdx;
 struct libusb_device_handle *usbhandle=NULL;
 pthread_t pulseThread;	// this is our thread identifier, used to call odourPulses() from its own thread
 
 char			anyKey;
 int				ctlC;
 
-int				delayTime;
 int				postDelay;
 int				doIHaveAnError;
 int				triggerTimeout;
@@ -234,7 +233,7 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 	data[10]=0x00;
 	data[11]=0x00;
 	
-	ret =   AIO_Usb_DIO_Configure (devIdx,	//writes and configures
+	ret =   AIO_Usb_DIO_Configure (myDevIdx,	//writes and configures
 								   triState,
 								   mask,
 								   data);
@@ -242,7 +241,7 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 	if (ret > ERROR_SUCCESS)
 	{
 		char temp[256];
-		sprintf(temp, "\015DIO_Configure Failed dev=0x%0x err=%d\015Have you run AccesLoader?\015",(unsigned int)devIdx,ret);
+		sprintf(temp, "\015DIO_Configure Failed dev=0x%0x err=%d\015Have you run AccesLoader?\015",(unsigned int)myDevIdx,ret);
 		XOPNotice(temp);
 		return(0);
 	} else {
@@ -473,7 +472,7 @@ int
 triggerDetectFaster()		//This triggerDetect calls a function AIO_Usb_DIO_ReadTrigger() that I added to the API
 {							//It is sufficiently fast
 	int ret;
-	ret = validateIndex(devIdx);
+	ret = validateIndex(myDevIdx);
 	if (ret > ERROR_SUCCESS)
 		return(0);
 
@@ -485,7 +484,7 @@ triggerDetectFaster()		//This triggerDetect calls a function AIO_Usb_DIO_ReadTri
 	
 	if (ret > ERROR_SUCCESS)
 	{
-        fprintf (fo,"\n\nReadAll Failed dev=0x%0x err=%d  \n\n",(unsigned int)devIdx,ret);
+        fprintf (fo,"\n\nReadAll Failed dev=0x%0x err=%d  \n\n",(unsigned int)myDevIdx,ret);
         return(0);
 	}
 	
@@ -563,7 +562,7 @@ xstrcat(xstrcatParams* p)				/* str1 = xstrcat(str2, str3) */
 //	}
 	// Get device handle
 	XOPNotice("Obtaining ACCES DIO device handle\015");
-	usbhandle=getDevHandle(devIdx);
+	usbhandle=getDevHandle(myDevIdx);
 //	ret=AIO_Usb_DIO_GetHandle(devIdx, usbhandle);
 	if(usbhandle==NULL){
 		XOPNotice("Failed to get a handle to Access DIO USB device");
@@ -684,7 +683,7 @@ main(IORecHandle ioRecHandle)
 	
 	ret = AIO_Usb_GetDevices(&aioDevices);
 	
-	devIdx = aioDevices.aioDevList[0].devIdx;		// use the first device found
+	myDevIdx = aioDevices.aioDevList[0].devIdx;		// use the first device found
 	
 	// Initialise the Acces DIO board so that pins have a default direction and state
 	// (so that air starts to flow through ODD)
