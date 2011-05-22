@@ -58,7 +58,6 @@ char			logFile[255];
 char			cfg[255];
 char			lg[255];
 
-
 //For the ACCES API calls
 unsigned char	mask[2]; 
 unsigned char	data[12];
@@ -83,7 +82,7 @@ int odourPulses(char *cfgFileName);
 int validateIndex(int devIdx);
 int initialise();
 void dataReset(int blankOdour);
-uint64_t GetPIDTimeInNanoseconds(void);
+uint64_t GetAbsTimeInNanoseconds(void);
 
 struct xstrcatParams  {
 	Handle str3;
@@ -102,34 +101,15 @@ typedef struct xstrcatParams xstrcatParams;
 
 // See
 // http://developer.apple.com/library/mac/#qa/qa2004/qa1398.html
-uint64_t GetPIDTimeInNanoseconds(void)
+uint64_t GetAbsTimeInNanoseconds(void)
 {
-    uint64_t        start;
-    uint64_t        end;
-    uint64_t        elapsed;
-    uint64_t        elapsedNano;
+    uint64_t        abstime;
+    uint64_t        abstimenano;
     static mach_timebase_info_data_t    sTimebaseInfo;
 
     // Start the clock.
 
-    start = mach_absolute_time();
-
-    // Call getpid.  This will produce inaccurate results because
-    // we're only making a single system call.  For more accurate
-    // results you should call getpid multiple times and average
-    // the results.
-
-    (void) getpid();
-
-    // Stop the clock.
-
-    end = mach_absolute_time();
-
-    // Calculate the duration.
-
-    elapsed = end - start;
-
-    // Convert to nanoseconds.
+    abstime = mach_absolute_time();
 
     // If this is the first time we've run, get the timebase.
     // We can use denom == 0 to indicate that sTimebaseInfo is
@@ -143,9 +123,9 @@ uint64_t GetPIDTimeInNanoseconds(void)
     // Do the maths.  We hope that the multiplication doesn't
     // overflow; the price you pay for working in fixed point.
 
-    elapsedNano = elapsed * sTimebaseInfo.numer / sTimebaseInfo.denom;
+    abstimenano= abstime * sTimebaseInfo.numer / sTimebaseInfo.denom;
 
-    return elapsedNano;
+    return abstimenano;
 }
 
 
@@ -385,7 +365,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 		XOPNotice("\015I found an entry in the .odd file. Can I please have a trigger?\015");
 		fprintf(fo, "\nNonzero p1 detected. Running line %d: %s",i,s);
 		tmp=triggerDetectFaster();
-		uint64_t triggerTime=GetPIDTimeInNanoseconds();
+		uint64_t triggerTime=GetAbsTimeInNanoseconds();
 		//tmp=triggerDetectFast();
 		//tmp=triggerDetect();
 		if (tmp==10) {
@@ -436,7 +416,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					uint64_t stimStartTime = 1e6*delayTime+triggerTime; // nb convert ms -> ns
 					uint64_t deltaStartTime;
 					while (1) {
-						deltaStartTime=GetPIDTimeInNanoseconds()-stimStartTime;
+						deltaStartTime=GetAbsTimeInNanoseconds()-stimStartTime;
 						if	(deltaStartTime>=0) {
 							break;
 						}
