@@ -437,14 +437,14 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 				} else {
 					fprintf(fo,"\nERROR: you've asked for an odour that I can't provide. I'm quitting");
 					XOPNotice("\015ERROR: you've asked for an odour that I can't provide. I'm quitting");
-					fclose(fi);fclose(fo);
-					return(0);
+					retval=0;
+					goto threaddone;
 				}
 				fprintf(fo, "Applied odour %d for %dms, after a %dms delay\n",odour,stimTime,delayTime);
 			}
-
-			XOPNotice("OK, Odours done.\015");
 		}
+		XOPNotice("OK, Odours done for this line.\015");
+		usleep(1000*postDelay);
 	}
 threaddone:
 	XOPNotice("\015Closing files.....");
