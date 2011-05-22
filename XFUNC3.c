@@ -128,6 +128,33 @@ uint64_t GetAbsTimeInNanoseconds(void)
     return abstimenano;
 }
 
+int64_t waitNanoSecDelayFromAbsTime(uint64_t delay,uint64_t startTime){
+	// Waits a specified number of nanoseconds from the absolute start time
+	// returns excess wait time in nanoseconds
+	
+	// Uses usleep to sleep the required amount of time and when <2 ms
+	// remains, switches to a loop conditioned on abs time in nanoseconds
+	int64_t timeRemaining,finishTime;
+	finishTime = startTime + delay;
+	uint64_t timeToUsleep; // in microseconds
+	
+	while (1) {
+		timeRemaining=finishTime-GetAbsTimeInNanoseconds();
+		if(timeRemaining<=0) break;
+		if(timeRemaining>2000000){
+			// >2,000 us (1E6 ns) left, usleep that much less 1000 us
+			// in my hands delay returning from usleep is ~ 100 us
+			timeToUsleep = timeRemaining / 1000 - 1000;
+			// Note that POSIX usleep is only defined up to 1s
+			// but macos usleep works up to maxuint32 (4294967295 us / 4294s)
+			// if(timeToUsleep >= 1000000){ // more than a second
+			// 	timeToUsleep=999999;
+			// }
+			usleep(timeToUsleep);
+		}
+	}
+	return -timeRemaining;
+}
 
 void									//Old
 catchInterrupt (int signum) 
