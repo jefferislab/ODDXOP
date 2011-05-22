@@ -46,10 +46,7 @@ pthread_t pulseThread;	// this is our thread identifier, used to call odourPulse
 char			anyKey;
 int				ctlC;
 
-int				stimTime;
-int				delayTime;
 int				postDelay;
-int				odour;
 int				doIHaveAnError;
 int				triggerTimeout;
 
@@ -57,7 +54,6 @@ char			configFile[255];
 char			logFile[255];
 char			cfg[255];
 char			lg[255];
-
 
 //For the ACCES API calls
 unsigned char	mask[2]; 
@@ -69,13 +65,7 @@ unsigned int	byteIdx;
 
 //Pointers to logfile and configfile
 FILE* fi; 
-FILE* fo; 
-
-
-//Values to be read from config file
-char ch, s[80], chID1[10], chID2[10], chID3[10], chID4[10], chID5[10];
-int d1,p1,o1,d2,p2,o2,d3,p3,o3,d4,p4,o4,d5,p5,o5;
-
+FILE* fo;
 
 //Functions
 int triggerDetectFaster();
@@ -83,7 +73,7 @@ int odourPulses(char *cfgFileName);
 int validateIndex(int devIdx);
 int initialise();
 void dataReset(int blankOdour);
-uint64_t GetPIDTimeInNanoseconds(void);
+uint64_t GetAbsTimeInNanoseconds(void);
 
 struct xstrcatParams  {
 	Handle str3;
@@ -102,34 +92,15 @@ typedef struct xstrcatParams xstrcatParams;
 
 // See
 // http://developer.apple.com/library/mac/#qa/qa2004/qa1398.html
-uint64_t GetPIDTimeInNanoseconds(void)
+uint64_t GetAbsTimeInNanoseconds(void)
 {
-    uint64_t        start;
-    uint64_t        end;
-    uint64_t        elapsed;
-    uint64_t        elapsedNano;
+    uint64_t        abstime;
+    uint64_t        abstimenano;
     static mach_timebase_info_data_t    sTimebaseInfo;
 
     // Start the clock.
 
-    start = mach_absolute_time();
-
-    // Call getpid.  This will produce inaccurate results because
-    // we're only making a single system call.  For more accurate
-    // results you should call getpid multiple times and average
-    // the results.
-
-    (void) getpid();
-
-    // Stop the clock.
-
-    end = mach_absolute_time();
-
-    // Calculate the duration.
-
-    elapsed = end - start;
-
-    // Convert to nanoseconds.
+    abstime = mach_absolute_time();
 
     // If this is the first time we've run, get the timebase.
     // We can use denom == 0 to indicate that sTimebaseInfo is
@@ -143,11 +114,38 @@ uint64_t GetPIDTimeInNanoseconds(void)
     // Do the maths.  We hope that the multiplication doesn't
     // overflow; the price you pay for working in fixed point.
 
-    elapsedNano = elapsed * sTimebaseInfo.numer / sTimebaseInfo.denom;
+    abstimenano= abstime * sTimebaseInfo.numer / sTimebaseInfo.denom;
 
-    return elapsedNano;
+    return abstimenano;
 }
 
+int64_t waitNanoSecDelayFromAbsTime(uint64_t delay,uint64_t startTime){
+	// Waits a specified number of nanoseconds from the absolute start time
+	// returns excess wait time in nanoseconds
+	
+	// Uses usleep to sleep the required amount of time and when <2 ms
+	// remains, switches to a loop conditioned on abs time in nanoseconds
+	int64_t timeRemaining,finishTime;
+	finishTime = startTime + delay;
+	uint64_t timeToUsleep; // in microseconds
+	
+	while (1) {
+		timeRemaining=finishTime-GetAbsTimeInNanoseconds();
+		if(timeRemaining<=0) break;
+		if(timeRemaining>2000000){
+			// >2,000 us (1E6 ns) left, usleep that much less 1000 us
+			// in my hands delay returning from usleep is ~ 100 us
+			timeToUsleep = timeRemaining / 1000 - 1000;
+			// Note that POSIX usleep is only defined up to 1s
+			// but macos usleep works up to maxuint32 (4294967295 us / 4294s)
+			// if(timeToUsleep >= 1000000){ // more than a second
+			// 	timeToUsleep=999999;
+			// }
+			usleep(timeToUsleep);
+		}
+	}
+	return -timeRemaining;
+}
 
 void									//Old
 catchInterrupt (int signum) 
@@ -329,7 +327,6 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 	
 	postDelay=1000;
 	
-//TODO: Change this to depend on the number of lines in the .odd file
 	int i=0;
 	int stimTimes[MAX_ODOURS_PER_LINE];
 	int odours[MAX_ODOURS_PER_LINE];
@@ -339,6 +336,9 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 	int blankOdour = BLANK_NOT_SET;
 	int tmp,ret;
 	int retval=1;
+	uint64_t stimStartTime, stimEndTime, cumulativeTime;
+	//Values to be read from config file
+	char s[80], chID[80];
 
 	while (fgets(s, 80, fi) != NULL) {
 		
@@ -367,7 +367,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 		
 		i++;
 
-		sscanf(s,"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",(char*)chID1, 
+		sscanf(s,"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",(char*)chID, 
 			   &delayTimes[0], &stimTimes[0], &odours[0],
 			   &delayTimes[1], &stimTimes[1], &odours[1],
 			   &delayTimes[2], &stimTimes[2], &odours[2],
@@ -385,9 +385,8 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 		XOPNotice("\015I found an entry in the .odd file. Can I please have a trigger?\015");
 		fprintf(fo, "\nNonzero p1 detected. Running line %d: %s",i,s);
 		tmp=triggerDetectFaster();
-		uint64_t triggerTime=GetPIDTimeInNanoseconds();
-		//tmp=triggerDetectFast();
-		//tmp=triggerDetect();
+		uint64_t triggerTime=GetAbsTimeInNanoseconds();
+
 		if (tmp==10) {
 			XOPNotice("\015Trigger detected. Executing protocol...");
 			fprintf(fo, "Trigger detected. Executing sequence.\n");
@@ -414,57 +413,47 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 		triggerTimeout=20;
 		
 		int j, port;
+		cumulativeTime=0;
 		for(j=0;j < MAX_ODOURS_PER_LINE; j++){
 			
-			stimTime=stimTimes[j];
-			odour=odours[j];
-			delayTime=delayTimes[j];
+			// calculate absolute times in nanoseconds for events wrt trigger
+			stimStartTime=delayTimes[j]*1e6L+cumulativeTime;
+			stimEndTime=stimTimes[j]*1e6L+stimStartTime;
+			cumulativeTime=stimEndTime;
 			
-			
-			if (stimTime!=0) {
-				port = odour/BITS_PER_PORT;
-				if (odour>=0 && odour<MAX_ODOURS) {
+			if (stimTimes[j]!=0) {
+				port = odours[j]/BITS_PER_PORT;
+				if (odours[j]>=0 && odours[j]<MAX_ODOURS) {
 					if (blankOdour == BLANK_NOT_SET) {
 						dataReset(port*BITS_PER_PORT);
 					} else {
-						
 						dataReset(blankOdour);
 					}
-					data[9]=1;
-					
-					usleep(1000*delayTime);
-					uint64_t stimStartTime = 1e6*delayTime+triggerTime; // nb convert ms -> ns
-					uint64_t deltaStartTime;
-					while (1) {
-						deltaStartTime=GetPIDTimeInNanoseconds()-stimStartTime;
-						if	(deltaStartTime>=0) {
-							break;
-						}
-					}
-					data[port]=pow(2, odour % BITS_PER_PORT);
+					data[9]=1; // this output will confirm that we have received the trigger
+					data[port]=pow(2, odours[j] % BITS_PER_PORT);
+					int64_t starttimeerror=waitNanoSecDelayFromAbsTime(stimStartTime, triggerTime);
 					ret =   AIO_Usb_WriteAllH(usbhandle,
 											  data);
-					usleep(1000*stimTime);
+					int64_t pulselengtherror=waitNanoSecDelayFromAbsTime(stimEndTime, triggerTime);
 					if (blankOdour == BLANK_NOT_SET) {
 						dataReset(port*BITS_PER_PORT);
 					} else {
 						dataReset(blankOdour);
 					}
-					usleep(1000*postDelay);
-					fprintf(fo,"\015INFO: deltaStartTime was %g.",(double) deltaStartTime);
-					
+					fprintf(fo,"\nINFO: starttime error was %g ms.",(double) starttimeerror/1000000.0);
+					fprintf(fo,"\nINFO: pulselength error was %g ms.",(double) pulselengtherror/1000000.0);
 					
 				} else {
 					fprintf(fo,"\nERROR: you've asked for an odour that I can't provide. I'm quitting");
 					XOPNotice("\015ERROR: you've asked for an odour that I can't provide. I'm quitting");
-					fclose(fi);fclose(fo);
-					return(0);
+					retval=0;
+					goto threaddone;
 				}
-				fprintf(fo, "Applied odour %d for %dms, after a %dms delay\n",odour,stimTime,delayTime);
+				fprintf(fo, "Applied odour %d for %dms, after a %dms delay\n",odours[j],stimTimes[j],delayTimes[j]);
 			}
-
-			XOPNotice("OK, Odours done.\015");
 		}
+		XOPNotice("OK, Odours done for this line.\015");
+		usleep(1000*postDelay);
 	}
 threaddone:
 	XOPNotice("\015Closing files.....");
