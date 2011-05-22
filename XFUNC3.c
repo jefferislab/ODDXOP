@@ -46,10 +46,7 @@ pthread_t pulseThread;	// this is our thread identifier, used to call odourPulse
 char			anyKey;
 int				ctlC;
 
-int				stimTime;
-int				delayTime;
 int				postDelay;
-int				odour;
 int				doIHaveAnError;
 int				triggerTimeout;
 
@@ -68,13 +65,7 @@ unsigned int	byteIdx;
 
 //Pointers to logfile and configfile
 FILE* fi; 
-FILE* fo; 
-
-
-//Values to be read from config file
-char ch, s[80], chID1[10], chID2[10], chID3[10], chID4[10], chID5[10];
-int d1,p1,o1,d2,p2,o2,d3,p3,o3,d4,p4,o4,d5,p5,o5;
-
+FILE* fo;
 
 //Functions
 int triggerDetectFaster();
@@ -336,7 +327,6 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 	
 	postDelay=1000;
 	
-//TODO: Change this to depend on the number of lines in the .odd file
 	int i=0;
 	int stimTimes[MAX_ODOURS_PER_LINE];
 	int odours[MAX_ODOURS_PER_LINE];
@@ -346,6 +336,9 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 	int blankOdour = BLANK_NOT_SET;
 	int tmp,ret;
 	int retval=1;
+	uint64_t stimStartTime, stimEndTime, cumulativeTime;
+	//Values to be read from config file
+	char s[80], chID[80];
 
 	while (fgets(s, 80, fi) != NULL) {
 		
@@ -374,7 +367,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 		
 		i++;
 
-		sscanf(s,"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",(char*)chID1, 
+		sscanf(s,"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",(char*)chID, 
 			   &delayTimes[0], &stimTimes[0], &odours[0],
 			   &delayTimes[1], &stimTimes[1], &odours[1],
 			   &delayTimes[2], &stimTimes[2], &odours[2],
@@ -393,8 +386,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 		fprintf(fo, "\nNonzero p1 detected. Running line %d: %s",i,s);
 		tmp=triggerDetectFaster();
 		uint64_t triggerTime=GetAbsTimeInNanoseconds();
-		//tmp=triggerDetectFast();
-		//tmp=triggerDetect();
+
 		if (tmp==10) {
 			XOPNotice("\015Trigger detected. Executing protocol...");
 			fprintf(fo, "Trigger detected. Executing sequence.\n");
@@ -421,45 +413,35 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 		triggerTimeout=20;
 		
 		int j, port;
+		cumulativeTime=0;
 		for(j=0;j < MAX_ODOURS_PER_LINE; j++){
 			
-			stimTime=stimTimes[j];
-			odour=odours[j];
-			delayTime=delayTimes[j];
+			// calculate absolute times in nanoseconds for events wrt trigger
+			stimStartTime=delayTimes[j]*1e6L+cumulativeTime;
+			stimEndTime=stimTimes[j]*1e6L+stimStartTime;
+			cumulativeTime=stimEndTime;
 			
-			
-			if (stimTime!=0) {
-				port = odour/BITS_PER_PORT;
-				if (odour>=0 && odour<MAX_ODOURS) {
+			if (stimTimes[j]!=0) {
+				port = odours[j]/BITS_PER_PORT;
+				if (odours[j]>=0 && odours[j]<MAX_ODOURS) {
 					if (blankOdour == BLANK_NOT_SET) {
 						dataReset(port*BITS_PER_PORT);
 					} else {
-						
 						dataReset(blankOdour);
 					}
-					data[9]=1;
-					
-					usleep(1000*delayTime);
-					uint64_t stimStartTime = 1e6*delayTime+triggerTime; // nb convert ms -> ns
-					uint64_t deltaStartTime;
-					while (1) {
-						deltaStartTime=GetAbsTimeInNanoseconds()-stimStartTime;
-						if	(deltaStartTime>=0) {
-							break;
-						}
-					}
-					data[port]=pow(2, odour % BITS_PER_PORT);
+					data[9]=1; // this output will confirm that we have received the trigger
+					data[port]=pow(2, odours[j] % BITS_PER_PORT);
+					int64_t starttimeerror=waitNanoSecDelayFromAbsTime(stimStartTime, triggerTime);
 					ret =   AIO_Usb_WriteAllH(usbhandle,
 											  data);
-					usleep(1000*stimTime);
+					int64_t pulselengtherror=waitNanoSecDelayFromAbsTime(stimEndTime, triggerTime);
 					if (blankOdour == BLANK_NOT_SET) {
 						dataReset(port*BITS_PER_PORT);
 					} else {
 						dataReset(blankOdour);
 					}
-					usleep(1000*postDelay);
-					fprintf(fo,"\015INFO: deltaStartTime was %g.",(double) deltaStartTime);
-					
+					fprintf(fo,"\nINFO: starttime error was %g ms.",(double) starttimeerror/1000000.0);
+					fprintf(fo,"\nINFO: pulselength error was %g ms.",(double) pulselengtherror/1000000.0);
 					
 				} else {
 					fprintf(fo,"\nERROR: you've asked for an odour that I can't provide. I'm quitting");
@@ -467,7 +449,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					retval=0;
 					goto threaddone;
 				}
-				fprintf(fo, "Applied odour %d for %dms, after a %dms delay\n",odour,stimTime,delayTime);
+				fprintf(fo, "Applied odour %d for %dms, after a %dms delay\n",odours[j],stimTimes[j],delayTimes[j]);
 			}
 		}
 		XOPNotice("OK, Odours done for this line.\015");
