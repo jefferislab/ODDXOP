@@ -367,13 +367,14 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 		
 		i++;
 
-		sscanf(s,"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",(char*)chID, 
+		int itemsread=sscanf(s,"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",(char*)chID, 
 			   &delayTimes[0], &stimTimes[0], &odours[0],
 			   &delayTimes[1], &stimTimes[1], &odours[1],
 			   &delayTimes[2], &stimTimes[2], &odours[2],
 			   &delayTimes[3], &stimTimes[3], &odours[3],
 			   &delayTimes[4], &stimTimes[4], &odours[4]);
 		
+		if(itemsread<4) continue;
 		//this might be unnecessary but will enable default blank selection from the config file later
 				
 		if (stimTimes[0]==0) {
