@@ -34,7 +34,8 @@
 #include "XFUNC3.h"
 
 #define MAX_ODOURS_PER_LINE 5
-#define MAX_ODOUR_PORTS 8 
+#define MAX_ODOUR_PORTS 8
+#define MAX_PORTS 12
 #define BITS_PER_PORT 8
 #define MAX_ODOURS (BITS_PER_PORT * MAX_ODOUR_PORTS)
 #define BLANK_NOT_SET -1
@@ -87,7 +88,7 @@ typedef struct xstrcatParams xstrcatParams;
 
 // Params for oddRead
 struct oddReadParams  {
-	double channel;
+	double port;
 	double result;						//Not currently used, but can pass a string back to Igor 
 };
 
@@ -605,16 +606,18 @@ done:
 
 static int oddRead(oddReadParams* p){
 	unsigned char       dataRead[14];
-	int channel = (int) p->channel;
-	if(channel>14) {
-		XOPNotice("Maximum channel is 14");
+	int port = (int) p->port;
+	if(port>(MAX_PORTS-1) || port<0) {
+		char notice[100];
+		sprintf(notice, "Please give a port from 0-%d\r",MAX_PORTS);
+		XOPNotice(notice);
+		p->result = -1.0;
 		return(-1);
 	}
 
 	int ret = AIO_Usb_DIO_ReadAll(myDevIdx, dataRead);
 
-	XOPNotice("Hello from oddRead\015");
-	p->result = (double) dataRead[channel];
+	p->result = (double) dataRead[port];
 	return(0);
 }
 
@@ -629,7 +632,7 @@ RegisterFunction()
 		case 0:						/* str1 = oddRun(str2, str3) */
 			return((long)xstrcat);	/* This uses the direct call method - preferred. */
 			break;
-		case 1:						/* float = oddRead(float channel) */
+		case 1:						/* float = oddRead(float port) */
 			return((long)oddRead);	/* This uses the direct call method - preferred. */
 			break;
 		case 2:						/* str1 = xstrcat1(str2, str3) */
