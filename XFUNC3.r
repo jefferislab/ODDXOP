@@ -52,7 +52,12 @@ resource 'XOPF' (1100) {
 		////////////////////////////////////////////////////////////////////////////////
 		
 		
-		
+		"oddRead",						/* function name */
+		F_UTIL | F_EXTERNAL,				/* function category */
+		NT_FP64,							/* return value type */			
+		{
+			NT_FP64,						/* parameter type */
+		},
 		
 		
 		/* str1 = xstrcat0(str2, str3) */	/* This uses the direct call method */

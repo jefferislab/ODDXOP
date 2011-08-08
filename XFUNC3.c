@@ -85,6 +85,14 @@ aioDeviceInfo aioDevices;
 
 typedef struct xstrcatParams xstrcatParams;
 
+// Params for oddRead
+struct oddReadParams  {
+	double channel;
+	double result;						//Not currently used, but can pass a string back to Igor 
+};
+
+typedef struct oddReadParams oddReadParams;
+
 
 //////////////////////////////////////////////////
 //My Functions
@@ -595,6 +603,12 @@ done:
 	return(err);
 }
 
+static int oddRead(oddReadParams* p){
+	
+	XOPNotice("Hello from oddRead");
+	return(0);
+}
+
 
 static long
 RegisterFunction()
@@ -606,11 +620,14 @@ RegisterFunction()
 		case 0:						/* str1 = oddRun(str2, str3) */
 			return((long)xstrcat);	/* This uses the direct call method - preferred. */
 			break;
-		case 1:						/* str1 = xstrcat1(str2, str3) */
+		case 1:						/* float = oddRead(float channel) */
+			return((long)oddRead);	/* This uses the direct call method - preferred. */
+			break;
+		case 2:						/* str1 = xstrcat1(str2, str3) */
 			return((long)xstrcat);	/* This uses the direct call method - preferred. */
 			break;
 			///////////////////////////////////////////////////////////////////////////////////////////
-		case 2:						/* str1 = xstrcat1(str2, str3) */
+		case 3:						/* str1 = xstrcat1(str2, str3) */
 			return(NIL);			/* This uses the message call method - generally not needed. */
 			break;
 			///////////////////////////////////////////////////////////////////////////////////////////
