@@ -94,6 +94,14 @@ struct oddReadParams  {
 
 typedef struct oddReadParams oddReadParams;
 
+// Params for oddWrite
+struct oddWriteParams  {
+	double value;
+	double port;
+	double result;						//Not currently used, but can pass a string back to Igor 
+};
+
+typedef struct oddWriteParams oddWriteParams;
 
 //////////////////////////////////////////////////
 //My Functions
@@ -621,6 +629,37 @@ static int oddRead(oddReadParams* p){
 	return(0);
 }
 
+static int oddWrite(oddWriteParams* p){
+	unsigned char       dataWrite[14];
+	int port = (int) p->port;
+	char value = (char) p->value;
+	
+	if(port>9 || port<0) {
+		char notice[100];
+		sprintf(notice, "Please give a port from 0-9\r");
+		XOPNotice(notice);
+		p->result = -1.0;
+		return(-1);
+	}
+	
+	dataWrite[0]=0;
+	dataWrite[1]=0;
+	dataWrite[2]=0;
+	dataWrite[3]=0;
+	dataWrite[4]=0;
+	dataWrite[5]=0;
+	dataWrite[6]=0;
+	dataWrite[7]=0;
+	dataWrite[8]=0;
+	dataWrite[9]=0;
+	
+	dataWrite[port]=value;
+	
+	int ret = AIO_Usb_WriteAll(myDevIdx, dataWrite);
+	
+	p->result = (double) ret;
+	return(0);
+}
 
 static long
 RegisterFunction()
@@ -635,11 +674,14 @@ RegisterFunction()
 		case 1:						/* float = oddRead(float port) */
 			return((long)oddRead);	/* This uses the direct call method - preferred. */
 			break;
-		case 2:						/* str1 = xstrcat1(str2, str3) */
+		case 2:						/* float = oddWrite(float port, float value) */
+			return((long)oddWrite);	/* This uses the direct call method - preferred. */
+			break;
+		case 3:						/* str1 = xstrcat1(str2, str3) */
 			return((long)xstrcat);	/* This uses the direct call method - preferred. */
 			break;
 			///////////////////////////////////////////////////////////////////////////////////////////
-		case 3:						/* str1 = xstrcat1(str2, str3) */
+		case 4:						/* str1 = xstrcat1(str2, str3) */
 			return(NIL);			/* This uses the message call method - generally not needed. */
 			break;
 			///////////////////////////////////////////////////////////////////////////////////////////
