@@ -604,8 +604,17 @@ done:
 }
 
 static int oddRead(oddReadParams* p){
-	
-	XOPNotice("Hello from oddRead");
+	unsigned char       dataRead[14];
+	int channel = (int) p->channel;
+	if(channel>14) {
+		XOPNotice("Maximum channel is 14");
+		return(-1);
+	}
+
+	int ret = AIO_Usb_DIO_ReadAll(myDevIdx, dataRead);
+
+	XOPNotice("Hello from oddRead\015");
+	p->result = (double) dataRead[channel];
 	return(0);
 }
 
