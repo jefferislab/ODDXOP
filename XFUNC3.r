@@ -52,8 +52,20 @@ resource 'XOPF' (1100) {
 		////////////////////////////////////////////////////////////////////////////////
 		
 		
+		"oddRead",						/* function name */
+		F_UTIL | F_EXTERNAL,				/* function category */
+		NT_FP64,							/* return value type */			
+		{
+			NT_FP64,						/* parameter type */
+		},
 		
-		
+		"oddWrite",						/* function name */
+		F_UTIL | F_EXTERNAL,				/* function category */
+		NT_FP64,							/* return value type */			
+		{
+			NT_FP64,						/* parameter types */
+			NT_FP64,						
+		},
 		
 		/* str1 = xstrcat0(str2, str3) */	/* This uses the direct call method */
 		"xstrcat0",							/* function name */
@@ -64,13 +76,5 @@ resource 'XOPF' (1100) {
 			HSTRING_TYPE,					/* str3 (string handle) */
 		},
 
-		/* str1 = xstrcat1(str2, str3) */	/* This uses the message call method */
-		"xstrcat1",							/* function name */
-		F_STR | F_EXTERNAL,					/* function category (string) */
-		HSTRING_TYPE,						/* return value type (string handle) */			
-		{
-			HSTRING_TYPE,					/* str2 (string handle) */
-			HSTRING_TYPE,					/* str3 (string handle) */
-		},
 	}
 };
