@@ -73,7 +73,10 @@ int triggerDetectFaster();
 int odourPulses(char *cfgFileName);
 int validateIndex(int devIdx);
 int initialise();
-void dataReset(int blankOdour);
+int sendBlank(int blankOdour, int port);
+int sendOdour(int odour);
+int dataSet(int odour, int valveOpenFlag);
+
 uint64_t GetAbsTimeInNanoseconds(void);
 
 struct xstrcatParams  {
@@ -267,9 +270,8 @@ initialise()						//Just sets up the board for our use: all but one byte to be u
 	return(0);	
 }
 
-
-void
-dataReset(int blankOdour)
+int
+dataSet(int odour, int valveOpenFlag)
 {
 	int ret;
 	
@@ -282,15 +284,33 @@ dataReset(int blankOdour)
 	data[6]=0;
 	data[7]=0;
 	
-	data[9]=0x00;
+	if(valveOpenFlag>0) valveOpenFlag=0x01;
+	data[9]=valveOpenFlag;
 	
-	if (blankOdour >= 0 && blankOdour < MAX_ODOURS ) {
-		int port = blankOdour/BITS_PER_PORT;
-		data[port]=pow(2, blankOdour % BITS_PER_PORT);
+	if (odour >= 0 && odour < MAX_ODOURS ) {
+		int port = odour/BITS_PER_PORT;
+		data[port]=pow(2, odour % BITS_PER_PORT);
 	}
 	
-	ret =   AIO_Usb_WriteAllH(usbhandle,
-							  data);
+	ret = AIO_Usb_WriteAllH(usbhandle, data);
+	return(ret);
+}
+
+int sendBlank(int blankOdour, int port)
+{
+	int ret;
+	if (blankOdour == BLANK_NOT_SET) {
+		ret=dataSet(port*BITS_PER_PORT, 0);
+	} else {
+		ret=dataSet(blankOdour, 0);
+	}	
+	return(ret);
+}
+
+int sendOdour(int odour)
+{
+	int ret=dataSet(odour, 0x01);
+	return(ret);
 }
 
 int 
@@ -351,7 +371,7 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 	char key[50];
     int values[2];
 	int blankOdour = BLANK_NOT_SET;
-	int tmp,ret;
+	int tmp;
 	int retval=1;
 	uint64_t stimStartTime, stimEndTime, cumulativeTime;
 	//Values to be read from config file
@@ -443,22 +463,13 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 			if (stimTimes[j]!=0) {
 				port = odours[j]/BITS_PER_PORT;
 				if (odours[j]>=0 && odours[j]<MAX_ODOURS) {
-					if (blankOdour == BLANK_NOT_SET) {
-						dataReset(port*BITS_PER_PORT);
-					} else {
-						dataReset(blankOdour);
-					}
-					data[9]=1; // this output will confirm that we have received the trigger
-					data[port]=pow(2, odours[j] % BITS_PER_PORT);
+					// NB passing the port allows a default blank for the current port to be set
+					// if one was not explicitly specified in the stimulus file
+					sendBlank(blankOdour, port);
 					int64_t starttimeerror=waitNanoSecDelayFromAbsTime(stimStartTime, triggerTime);
-					ret =   AIO_Usb_WriteAllH(usbhandle,
-											  data);
+					sendOdour(odours[j]);
 					int64_t pulselengtherror=waitNanoSecDelayFromAbsTime(stimEndTime, triggerTime);
-					if (blankOdour == BLANK_NOT_SET) {
-						dataReset(port*BITS_PER_PORT);
-					} else {
-						dataReset(blankOdour);
-					}
+					sendBlank(blankOdour, port);
 					fprintf(fo,"\nINFO: starttime error was %g ms.",(double) starttimeerror/1000000.0);
 					fprintf(fo,"\nINFO: pulselength error was %g ms.",(double) pulselengtherror/1000000.0);
 					fprintf(fo,"\nINFO: Started waiting for trigger at %g ms.",(double) waitingForTriggerTime/1000000.0);
