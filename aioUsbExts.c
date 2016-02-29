@@ -9,6 +9,7 @@
 
 #include "aioUsbExts.h"
 #include "libusb.h"
+#include "XOPStandardHeaders.h"		
 
 /********************************************************************/
 //
@@ -113,17 +114,21 @@ AIO_Usb_DIO_ReadTriggerH (struct libusb_device_handle *handle,
 						 unsigned char  *pData,
 						 int triggerTimeout)
 {
-	int startTime, endTime; 
+	int startTime, endTime, finishedTime; 
 	int	temp, ret;
-	
+	int numloops;
+	numloops = 0;
 	startTime = time(NULL);
 	endTime = startTime+triggerTimeout;
 	pData[11]=0;
+	// store the time we went into the lop
+	char tempstr[256];
 	
 	//TODO: Change this so that temp is explicitly stated (probably 0) to save on the subtraction operation
 	while (pData[11] == 0 && time(NULL) <= endTime) {
 
 		temp = pData[11];
+		numloops++;
 		
 		ret = libusb_control_transfer(handle,
 									  USB_READ_FROM_DEV,
@@ -133,21 +138,26 @@ AIO_Usb_DIO_ReadTriggerH (struct libusb_device_handle *handle,
 									  pData,
 									  14, //changed from the original 4 to work with 96-channel board
 									  TIMEOUT_1_SEC);
+		
+		if (ret < 0)
+		{
+			// Make a note that there was a problem contacting the device
+			XOPNotice("DBG>> AIO_Usb_DIO_ReadTriggerH : TIMEOUT_1_SEC reading from USB\015");
+			// but just keep going until timeOut
+			//return (ERROR_USB_CONTROL_MSG_FAILED);
+		}
+		
 	}
+	finishedTime=time(NULL);
+	sprintf(tempstr, "\015waited for %d ns between trigger checks, iterating over %d nloops\015",finishedTime-startTime,numloops);
+	XOPNotice(tempstr);
+
 	
 	if (time(NULL)>startTime+triggerTimeout) {
 		return(15);
 	}else {
 		return(10);
 	}
-	
-	if (ret < 0)
-	{
-		debug("DBG>> AIO_Usb_DIO_ReadTriggerH : usb_control_msg failed dev = 0x%0x err=%d",(unsigned int)devIdx,ret);
-		return (ERROR_USB_CONTROL_MSG_FAILED);
-	}
-	else
-		return (ERROR_SUCCESS);
 }
 
 /********************************************************************/
