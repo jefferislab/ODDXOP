@@ -472,8 +472,8 @@ odourPulses(char *cfgFileName)		//Main function. The others are mostly just for 
 					sendBlank(blankOdour, port);
 					fprintf(fo,"\nINFO: starttime error was %g ms.",(double) starttimeerror/1000000.0);
 					fprintf(fo,"\nINFO: pulselength error was %g ms.",(double) pulselengtherror/1000000.0);
-					fprintf(fo,"\nINFO: Started waiting for trigger at %g ms.",(double) waitingForTriggerTime/1000000.0);
-					fprintf(fo,"\nINFO: Trigger received at %g ms.",(double) triggerTime/1000000.0);
+					fprintf(fo,"\nINFO: Started waiting for trigger at %.1f ms.",(double) waitingForTriggerTime/1000000.0);
+					fprintf(fo,"\nINFO: Trigger received at %.1f ms.",(double) triggerTime/1000000.0);
 					
 				} else {
 					fprintf(fo,"\nERROR: you've asked for an odour that I can't provide. I'm quitting");
